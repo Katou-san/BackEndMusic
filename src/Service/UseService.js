@@ -103,20 +103,4 @@ const CheckUser = (data) => {
   });
 };
 
-const testAPI = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const allU = await User.find();
-
-      resolve({
-        status: "OK",
-        message: "connect success",
-        data: allU,
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser, testAPI };
+module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };

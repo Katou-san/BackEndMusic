@@ -94,16 +94,5 @@ const CheckUser = async (req, res) => {
     });
   }
 };
-const testAPI = async (req, res) => {
-  try {
-    const response = await UserService.testAPI(req.body);
-    return res.status(200).json(response);
-  } catch (err) {
-    console.log(err);
-    return res.status(404).json({
-      status: "ERR",
-      message: "Cant not create user",
-    });
-  }
-};
-module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser, testAPI };
+
+module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
