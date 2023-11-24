@@ -7,7 +7,7 @@ const songSchema = new mongoose.Schema(
     Avatar: { type: String, default: "" },
     Like: { type: Number, default: 0 },
     IdUser: { type: String, default: "" },
-    CatalogyID: { type: String, default: "" },
+    CatalogyId: { type: String, default: "" },
     Lyric: { type: String, default: "" },
   },
   {
