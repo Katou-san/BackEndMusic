@@ -28,10 +28,10 @@ const SendSong = async (req, res) => {
 
 const CreateSong = async (req, res) => {
   try {
-    console.log(req.body);
+    console.log(req.file);
 
     //const response = await SongService.CheckSong(req.body);
-    return res.status(200).json();
+    return res.status(200).json(req.file);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
