@@ -11,6 +11,9 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+app.use(
+  express.urlencoded({ extended: false, limit: 10000, parameterLimit: 2 })
+);
 // app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
 routes(app);
