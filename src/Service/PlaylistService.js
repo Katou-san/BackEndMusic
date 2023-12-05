@@ -1,4 +1,5 @@
 const { Playlist } = require("../Model/Playlist");
+const { User } = require("../Model/User");
 
 const CreatePlaylist = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -59,7 +60,7 @@ const UpdatePlaylist = (id, data) => {
   });
 };
 
-const DeletePlaylist = (id) => {
+const DeletePlaylist = (id, iduser) => {
   return new Promise(async (resolve, reject) => {
     try {
       const check = await Playlist.findOne({ Id: id });
@@ -69,12 +70,21 @@ const DeletePlaylist = (id) => {
           message: "Playlist not exist",
         });
       }
-      const idPlaylist = check._id;
-      await Playlist.findByIdAndDelete({ _id: idPlaylist });
-      resolve({
-        status: "OK",
-        message: "Delete playlist success",
-      });
+
+      const checkUser = await User.findOne({ Id: iduser });
+      if (check.Id == iduser || checkUser.isAdmin) {
+        const idPlaylist = check._id;
+        await Playlist.findByIdAndDelete({ _id: idPlaylist });
+        resolve({
+          status: "OK",
+          message: "Delete playlist success",
+        });
+      } else {
+        resolve({
+          status: "ERR",
+          message: "Not have permission to delete that playlist",
+        });
+      }
     } catch (err) {
       reject(err);
     }
