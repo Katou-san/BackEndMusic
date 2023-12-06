@@ -1,29 +1,35 @@
 const { Song } = require("../Model/Song");
 
-// const CreateSong = (data) => {
-//   console.log(data);
-//   return new Promise(async (resolve, reject) => {
-//     console.log(data);
-//     const { Id, Name } = data;
-//     try {
-//       const check = await Song.findOne({ Id: Id });
-//       if (check !== null) {
-//         resolve({
-//           status: "ERR",
-//           message: "Song already have!",
-//         });
-//       }
-//       const song = await Song.create({ Id, Name });
-//       resolve({
-//         status: "OK",
-//         message: "Song created!",
-//         data: song,
-//       });
-//     } catch (err) {
-//       reject(err);
-//     }
-//   });
-// };
+const CreateSong = (data) => {
+  return new Promise(async (resolve, reject) => {
+    const { Id, Name, Avatar, Like, IdUser, CatalogyId, Lyric } = data;
+    try {
+      const check = await Song.findOne({ Id: Id });
+      if (check !== null) {
+        resolve({
+          status: "ERR",
+          message: "Song already have!",
+        });
+      }
+      const song = await Song.create({
+        Id,
+        Name,
+        Avatar,
+        Like,
+        IdUser,
+        CatalogyId,
+        Lyric,
+      });
+      resolve({
+        status: "OK",
+        message: "Song created!",
+        data: song,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
 
 const CheckSong = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -54,4 +60,4 @@ const CheckSong = (data) => {
   });
 };
 
-module.exports = { CheckSong };
+module.exports = { CheckSong, CreateSong };

@@ -1,25 +1,25 @@
-const { Catalogy } = require("../Model/Catalogy");
+const { Category } = require("../Model/Category");
 const { User } = require("../Model/User");
 
-const CreateCatalogy = (data) => {
+const CreateCategory = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Id, Name } = data;
     try {
-      const check = await Catalogy.findOne({ Id: Id });
+      const check = await Category.findOne({ Id: Id });
       if (check !== null) {
         resolve({
           status: "ERR",
-          message: "Catalogy is exist",
+          message: "Category is exist",
         });
       }
-      const catalogy = await Catalogy.create({
+      const category = await Category.create({
         Id,
         Name,
       });
       resolve({
         status: "OK",
         message: "create playlist success",
-        data: catalogy,
+        data: category,
       });
     } catch (err) {
       reject(err);
@@ -27,20 +27,20 @@ const CreateCatalogy = (data) => {
   });
 };
 
-const UpdateCatalogy = (id, data) => {
+const UpdateCategory = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let idCatalogy = "";
-      const check = await Catalogy.findOne({ Id: id });
+      let idCategory = "";
+      const check = await Category.findOne({ Id: id });
       if (check === null) {
         resolve({
           status: "ERR",
-          message: "Catalogy is not exist",
+          message: "Category is not exist",
         });
       }
-      idCatalogy = check._id;
-      const catalogy = await Catalogy.findOneAndUpdate(
-        { _id: idCatalogy },
+      idCategory = check._id;
+      const category = await Category.findOneAndUpdate(
+        { _id: idCategory },
         data,
         {
           new: true,
@@ -48,8 +48,8 @@ const UpdateCatalogy = (id, data) => {
       );
       resolve({
         status: "OK",
-        message: "Update Catalogy success",
-        data: catalogy,
+        message: "Update Category success",
+        data: category,
       });
     } catch (err) {
       reject(err);
@@ -57,10 +57,10 @@ const UpdateCatalogy = (id, data) => {
   });
 };
 
-const DeleteCatalogy = (id, iduser) => {
+const DeleteCategory = (id, iduser) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const check = await Catalogy.findOne({ Id: id });
+      const check = await Category.findOne({ Id: id });
       if (check === null) {
         resolve({
           status: "ERR",
@@ -70,16 +70,16 @@ const DeleteCatalogy = (id, iduser) => {
 
       const checkUser = await User.findOne({ Id: iduser });
       if (checkUser.isAdmin) {
-        const idCatalogy = check._id;
-        await Catalogy.findByIdAndDelete({ _id: idCatalogy });
+        const idCategory = check._id;
+        await Category.findByIdAndDelete({ _id: idCategory });
         resolve({
           status: "OK",
-          message: "Delete catalogy success",
+          message: "Delete Category success",
         });
       } else {
         resolve({
           status: "ERR",
-          message: "Not have permission to delete that catalogy",
+          message: "Not have permission to delete that Category",
         });
       }
     } catch (err) {
@@ -89,7 +89,7 @@ const DeleteCatalogy = (id, iduser) => {
 };
 
 module.exports = {
-  CreateCatalogy,
-  DeleteCatalogy,
-  UpdateCatalogy,
+  CreateCategory,
+  DeleteCategory,
+  UpdateCategory,
 };
