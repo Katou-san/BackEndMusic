@@ -2,7 +2,6 @@ const SongService = require("../Service/SongService");
 var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
-const multer = require("multer");
 
 const SendSong = async (req, res) => {
   try {
@@ -29,31 +28,8 @@ const SendSong = async (req, res) => {
 
 const CreateSong = async (req, res) => {
   try {
-    //
-    const { Id, IdUser } = req.body;
-    const storagePath = multer.diskStorage({
-      destination: function (req, file, cb) {
-        let filePath = file.mimetype.split("/")[0];
-        if (filePath == "audio") {
-          cb(null, "./src/SongList");
-        } else if (filePath === "image") {
-          cb(null, "./src/ImgUpload");
-        }
-      },
-      filename: function (req, file, cb) {
-        cb(null, Id + "_" + IdUser + path.extname(file.originalname));
-      },
-    });
-    const uploadFile = multer({ storage: storagePath });
-    //
-
     console.log(req.body);
     console.log(req.files);
-
-    //dang tai
-    uploadFile.array("Files");
-    //
-
     return res.status(200).json({
       status: "Okk",
       message: "add song finished successfully",
