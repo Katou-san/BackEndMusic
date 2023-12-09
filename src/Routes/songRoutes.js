@@ -18,7 +18,9 @@ const storagePath = multer.diskStorage({
       null,
       req.body.IdUser +
         "_" +
-        req.body.NameSong.replace(/ /g, "_") +
+        req.body.NameSong +
+        "_" +
+        req.body.PostTime +
         path.extname(file.originalname)
     );
   },
@@ -31,5 +33,6 @@ Router.post(
   uploadFile.array("Files"),
   SongController.CreateSong
 );
+Router.get("/GetListSong", SongController.GetListSong);
 
 module.exports = Router;

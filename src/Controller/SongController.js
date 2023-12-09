@@ -5,10 +5,10 @@ const path = require("path");
 
 const SendSong = async (req, res) => {
   try {
-    const { Id, IdUser } = req.body;
+    const { src } = req.body;
     const response = await SongService.CheckSong(req.body);
     if (response.status != "ERR") {
-      res.sendFile(`${Id}-${IdUser}.mp3`, {
+      res.sendFile(`${src}.mp3`, {
         root: path.join(__dirname, "../SongList/"),
       });
     } else {
@@ -26,14 +26,30 @@ const SendSong = async (req, res) => {
   }
 };
 
+const GetListSong = async (req, res) => {
+  try {
+    const list = await Song.find();
+    return res.status(200).json({
+      status: "OK",
+      message: "List send!",
+      data: list,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(404).json({
+      status: "ERR",
+      message: "Fork up song~",
+    });
+  }
+};
+
 const CreateSong = async (req, res) => {
   try {
-    console.log(req.body);
-    console.log(req.files);
-    return res.status(200).json({
-      status: "Okk",
-      message: "add song finished successfully",
-    });
+    // console.log(req.body);
+    // console.log(req.files);
+    const { NameSong, PostTime, Category, IdUser } = req.body;
+    const response = await SongService.CreateSong(req.body, req.files);
+    return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
@@ -43,4 +59,4 @@ const CreateSong = async (req, res) => {
   }
 };
 
-module.exports = { SendSong, CreateSong };
+module.exports = { SendSong, CreateSong, GetListSong };

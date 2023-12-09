@@ -1,10 +1,13 @@
 const { Song } = require("../Model/Song");
+const path = require("path");
 
-const CreateSong = (data) => {
+const CreateSong = (data, file) => {
   return new Promise(async (resolve, reject) => {
-    const { Id, Name, Avatar, Like, IdUser, CatalogyId, Lyric } = data;
+    //const { Id, Name, Avatar, Like, IdUser, CatalogyId, Lyric } = data;
+
+    const { NameSong, PostTime, Category, IdUser, Like, Lyric } = data;
     try {
-      const check = await Song.findOne({ Id: Id });
+      const check = await Song.findOne({ Id: PostTime });
       if (check !== null) {
         resolve({
           status: "ERR",
@@ -12,12 +15,25 @@ const CreateSong = (data) => {
         });
       }
       const song = await Song.create({
-        Id,
-        Name,
-        Avatar,
+        Id: PostTime,
+        Name: NameSong,
+        Avatar:
+          IdUser +
+          "_" +
+          NameSong +
+          "_" +
+          PostTime +
+          path.extname(file[1].originalname),
+        src:
+          IdUser +
+          "_" +
+          NameSong +
+          "_" +
+          PostTime +
+          path.extname(file[0].originalname),
         Like,
-        IdUser,
-        CatalogyId,
+        IdUser: IdUser,
+        CatalogyId: Category,
         Lyric,
       });
       resolve({
