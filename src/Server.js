@@ -5,9 +5,11 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const routes = require("./Routes");
 const bodyParser = require("body-parser");
+const { patch } = require("./Routes/userRoutes");
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());

@@ -1,6 +1,7 @@
 const express = require("express");
 const Router = express.Router();
 const SongController = require("../Controller/SongController");
+const AIController = require("../Controller/AIController");
 const path = require("path");
 const multer = require("multer");
 
@@ -34,5 +35,5 @@ Router.post(
   SongController.CreateSong
 );
 Router.get("/GetListSong", SongController.GetListSong);
-
+// Router.post("/AIFind", AIController.AiFindSong);
 module.exports = Router;

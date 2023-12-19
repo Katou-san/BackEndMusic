@@ -76,4 +76,27 @@ const CheckSong = (data) => {
   });
 };
 
-module.exports = { CheckSong, CreateSong };
+const GetAllSong = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const listSong = await Song.find();
+
+      if (listSong == null) {
+        reject({
+          status: "ERROR",
+          message: "cant get all songs",
+        });
+      }
+
+      resolve({
+        status: "OK",
+        message: "got list Song",
+        data: listSong,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+module.exports = { CheckSong, CreateSong, GetAllSong };

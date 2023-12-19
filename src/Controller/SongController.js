@@ -28,17 +28,13 @@ const SendSong = async (req, res) => {
 
 const GetListSong = async (req, res) => {
   try {
-    const list = await Song.find();
-    return res.status(200).json({
-      status: "OK",
-      message: "List send!",
-      data: list,
-    });
+    const respone = await SongService.GetAllSong();
+    return res.status(200).json(respone);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
       status: "ERR",
-      message: "Fork up song~",
+      message: "cant get all songs",
     });
   }
 };
