@@ -2,8 +2,8 @@ const UserService = require("../Service/UseService");
 
 const CreateUser = async (req, res) => {
   try {
-    const { Email, Pass } = req.body;
-    console.log(req.body);
+    const { Email, Password } = req.body;
+    // console.log(req.body);
     if (!Email) {
       return res.status(200).json({
         status: "ERR",
@@ -11,7 +11,7 @@ const CreateUser = async (req, res) => {
       });
     }
 
-    if (!Pass) {
+    if (!Password) {
       return res.status(200).json({
         status: "ERR",
         message: "Pass is required",

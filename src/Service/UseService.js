@@ -2,7 +2,8 @@ const { User } = require("../Model/User");
 
 const CreateUser = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Id, Name, Email, Pass } = data;
+    const { Id, Username, Email, Password } = data;
+    console.log("hello" + data);
     try {
       const check = await User.findOne({ Email: Email });
       if (check !== null) {
@@ -12,8 +13,12 @@ const CreateUser = (data) => {
         });
       }
 
-      console.log(Name);
-      const user = await User.create({ Id, Name, Email, Pass });
+      const user = await User.create({
+        Id,
+        Name: Username,
+        Email,
+        Pass: Password,
+      });
       resolve({
         status: "OK",
         message: "create user success",
