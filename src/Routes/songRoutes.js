@@ -33,7 +33,7 @@ Router.post(
   uploadFile.array("Files"),
   SongController.CreateSong
 );
-Router.get("/GetListSong", SongController.GetListSong);
+Router.get("/GetAllSong", SongController.GetListSong);
 // Router.post("/AIFind", AIController.AiFindSong);
 
 module.exports = Router;
