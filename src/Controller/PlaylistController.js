@@ -1,10 +1,10 @@
 const PlaylistService = require("../Service/PlaylistService");
 
 const CreatePlaylist = async (req, res) => {
-  const { Id, Name, IdUser } = req.body;
-  if (!Id || !Name || !IdUser) {
+  const { Playlist_Id, Playlist_Name, User_Id } = req.body;
+  if (!Playlist_Id || !Playlist_Name || !User_Id) {
     return res.status(200).json({
-      status: "ERR",
+      status: "404",
       message: "Playlist invalid",
     });
   }
@@ -14,28 +14,28 @@ const CreatePlaylist = async (req, res) => {
 };
 
 const UpdatePlaylist = async (req, res) => {
-  const { Id, Name, IdUser } = req.body;
-  if (!Id || !Name || !IdUser) {
+  const { Playlist_Id, Playlist_Name, User_Id } = req.body;
+  if (!Playlist_Id || !Playlist_Name || !User_Id) {
     return res.status(200).json({
-      status: "ERR",
+      status: "404",
       message: "Playlist invalid",
     });
   }
 
-  const response = await PlaylistService.UpdatePlaylist(Id, req.body);
+  const response = await PlaylistService.UpdatePlaylist(Playlist_Id, req.body);
   return res.status(200).json(response);
 };
 
 const DeletePlaylist = async (req, res) => {
-  const { Id, IdUser } = req.body;
-  if (!Id || !IdUser) {
+  const { Playlist_Id, User_Id } = req.body;
+  if (!Playlist_Id || !User_Id) {
     return res.status(200).json({
-      status: "ERR",
+      status: "404",
       message: "Playlist invalid",
     });
   }
 
-  const response = await PlaylistService.DeletePlaylist(Id, IdUser);
+  const response = await PlaylistService.DeletePlaylist(Playlist_Id, req.body);
   return res.status(200).json(response);
 };
 

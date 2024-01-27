@@ -11,3 +11,8 @@ const catalogySchema = new mongoose.Schema(
 
 const Catalogy = mongoose.model("DataCatalogy", catalogySchema);
 module.exports = { Catalogy };
+
+// Catalogy={
+//   Catalogy_Id:"",
+//   Catalogy_Name:""
+// }

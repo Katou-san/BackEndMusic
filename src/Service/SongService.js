@@ -5,7 +5,17 @@ const CreateSong = (data, file) => {
   return new Promise(async (resolve, reject) => {
     //const { Id, Name, Avatar, Like, IdUser, CatalogyId, Lyric } = data;
 
-    const { NameSong, PostTime, Category, IdUser, Like, Lyric } = data;
+    const {
+      Song_Name,
+      Post_Time,
+      Category_Id,
+      User_Id,
+      Like,
+      Lyrics,
+      Tag,
+      Color,
+    } = data;
+
     try {
       const check = await Song.findOne({ Id: PostTime });
       if (check !== null) {
@@ -15,26 +25,28 @@ const CreateSong = (data, file) => {
         });
       }
       const song = await Song.create({
-        Id: PostTime,
-        Name: NameSong,
-        Avatar:
-          IdUser +
+        Song_Id: Post_Time,
+        Song_Name: Song_Name,
+        Song_Image:
+          User_Id +
           "_" +
-          NameSong +
+          Song_Name +
           "_" +
-          PostTime +
+          Post_Time +
           path.extname(file[1].originalname),
-        src:
-          IdUser +
+        Song_Src:
+          User_Id +
           "_" +
-          NameSong +
+          Song_Name +
           "_" +
-          PostTime +
+          Post_Time +
           path.extname(file[0].originalname),
-        Like,
-        IdUser: IdUser,
-        CatalogyId: Category,
-        Lyric,
+        Like: Like,
+        User_Id: User_Id,
+        Catalogy_Id: Category_Id,
+        Lyrics: Lyrics,
+        Tag: Tag,
+        Color: Color,
       });
       resolve({
         status: "OK",
@@ -49,24 +61,24 @@ const CreateSong = (data, file) => {
 
 const CheckSong = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Id, Name } = data;
+    const { Song_Id, Song_Name } = data;
     try {
-      const checkE = await Song.findOne({ Id: Id });
+      const checkE = await Song.findOne({ Song_Id: Song_Id });
       if (checkE == null) {
         resolve({
-          status: "ERR",
+          status: "404",
           message: "Song not found!",
         });
       } else {
-        if (checkE.Name == Name) {
+        if (checkE.Song_Name == Song_Name) {
           resolve({
-            status: "OK",
+            status: "200",
             message: "Song founded",
           });
         } else {
           resolve({
-            status: "ERR",
-            message: "Name song wrong!",
+            status: "404",
+            message: "Song name wrong!",
           });
         }
       }
@@ -83,13 +95,13 @@ const GetAllSong = () => {
 
       if (listSong == null) {
         reject({
-          status: "ERROR",
+          status: "404",
           message: "cant get all songs",
         });
       }
 
       resolve({
-        status: "OK",
+        status: "200",
         message: "got list Song",
         data: listSong,
       });

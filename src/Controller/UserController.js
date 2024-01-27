@@ -96,3 +96,19 @@ const CheckUser = async (req, res) => {
 };
 
 module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
+
+// User = {
+//   User_Id: "",
+//   User_Email: "",
+//   User_Pass: "",
+//   User_Name: "",
+//   Avatar: "",
+//   Number_Phone: "",
+//   Follower: "",
+//   Following: "",
+//   Playlist: "",
+//   List_Add_Songs: "",
+//   List_Likes: "",
+//   User_Color: "",
+//   Rule:""
+// };

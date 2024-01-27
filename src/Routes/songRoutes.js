@@ -17,11 +17,11 @@ const storagePath = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(
       null,
-      req.body.IdUser +
+      req.body.User_Id +
         "_" +
-        req.body.NameSong +
+        req.body.Song_Name +
         "_" +
-        req.body.PostTime +
+        req.body.Post_Time +
         path.extname(file.originalname)
     );
   },

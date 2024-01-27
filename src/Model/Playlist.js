@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const playlistSchema = new mongoose.Schema(
   {
-    Id: { type: String, required: true, unique: true },
-    Name: { type: String, required: true },
-    Avatar: { type: String, default: "" },
-    IdUser: { type: String, default: "" },
-    Songs: [],
+    Playlist_Id: { type: String, required: true, unique: true },
+    Playlist_Name: { type: String, required: true },
+    Image: { type: String, default: "" },
+    Thumbnail: { type: String, default: "" },
+    User_Id: { type: String, required: true },
+    List_Song: [],
   },
   {
     timestamps: true,

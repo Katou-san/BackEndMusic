@@ -7,21 +7,21 @@ const SendSong = async (req, res) => {
   try {
     const { src } = req.body;
     const response = await SongService.CheckSong(req.body);
-    if (response.status != "ERR") {
+    if (response.status != "404") {
       res.sendFile(`${src}.mp3`, {
         root: path.join(__dirname, "../SongList/"),
       });
     } else {
       return res.status(404).json({
-        status: "ERR",
-        message: "Fork up song~",
+        status: "404",
+        message: "Song not sended",
       });
     }
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
-      message: "Fork up song~",
+      status: "404",
+      message: "Song not sended - err",
     });
   }
 };
@@ -33,7 +33,7 @@ const GetListSong = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
+      status: "404",
       message: "cant get all songs",
     });
   }
@@ -49,7 +49,7 @@ const CreateSong = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
+      status: "404",
       message: "Cant not create song",
     });
   }

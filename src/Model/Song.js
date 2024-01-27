@@ -2,14 +2,16 @@ const { Int32 } = require("mongodb");
 const mongoose = require("mongoose");
 const songSchema = new mongoose.Schema(
   {
-    Id: { type: String, required: true, unique: true },
-    Name: { type: String, required: true },
-    Avatar: { type: String, default: "" },
-    src: { type: String, default: "" },
+    Song_Id: { type: String, required: true, unique: true },
+    Song_Name: { type: String, required: true },
+    Song_Image: { type: String, default: "" },
+    Song_Src: { type: String, default: "" },
     Like: { type: Number, default: 0 },
-    IdUser: { type: String, default: "" },
-    CatalogyId: { type: String, default: "" },
-    Lyric: { type: String, default: "" },
+    User_Id: { type: String, default: "", required: true },
+    Catalogy_Id: { type: String, default: "" },
+    Lyrics: { type: String, default: "" },
+    Tag: { type: String, default: "" },
+    Color: { type: String, default: "#ffffff" },
   },
   {
     timestamps: true,
