@@ -5,7 +5,7 @@ const path = require("path");
 const getAudio = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../ListSong") };
+    const filePath = { root: path.join(__dirname, "../Song_Audio") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -21,7 +21,7 @@ const getAudio = async (req, res) => {
 const getImage = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../ListImg") };
+    const filePath = { root: path.join(__dirname, "../Song_Image") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);

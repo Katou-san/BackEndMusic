@@ -3,21 +3,24 @@ const { User } = require("../Model/User");
 
 const CreatePlaylist = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Id, Name, Avatar, IdUser, Songs } = data;
+    const { Post_Time, Playlist_Name, Image, Thumbnail, User_Id, List_Song } =
+      data;
     try {
-      const check = CheckPlaylist(data);
-      if (check.status == "PL_F") {
+      const FileName = User_Id + "_" + Song_Name + "_" + Post_Time;
+      const check = await Playlist.findOne({ Playlist_Id: Playlist_Id });
+      if (check != null) {
         resolve({
-          status: "ERR",
-          message: "playlist is exist",
+          status: "404",
+          message: "Playlist is exist",
         });
       }
       const playlist = await Playlist.create({
-        Id,
-        Name,
-        Avatar,
-        IdUser,
-        Songs,
+        Playlist_Id: Post_Time,
+        Playlist_Name: Playlist_Name,
+        Image: FileName + path.extname(file[0].originalname),
+        Thumbnail: FileName + path.extname(file[1].originalname),
+        User_Id: User_Id,
+        List_Song: List_Song,
       });
       resolve({
         status: "OK",

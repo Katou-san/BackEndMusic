@@ -41,9 +41,6 @@ const GetListSong = async (req, res) => {
 
 const CreateSong = async (req, res) => {
   try {
-    // console.log(req.body);
-    // console.log(req.files);
-    const { NameSong, PostTime, Category, IdUser } = req.body;
     const response = await SongService.CreateSong(req.body, req.files);
     return res.status(200).json(response);
   } catch (err) {
