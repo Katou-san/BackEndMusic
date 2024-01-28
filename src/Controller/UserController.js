@@ -102,13 +102,15 @@ module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
 //   User_Email: "",
 //   User_Pass: "",
 //   User_Name: "",
+//   User_Color: "",
+//   Background:""
 //   Avatar: "",
 //   Number_Phone: "",
 //   Follower: "",
 //   Following: "",
 //   Playlist: "",
 //   List_Add_Songs: "",
-//   List_Likes: "",
-//   User_Color: "",
+//   List_Like_Song: "",
 //   Rule:""
+//   is_Premium: "",
 // };

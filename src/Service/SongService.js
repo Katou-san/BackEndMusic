@@ -15,9 +15,9 @@ const CreateSong = (data, file) => {
       Tag,
       Color,
     } = data;
-
+    const Set_Name = User_Id + "_" + Song_Name + "_" + Post_Time;
     try {
-      const check = await Song.findOne({ Id: PostTime });
+      const check = await Song.findOne({ Song_Id: Post_Time });
       if (check !== null) {
         resolve({
           status: "ERR",
@@ -27,20 +27,8 @@ const CreateSong = (data, file) => {
       const song = await Song.create({
         Song_Id: Post_Time,
         Song_Name: Song_Name,
-        Song_Image:
-          User_Id +
-          "_" +
-          Song_Name +
-          "_" +
-          Post_Time +
-          path.extname(file[1].originalname),
-        Song_Src:
-          User_Id +
-          "_" +
-          Song_Name +
-          "_" +
-          Post_Time +
-          path.extname(file[0].originalname),
+        Song_Image: Set_Name + path.extname(file[1].originalname),
+        Song_Src: Set_Name + path.extname(file[0].originalname),
         Like: Like,
         User_Id: User_Id,
         Catalogy_Id: Category_Id,
