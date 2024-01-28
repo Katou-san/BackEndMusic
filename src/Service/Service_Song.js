@@ -14,6 +14,7 @@ const CreateSong = (data, file) => {
       Lyrics,
       Tag,
       Color,
+      Is_Publish,
     } = data;
     const Set_Name = User_Id + "_" + Song_Name + "_" + Post_Time;
     try {
@@ -35,6 +36,7 @@ const CreateSong = (data, file) => {
         Lyrics: Lyrics,
         Tag: Tag,
         Color: Color,
+        Is_Publish: Is_Publish,
       });
       resolve({
         status: "OK",
@@ -79,7 +81,7 @@ const CheckSong = (data) => {
 const GetAllSong = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const listSong = await Song.find();
+      const listSong = await Song.find({ Is_Publish: true });
 
       if (listSong == null) {
         reject({

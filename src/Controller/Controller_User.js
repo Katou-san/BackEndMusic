@@ -1,4 +1,4 @@
-const UserService = require("../Service/UseService");
+const UserService = require("../Service/Service_User");
 
 const CreateUser = async (req, res) => {
   try {
@@ -96,21 +96,3 @@ const CheckUser = async (req, res) => {
 };
 
 module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
-
-// User = {
-//   User_Id: "",
-//   User_Email: "",
-//   User_Pass: "",
-//   User_Name: "",
-//   User_Color: "",
-//   Background:""
-//   Avatar: "",
-//   Number_Phone: "",
-//   Follower: "",
-//   Following: "",
-//   Playlist: "",
-//   List_Add_Songs: "",
-//   List_Like_Song: "",
-//   Rule:""
-//   is_Premium: "",
-// };

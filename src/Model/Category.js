@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const catalogySchema = new mongoose.Schema(
   {
-    Id: { type: String, required: true, unique: true },
-    Name: { type: String, required: true },
+    Catalogy_Id: { type: String, required: true, unique: true },
+    Catalogy_Name: { type: String, required: true },
   },
   {
     timestamps: true,
@@ -11,8 +11,3 @@ const catalogySchema = new mongoose.Schema(
 
 const Catalogy = mongoose.model("DataCatalogy", catalogySchema);
 module.exports = { Catalogy };
-
-// Catalogy={
-//   Catalogy_Id:"",
-//   Catalogy_Name:""
-// }

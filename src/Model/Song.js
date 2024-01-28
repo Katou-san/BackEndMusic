@@ -12,6 +12,7 @@ const songSchema = new mongoose.Schema(
     Lyrics: { type: String, default: "" },
     Tag: { type: String, default: "" },
     Color: { type: String, default: "#ffffff" },
+    Is_Publish: { type: Boolean, default: false },
   },
   {
     timestamps: true,
