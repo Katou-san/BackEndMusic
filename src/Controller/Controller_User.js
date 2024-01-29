@@ -1,29 +1,37 @@
-const UserService = require("../Service/Service_User");
+const { User } = require("../Model/User");
+const Service_User = require("../Service/Service_User");
 
 const CreateUser = async (req, res) => {
   try {
-    const { Email, Password } = req.body;
-    // console.log(req.body);
-    if (!Email) {
+    const { User_Id, User_Email, User_Pass, User_Name } = req.body;
+
+    if (!User_Email) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "Email is required",
       });
     }
 
-    if (!Password) {
+    if (!User_Pass && User_Pass.length >= 4) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "Pass is required",
       });
     }
-    const response = await UserService.CreateUser(req.body);
+
+    if (!User_Id && !User_Name) {
+      return res.status(200).json({
+        status: 404,
+        message: "Id or Username is emty",
+      });
+    }
+
+    const response = await Service_User.CreateUser(req.body);
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err);
     return res.status(404).json({
-      status: "ERR",
-      message: "Cant not create user",
+      status: 404,
+      message: "Create User failed",
     });
   }
 };
@@ -33,16 +41,16 @@ const UpdateUser = async (req, res) => {
     const id = req.params.id;
     if (!id) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "ID is required",
       });
     }
-    const response = await UserService.UpdateUser(id, req.body);
+    const response = await Service_User.UpdateUser(id, req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
+      status: 404,
       message: "Cant update user",
     });
   }
@@ -53,16 +61,16 @@ const DeletaUser = async (req, res) => {
     const id = req.params.id;
     if (!id) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "ID is required",
       });
     }
-    const response = await UserService.DeletaUser(id);
+    const response = await Service_User.DeletaUser(id);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
+      status: 404,
       message: "Cant delete user",
     });
   }
@@ -70,26 +78,27 @@ const DeletaUser = async (req, res) => {
 
 const CheckUser = async (req, res) => {
   try {
-    const { Email, Pass } = req.body;
-    if (!Email) {
+    const { User_Email, User_Pass } = req.body;
+    console.log(req.body);
+    if (!User_Email) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "Email is required",
       });
     }
 
-    if (!Pass) {
+    if (!User_Pass) {
       return res.status(200).json({
-        status: "ERR",
+        status: 404,
         message: "Pass is required",
       });
     }
-    const response = await UserService.CheckUser(req.body);
+    const response = await Service_User.CheckUser(req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
-      status: "ERR",
+      status: 404,
       message: "Cant not create user",
     });
   }

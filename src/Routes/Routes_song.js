@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
-const SongController = require("../Controller/SongController");
+const Controller_Song = require("../Controller/Controller_Song");
 const path = require("path");
 const multer = require("multer");
 
@@ -27,12 +27,12 @@ const storagePath = multer.diskStorage({
 });
 const uploadFile = multer({ storage: storagePath });
 
-Router.get("/SendSong", SongController.SendSong);
+Router.get("/SendSong", Controller_Song.SendSong);
 Router.post(
   "/UploadSong",
   uploadFile.array("Files"),
-  SongController.CreateSong
+  Controller_Song.CreateSong
 );
-Router.get("/GetAllSong", SongController.GetListSong);
+Router.get("/GetAllSong", Controller_Song.GetListSong);
 
 module.exports = Router;

@@ -1,9 +1,9 @@
 const express = require("express");
 const Router = express.Router();
-const UserController = require("../Controller/UserController");
+const Controller_User = require("../Controller/Controller_User");
 
-Router.post("/Login", UserController.CheckUser);
-Router.post("/Sign_up", UserController.CreateUser);
-Router.put("/Update_user/:id", UserController.UpdateUser);
-Router.delete("/Delete_user/:id", UserController.DeletaUser);
+Router.post("/Login", Controller_User.CheckUser);
+Router.post("/Sign_up", Controller_User.CreateUser);
+Router.put("/Update_user/:id", Controller_User.UpdateUser);
+Router.delete("/Delete_user/:id", Controller_User.DeletaUser);
 module.exports = Router;

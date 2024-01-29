@@ -1,4 +1,4 @@
-const CategoryService = require("../Service/CategoryService");
+const Service_Category = require("../Service/Service_Category");
 
 const CreateCategory = async (req, res) => {
   const { Id, Name } = req.body;
@@ -9,7 +9,7 @@ const CreateCategory = async (req, res) => {
     });
   }
 
-  const response = await CategoryService.CreateCategory(req.body);
+  const response = await Service_Category.CreateCategory(req.body);
   return res.status(200).json(response);
 };
 
@@ -22,7 +22,7 @@ const UpdateCategory = async (req, res) => {
     });
   }
 
-  const response = await CategoryService.UpdateCategory(Id, req.body);
+  const response = await Service_Category.UpdateCategory(Id, req.body);
   return res.status(200).json(response);
 };
 
@@ -35,7 +35,7 @@ const DeleteCategory = async (req, res) => {
     });
   }
 
-  const response = await CategoryService.DeleteCategory(Id, IdUser);
+  const response = await Service_Category.DeleteCategory(Id, IdUser);
   return res.status(200).json(response);
 };
 

@@ -3,43 +3,33 @@ const path = require("path");
 
 const CreateSong = (data, file) => {
   return new Promise(async (resolve, reject) => {
-    //const { Id, Name, Avatar, Like, IdUser, CatalogyId, Lyric } = data;
+    const { Song_Name, Post_Time, Category_Id, User_Id, Lyrics, Tag, Color } =
+      data;
 
-    const {
-      Song_Name,
-      Post_Time,
-      Category_Id,
-      User_Id,
-      Like,
-      Lyrics,
-      Tag,
-      Color,
-      Is_Publish,
-    } = data;
     const Set_Name = User_Id + "_" + Song_Name + "_" + Post_Time;
     try {
       const check = await Song.findOne({ Song_Id: Post_Time });
       if (check !== null) {
         resolve({
-          status: "ERR",
+          status: "404",
           message: "Song already have!",
         });
       }
+
       const song = await Song.create({
         Song_Id: Post_Time,
         Song_Name: Song_Name,
-        Song_Image: Set_Name + path.extname(file[1].originalname),
         Song_Src: Set_Name + path.extname(file[0].originalname),
-        Like: Like,
-        User_Id: User_Id,
-        Catalogy_Id: Category_Id,
-        Lyrics: Lyrics,
-        Tag: Tag,
-        Color: Color,
-        Is_Publish: Is_Publish,
+        Song_Image: Set_Name + path.extname(file[1].originalname),
+        User_Id,
+        Category_Id,
+        Lyrics,
+        Tag,
+        Color,
       });
+
       resolve({
-        status: "OK",
+        status: "200",
         message: "Song created!",
         data: song,
       });

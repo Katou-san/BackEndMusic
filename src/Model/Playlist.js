@@ -6,6 +6,7 @@ const playlistSchema = new mongoose.Schema(
     Image: { type: String, default: "" },
     Thumbnail: { type: String, default: "" },
     User_Id: { type: String, required: true },
+    Playlist_Is_Publish: { type: Boolean, default: false },
     List_Song: [],
   },
   {

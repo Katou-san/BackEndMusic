@@ -5,11 +5,10 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const routes = require("./Routes");
 const bodyParser = require("body-parser");
-const { patch } = require("./Routes/userRoutes");
+const path = require("path");
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
-const path = require("path");
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +24,7 @@ mongoose
   .catch((err) => {
     console.log("connect fail");
   });
+
 app.listen(port, () => {
   console.log("Server is running in http://localhost:" + port);
 });

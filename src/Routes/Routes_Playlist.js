@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
-const PlaylistController = require("../Controller/PlaylistController");
+const Controller_Playlist = require("../Controller/Controller_Playlist");
 const path = require("path");
 const multer = require("multer");
 
@@ -22,7 +22,7 @@ const storagePath = multer.diskStorage({
 });
 const uploadFile = multer({ storage: storagePath });
 
-Router.post("/Create_playlist", PlaylistController.CreatePlaylist);
-Router.put("/Update_playlist/:id", PlaylistController.UpdatePlaylist);
-Router.delete("/Delete_playlist/:id", PlaylistController.DeletePlaylist);
+Router.post("/Create_playlist", Controller_Playlist.CreatePlaylist);
+Router.put("/Update_playlist/:id", Controller_Playlist.UpdatePlaylist);
+Router.delete("/Delete_playlist/:id", Controller_Playlist.DeletePlaylist);
 module.exports = Router;

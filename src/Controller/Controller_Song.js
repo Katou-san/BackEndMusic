@@ -1,4 +1,4 @@
-const SongService = require("../Service/SongService");
+const Service_Song = require("../Service/Service_Song");
 var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
@@ -6,7 +6,7 @@ path;
 const SendSong = async (req, res) => {
   try {
     const { src } = req.body;
-    const response = await SongService.CheckSong(req.body);
+    const response = await Service_Song.CheckSong(req.body);
     if (response.status != "404") {
       res.sendFile(`${src}.mp3`, {
         root: path.join(__dirname, "../SongList/"),
@@ -28,7 +28,7 @@ const SendSong = async (req, res) => {
 
 const GetListSong = async (req, res) => {
   try {
-    const respone = await SongService.GetAllSong();
+    const respone = await Service_Song.GetAllSong();
     return res.status(200).json(respone);
   } catch (err) {
     console.log(err);
@@ -41,7 +41,7 @@ const GetListSong = async (req, res) => {
 
 const CreateSong = async (req, res) => {
   try {
-    const response = await SongService.CreateSong(req.body, req.files);
+    const response = await Service_Song.CreateSong(req.body, req.files);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
