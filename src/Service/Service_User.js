@@ -33,7 +33,7 @@ const CreateUser = (data) => {
           Data_User: {
             User_Id,
             User_Name,
-            Avatar: "",
+            Avatar: "Avatar_Default.jpg",
           },
         },
       });

@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
     User_Pass: { type: String, required: true },
     User_Name: { type: String, required: true },
     User_Color: { type: String, default: "#ffffff" },
-    Avatar: { type: String, default: "" },
+    Avatar: { type: String, default: "Avatar_Default.jpg" },
     Number_Phone: { type: String, default: "" },
     Follower: { type: Number, default: 0 },
     Following: { type: Number, default: 0 },
