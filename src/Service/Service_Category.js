@@ -1,24 +1,40 @@
 const { Category } = require("../Model/Category");
 const { User } = require("../Model/User");
 
+const Get_All_Category_Service = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Values_Category = await Category.find();
+      resolve({
+        status: 200,
+        message: "Get add Category success",
+        data: Values_Category,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 const CreateCategory = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Id, Name } = data;
+    const { Category_Id, Category_Name } = data;
     try {
-      const check = await Category.findOne({ Id: Id });
+      const check = await Category.findOne({ Category_Id });
       if (check !== null) {
         resolve({
-          status: "ERR",
+          status: 404,
           message: "Category is exist",
         });
       }
       const category = await Category.create({
-        Id,
-        Name,
+        Category_Id,
+        Category_Name,
       });
+
       resolve({
-        status: "OK",
-        message: "create playlist success",
+        status: 200,
+        message: "create Category success",
         data: category,
       });
     } catch (err) {
@@ -92,4 +108,5 @@ module.exports = {
   CreateCategory,
   DeleteCategory,
   UpdateCategory,
+  Get_All_Category_Service,
 };

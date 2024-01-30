@@ -13,7 +13,7 @@ const storagePath = multer.diskStorage({
       null,
       req.body.User_Id +
         "_" +
-        req.body.Playlist_Name +
+        req.body.Playlist_Name.toLowerCase().replaceAll(" ", "%~%") +
         "_" +
         req.body.Post_Time +
         path.extname(file.originalname)

@@ -1,5 +1,7 @@
+const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
 const { User } = require("../Model/User");
 const { Hash_Password, Confirm_Hash_Password } = require("./Service_Hash_Pass");
+
 const bcrypt = require("bcrypt");
 const salt = bcrypt.genSaltSync(10);
 

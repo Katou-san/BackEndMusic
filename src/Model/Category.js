@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
-const catalogySchema = new mongoose.Schema(
+const CategorySchema = new mongoose.Schema(
   {
-    Catalogy_Id: { type: String, required: true, unique: true },
-    Catalogy_Name: { type: String, required: true },
+    Category_Id: { type: String, required: true, unique: true },
+    Category_Name: { type: String, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-const Catalogy = mongoose.model("DataCatalogy", catalogySchema);
-module.exports = { Catalogy };
+const Category = mongoose.model("Data_Category", CategorySchema);
+module.exports = { Category };

@@ -3,10 +3,20 @@ const path = require("path");
 
 const CreateSong = (data, file) => {
   return new Promise(async (resolve, reject) => {
-    const { Song_Name, Post_Time, Category_Id, User_Id, Lyrics, Tag, Color } =
-      data;
+    const {
+      Song_Name,
+      Post_Time,
+      Category_Id,
+      User_Id,
+      Lyrics,
+      Tag,
+      Color,
+      Is_Publish,
+    } = data;
 
-    const Set_Name = User_Id + "_" + Song_Name + "_" + Post_Time;
+    const New_Song_Name = Song_Name.toLowerCase();
+    const Set_Name =
+      User_Id + "_" + New_Song_Name.replaceAll(" ", "%~%") + "_" + Post_Time;
     try {
       const check = await Song.findOne({ Song_Id: Post_Time });
       if (check !== null) {
@@ -18,7 +28,7 @@ const CreateSong = (data, file) => {
 
       const song = await Song.create({
         Song_Id: Post_Time,
-        Song_Name: Song_Name,
+        Song_Name: New_Song_Name,
         Song_Src: Set_Name + path.extname(file[0].originalname),
         Song_Image: Set_Name + path.extname(file[1].originalname),
         User_Id,
@@ -26,6 +36,7 @@ const CreateSong = (data, file) => {
         Lyrics,
         Tag,
         Color,
+        Is_Publish,
       });
 
       resolve({

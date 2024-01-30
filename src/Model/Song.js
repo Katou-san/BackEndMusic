@@ -19,5 +19,5 @@ const songSchema = new mongoose.Schema(
   }
 );
 
-const Song = mongoose.model("DataSong", songSchema);
+const Song = mongoose.model("Data_Song", songSchema);
 module.exports = { Song };
