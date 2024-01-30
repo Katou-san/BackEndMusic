@@ -1,11 +1,13 @@
-const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
+const {
+  JWT_Create_Token,
+  JWT_Verify_Token,
+} = require("../Middleware/JWT_ActionS");
 const { User } = require("../Model/User");
 const { Hash_Password, Confirm_Hash_Password } = require("./Service_Hash_Pass");
-
 const bcrypt = require("bcrypt");
 const salt = bcrypt.genSaltSync(10);
 
-const CreateUser = (data) => {
+const Create_User_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { User_Id, User_Email, User_Name, User_Pass } = data;
     const Hash_Pass = Hash_Password(User_Pass);
@@ -26,12 +28,17 @@ const CreateUser = (data) => {
         User_Name,
       });
 
+      const Access_Token = JWT_Create_Token({
+        User_Email: user.User_Email,
+        Roles: user.Roles,
+      });
+
       resolve({
         status: 200,
         message: "Create user success",
         data: {
           is_Login: true,
-          Access_Token: "",
+          Access_Token: Access_Token,
           Data_User: {
             User_Id,
             User_Name,
@@ -48,7 +55,7 @@ const CreateUser = (data) => {
   });
 };
 
-const UpdateUser = (id, data) => {
+const Update_User_Service = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let idUser = "";
@@ -74,7 +81,7 @@ const UpdateUser = (id, data) => {
   });
 };
 
-const DeletaUser = (id) => {
+const Deleta_User_Service = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const checkUserEmail = await User.findOne({ Email: id });
@@ -96,9 +103,10 @@ const DeletaUser = (id) => {
   });
 };
 
-const CheckUser = (data) => {
+const Check_User_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { User_Email, User_Pass } = data;
+
     try {
       const check_User = await User.findOne({ User_Email });
       if (check_User == null) {
@@ -109,14 +117,17 @@ const CheckUser = (data) => {
       }
 
       if (Confirm_Hash_Password(User_Pass, check_User.User_Pass)) {
-        const { User_Id, User_Name, Avatar } = check_User;
-        console.log(check_User);
+        const { User_Id, User_Name, Avatar, Roles } = check_User;
+        const Access_Token = JWT_Create_Token({
+          User_Email,
+          Roles: Roles,
+        });
         resolve({
           status: 200,
           message: "Login success",
           data: {
             is_Login: true,
-            Access_Token: "",
+            Access_Token: Access_Token,
             Data_User: {
               User_Id,
               User_Name,
@@ -136,4 +147,9 @@ const CheckUser = (data) => {
   });
 };
 
-module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
+module.exports = {
+  Create_User_Service,
+  Update_User_Service,
+  Deleta_User_Service,
+  Check_User_Service,
+};

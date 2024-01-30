@@ -9,8 +9,6 @@ const Send_Song_Audio = async (req, res) => {
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
-      } else {
-        console.log("Success");
       }
     });
   } catch (error) {
@@ -25,8 +23,6 @@ const Send_Song_Img = async (req, res) => {
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
-      } else {
-        console.log("Success");
       }
     });
   } catch (error) {
@@ -41,8 +37,6 @@ const Send_User_Avatar = async (req, res) => {
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
-      } else {
-        console.log("Success");
       }
     });
   } catch (error) {

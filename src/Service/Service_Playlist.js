@@ -1,7 +1,7 @@
 const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
 
-const CreatePlaylist = (data) => {
+const Create_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Post_Time, Playlist_Name, Image, Thumbnail, User_Id, List_Song } =
       data;
@@ -33,7 +33,7 @@ const CreatePlaylist = (data) => {
   });
 };
 
-const UpdatePlaylist = (id, data) => {
+const Update_Playlist_Service = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let idPlaylist = "";
@@ -63,7 +63,7 @@ const UpdatePlaylist = (id, data) => {
   });
 };
 
-const DeletePlaylist = (id, iduser) => {
+const Delete_Playlist_Service = (id, iduser) => {
   return new Promise(async (resolve, reject) => {
     try {
       const check = await Playlist.findOne({ Id: id });
@@ -94,7 +94,7 @@ const DeletePlaylist = (id, iduser) => {
   });
 };
 
-const CheckPlaylist = (data) => {
+const Check_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Id } = data;
     try {
@@ -117,8 +117,8 @@ const CheckPlaylist = (data) => {
 };
 
 module.exports = {
-  CheckPlaylist,
-  CreatePlaylist,
-  UpdatePlaylist,
-  DeletePlaylist,
+  Check_Playlist_Service,
+  Create_Playlist_Service,
+  Update_Playlist_Service,
+  Delete_Playlist_Service,
 };

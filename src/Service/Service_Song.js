@@ -1,7 +1,7 @@
 const { Song } = require("../Model/Song");
 const path = require("path");
 
-const CreateSong = (data, file) => {
+const Create_Song_Service = (data, file) => {
   return new Promise(async (resolve, reject) => {
     const {
       Song_Name,
@@ -102,4 +102,4 @@ const GetAllSong = () => {
   });
 };
 
-module.exports = { CheckSong, CreateSong, GetAllSong };
+module.exports = { CheckSong, Create_Song_Service, GetAllSong };

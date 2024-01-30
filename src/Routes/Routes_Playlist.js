@@ -22,7 +22,7 @@ const storagePath = multer.diskStorage({
 });
 const uploadFile = multer({ storage: storagePath });
 
-Router.post("/Create_playlist", Controller_Playlist.CreatePlaylist);
-Router.put("/Update_playlist/:id", Controller_Playlist.UpdatePlaylist);
-Router.delete("/Delete_playlist/:id", Controller_Playlist.DeletePlaylist);
+Router.post("/Create_playlist", Controller_Playlist.Create_Playlist);
+Router.put("/Update_playlist/:id", Controller_Playlist.Update_Playlist);
+Router.delete("/Delete_playlist/:id", Controller_Playlist.Delete_Playlist);
 module.exports = Router;

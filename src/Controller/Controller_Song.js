@@ -39,9 +39,12 @@ const GetListSong = async (req, res) => {
   }
 };
 
-const CreateSong = async (req, res) => {
+const Create_Song = async (req, res) => {
   try {
-    const response = await Service_Song.CreateSong(req.body, req.files);
+    const response = await Service_Song.Create_Song_Service(
+      req.body,
+      req.files
+    );
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -52,4 +55,4 @@ const CreateSong = async (req, res) => {
   }
 };
 
-module.exports = { SendSong, CreateSong, GetListSong };
+module.exports = { SendSong, Create_Song, GetListSong };

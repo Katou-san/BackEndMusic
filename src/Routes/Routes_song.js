@@ -31,7 +31,7 @@ Router.get("/SendSong", Controller_Song.SendSong);
 Router.post(
   "/UploadSong",
   uploadFile.array("Files"),
-  Controller_Song.CreateSong
+  Controller_Song.Create_Song
 );
 Router.get("/GetAllSong", Controller_Song.GetListSong);
 

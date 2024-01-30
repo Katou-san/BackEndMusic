@@ -16,7 +16,7 @@ const Get_All_Category_Service = (data) => {
   });
 };
 
-const CreateCategory = (data) => {
+const Create_Category_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Category_Id, Category_Name } = data;
     try {
@@ -43,7 +43,7 @@ const CreateCategory = (data) => {
   });
 };
 
-const UpdateCategory = (id, data) => {
+const Update_Category_Service = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let idCategory = "";
@@ -73,7 +73,7 @@ const UpdateCategory = (id, data) => {
   });
 };
 
-const DeleteCategory = (id, iduser) => {
+const Delete_Category_Service = (id, iduser) => {
   return new Promise(async (resolve, reject) => {
     try {
       const check = await Category.findOne({ Id: id });
@@ -105,8 +105,8 @@ const DeleteCategory = (id, iduser) => {
 };
 
 module.exports = {
-  CreateCategory,
-  DeleteCategory,
-  UpdateCategory,
+  Create_Category_Service,
+  Delete_Category_Service,
+  Update_Category_Service,
   Get_All_Category_Service,
 };

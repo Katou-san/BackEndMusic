@@ -1,10 +1,9 @@
 const { User } = require("../Model/User");
 const Service_User = require("../Service/Service_User");
 
-const CreateUser = async (req, res) => {
+const Sign_up_User = async (req, res) => {
   try {
     const { User_Id, User_Email, User_Pass, User_Name } = req.body;
-
     if (!User_Email) {
       return res.status(200).json({
         status: 404,
@@ -26,7 +25,7 @@ const CreateUser = async (req, res) => {
       });
     }
 
-    const response = await Service_User.CreateUser(req.body);
+    const response = await Service_User.Create_User_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
     return res.status(404).json({
@@ -36,7 +35,7 @@ const CreateUser = async (req, res) => {
   }
 };
 
-const UpdateUser = async (req, res) => {
+const Update_User = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {
@@ -45,7 +44,7 @@ const UpdateUser = async (req, res) => {
         message: "ID is required",
       });
     }
-    const response = await Service_User.UpdateUser(id, req.body);
+    const response = await Service_User.Update_User_Service(id, req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -56,7 +55,7 @@ const UpdateUser = async (req, res) => {
   }
 };
 
-const DeletaUser = async (req, res) => {
+const Delete_User = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {
@@ -65,7 +64,7 @@ const DeletaUser = async (req, res) => {
         message: "ID is required",
       });
     }
-    const response = await Service_User.DeletaUser(id);
+    const response = await Service_User.Deleta_User_Service(id);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -76,10 +75,9 @@ const DeletaUser = async (req, res) => {
   }
 };
 
-const CheckUser = async (req, res) => {
+const Login_User = async (req, res) => {
   try {
     const { User_Email, User_Pass } = req.body;
-    console.log(req.body);
     if (!User_Email) {
       return res.status(200).json({
         status: 404,
@@ -93,15 +91,15 @@ const CheckUser = async (req, res) => {
         message: "Pass is required",
       });
     }
-    const response = await Service_User.CheckUser(req.body);
+    const response = await Service_User.Check_User_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
       status: 404,
-      message: "Cant not create user",
+      message: "Cant not Login",
     });
   }
 };
 
-module.exports = { CreateUser, UpdateUser, DeletaUser, CheckUser };
+module.exports = { Sign_up_User, Update_User, Delete_User, Login_User };

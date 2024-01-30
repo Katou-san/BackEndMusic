@@ -1,8 +1,8 @@
 const Service_Playlist = require("../Service/Service_Playlist");
 
-const CreatePlaylist = async (req, res) => {
+const Create_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.CreatePlaylist(req.body);
+    const response = await Service_Playlist.Create_Playlist_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -13,9 +13,9 @@ const CreatePlaylist = async (req, res) => {
   }
 };
 
-const UpdatePlaylist = async (req, res) => {
+const Update_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.UpdatePlaylist(req.body);
+    const response = await Service_Playlist.Update_Playlist_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -26,9 +26,9 @@ const UpdatePlaylist = async (req, res) => {
   }
 };
 
-const DeletePlaylist = async (req, res) => {
+const Delete_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.DeletePlaylist(req.body);
+    const response = await Service_Playlist.Delete_Playlist_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -39,4 +39,4 @@ const DeletePlaylist = async (req, res) => {
   }
 };
 
-module.exports = { CreatePlaylist, UpdatePlaylist, DeletePlaylist };
+module.exports = { Create_Playlist, Update_Playlist, Delete_Playlist };

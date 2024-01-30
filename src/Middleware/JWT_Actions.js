@@ -7,8 +7,10 @@ const Key_JWT = process.env.PRIVATE_KEY_JWT;
 const JWT_Create_Token = (Payload) => {
   let token = null;
   try {
-    token = jwt.sign({ ...Payload }, Key_JWT);
-    console.log(token);
+    token = jwt.sign(
+      { ...Payload, expiresIn: process.env.EXPIRES_IN },
+      Key_JWT
+    );
     return token;
   } catch (err) {
     return token;
@@ -18,13 +20,12 @@ const JWT_Create_Token = (Payload) => {
 //Xac Minh JWT TOKEN
 const JWT_Verify_Token = (Token) => {
   let Result = null;
-  jwt.verify(Token, Key_JWT, (err, decoded) => {
-    if (err) {
-      return Result;
-    }
-    console.log(decoded);
-    return decoded;
-  });
+  try {
+    Result = jwt.verify(Token, Key_JWT);
+  } catch (err) {
+    console.log(err);
+  }
+  return Result;
 };
 
 module.exports = { JWT_Create_Token, JWT_Verify_Token };
