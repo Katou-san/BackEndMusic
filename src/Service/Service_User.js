@@ -121,6 +121,7 @@ const Check_User_Service = (data) => {
         const Access_Token = JWT_Create_Token({
           User_Email,
           Roles: Roles,
+          User_Id,
         });
         resolve({
           status: 200,
@@ -147,9 +148,42 @@ const Check_User_Service = (data) => {
   });
 };
 
+const Check_Token_User_Service = (User_Email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log("Check_Token_User_Service");
+      const check_User = await User.findOne({ User_Email });
+      console.log(check_User);
+      if (check_User == null) {
+        resolve({
+          status: 404,
+          message: "not found Email",
+        });
+      }
+
+      const { User_Id, User_Name, Avatar } = check_User;
+      resolve({
+        status: 200,
+        message: "Login success",
+        data: {
+          is_Login: true,
+          Data_User: {
+            User_Id,
+            User_Name,
+            Avatar,
+          },
+        },
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   Create_User_Service,
   Update_User_Service,
   Deleta_User_Service,
   Check_User_Service,
+  Check_Token_User_Service,
 };

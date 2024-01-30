@@ -44,4 +44,37 @@ const Send_User_Avatar = async (req, res) => {
   }
 };
 
-module.exports = { Send_Song_Audio, Send_Song_Img, Send_User_Avatar };
+const Send_Playlist_Img = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const filePath = { root: path.join(__dirname, "../User_Avatar") };
+    return res.sendFile(`${Id}`, filePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+};
+
+const Send_Playlist_Thumbnail = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const filePath = { root: path.join(__dirname, "../Playlist_Thumbnail") };
+    return res.sendFile(`${Id}`, filePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+};
+
+module.exports = {
+  Send_Song_Audio,
+  Send_Song_Img,
+  Send_User_Avatar,
+  Send_Playlist_Thumbnail,
+};
