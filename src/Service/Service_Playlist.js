@@ -3,10 +3,15 @@ const { User } = require("../Model/User");
 
 const Create_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Post_Time, Playlist_Name, Image, Thumbnail, User_Id, List_Song } =
-      data;
+    const { Post_Time, Playlist_Name, Playlist_Is_Publish, User_Id } = data;
     try {
-      const FileName = User_Id + "_" + Song_Name + "_" + Post_Time;
+      const New_PlayList_Name = Playlist_Name.toLowerCase();
+      const Playlist_Id =
+        User_Id +
+        "_" +
+        New_PlayList_Name.replaceAll(" ", "%~%") +
+        "_" +
+        Post_Time;
       const check = await Playlist.findOne({ Playlist_Id: Playlist_Id });
       if (check != null) {
         resolve({
@@ -15,12 +20,10 @@ const Create_Playlist_Service = (data) => {
         });
       }
       const playlist = await Playlist.create({
-        Playlist_Id: Post_Time,
-        Playlist_Name: Playlist_Name,
-        Image: FileName + path.extname(file[0].originalname),
-        Thumbnail: FileName + path.extname(file[1].originalname),
-        User_Id: User_Id,
-        List_Song: List_Song,
+        Playlist_Id: Playlist_Id,
+        Playlist_Name: New_PlayList_Name,
+        User_Id,
+        Playlist_Is_Publish,
       });
       resolve({
         status: "OK",
