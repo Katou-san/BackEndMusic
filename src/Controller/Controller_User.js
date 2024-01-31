@@ -102,4 +102,29 @@ const Login_User = async (req, res) => {
   }
 };
 
-module.exports = { Sign_up_User, Update_User, Delete_User, Login_User };
+const Get_Playlist_User = async (req, res) => {
+  try {
+    const { User_Id } = req.body;
+    if (!User_Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Not Found Id",
+      });
+    }
+    const response = await Service_User.Get_Playlist_User_Service(User_Id);
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: 404,
+      message: "Cant get data",
+    });
+  }
+};
+
+module.exports = {
+  Sign_up_User,
+  Update_User,
+  Delete_User,
+  Login_User,
+  Get_Data_User,
+};
