@@ -17,6 +17,9 @@ const JWT_Verify = (req, res, next) => {
             User_Id: "",
             User_Name: "",
             Avatar: "",
+            Playlist: [],
+            List_Add_Songs: [],
+            List_Like_Song: [],
           },
         });
       } else {
@@ -33,6 +36,9 @@ const JWT_Verify = (req, res, next) => {
         User_Id: "",
         User_Name: "",
         Avatar: "",
+        Playlist: [],
+        List_Add_Songs: [],
+        List_Like_Song: [],
       },
     });
   }

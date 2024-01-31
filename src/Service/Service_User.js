@@ -43,6 +43,9 @@ const Create_User_Service = (data) => {
             User_Id,
             User_Name,
             Avatar: "Avatar_Default.jpg",
+            Playlist: user.Playlist,
+            List_Add_Songs: user.List_Add_Songs,
+            List_Like_Song: user.List_Like_Song,
           },
         },
       });
@@ -55,25 +58,26 @@ const Create_User_Service = (data) => {
   });
 };
 
-const Update_User_Service = (id, data) => {
+const Update_User_Service = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let idUser = "";
-      const checkUserEmail = await User.findOne({ Email: id });
-      if (checkUserEmail === null) {
+      const Find_User = await User.findOne({ User_Id });
+      if (Find_User === null) {
         resolve({
           status: 404,
           message: "Not checkuser is null found",
         });
       }
-      idUser = checkUserEmail._id;
-      const user = await User.findOneAndUpdate({ _id: idUser }, data, {
+      let _id_User = Find_User._id;
+
+      const User_Update = await User.findOneAndUpdate({ _id: _id_User }, data, {
         new: true,
       });
+
       resolve({
         status: 200,
-        message: "update user success",
-        data: user,
+        message: "Update user success",
+        data: User_Update,
       });
     } catch (err) {
       reject(err);
@@ -115,9 +119,16 @@ const Check_User_Service = (data) => {
           message: "not found Email",
         });
       }
-
       if (Confirm_Hash_Password(User_Pass, check_User.User_Pass)) {
-        const { User_Id, User_Name, Avatar, Roles } = check_User;
+        const {
+          User_Id,
+          User_Name,
+          Avatar,
+          Roles,
+          Playlist,
+          List_Add_Songs,
+          List_Like_Song,
+        } = check_User;
         const Access_Token = JWT_Create_Token({
           User_Email,
           Roles: Roles,
@@ -133,6 +144,9 @@ const Check_User_Service = (data) => {
               User_Id,
               User_Name,
               Avatar,
+              Playlist,
+              List_Add_Songs,
+              List_Like_Song,
             },
           },
         });
@@ -151,9 +165,7 @@ const Check_User_Service = (data) => {
 const Check_Token_User_Service = (User_Email) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("Check_Token_User_Service");
       const check_User = await User.findOne({ User_Email });
-      console.log(check_User);
       if (check_User == null) {
         resolve({
           status: 404,
@@ -161,7 +173,14 @@ const Check_Token_User_Service = (User_Email) => {
         });
       }
 
-      const { User_Id, User_Name, Avatar } = check_User;
+      const {
+        User_Id,
+        User_Name,
+        Avatar,
+        Playlist,
+        List_Add_Songs,
+        List_Like_Song,
+      } = check_User;
       resolve({
         status: 200,
         message: "Login success",
@@ -171,6 +190,9 @@ const Check_Token_User_Service = (User_Email) => {
             User_Id,
             User_Name,
             Avatar,
+            Playlist,
+            List_Add_Songs,
+            List_Like_Song,
           },
         },
       });

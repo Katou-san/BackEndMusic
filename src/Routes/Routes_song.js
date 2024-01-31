@@ -8,9 +8,9 @@ const storagePath = multer.diskStorage({
   destination: function (req, file, cb) {
     let filePath = file.mimetype.split("/")[0];
     if (filePath == "audio") {
-      cb(null, "./src/Song_Audio");
+      cb(null, "./src/Assets/Song_Audio");
     } else if (filePath === "image") {
-      cb(null, "./src/Song_Image");
+      cb(null, "./src/Assets/Song_Image");
     }
   },
   filename: function (req, file, cb) {
@@ -27,7 +27,6 @@ const storagePath = multer.diskStorage({
 });
 const uploadFile = multer({ storage: storagePath });
 
-Router.get("/SendSong", Controller_Song.SendSong);
 Router.post(
   "/UploadSong",
   uploadFile.array("Files"),

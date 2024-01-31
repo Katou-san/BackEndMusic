@@ -5,7 +5,7 @@ const path = require("path");
 const Send_Song_Audio = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../Song_Audio") };
+    const filePath = { root: path.join(__dirname, "../Assets/Song_Audio") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -19,7 +19,7 @@ const Send_Song_Audio = async (req, res) => {
 const Send_Song_Img = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../Song_Image") };
+    const filePath = { root: path.join(__dirname, "../Assets/Song_Image") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -33,7 +33,7 @@ const Send_Song_Img = async (req, res) => {
 const Send_User_Avatar = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../User_Avatar") };
+    const filePath = { root: path.join(__dirname, "../Assets/User_Avatar") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -47,7 +47,7 @@ const Send_User_Avatar = async (req, res) => {
 const Send_Playlist_Img = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../User_Avatar") };
+    const filePath = { root: path.join(__dirname, "../Assets/Playlist_Img") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -61,7 +61,9 @@ const Send_Playlist_Img = async (req, res) => {
 const Send_Playlist_Thumbnail = async (req, res) => {
   try {
     const { Id } = req.params;
-    const filePath = { root: path.join(__dirname, "../Playlist_Thumbnail") };
+    const filePath = {
+      root: path.join(__dirname, "../Assets/Playlist_Thumbnail"),
+    };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
         console.log(err);
@@ -77,4 +79,5 @@ module.exports = {
   Send_Song_Img,
   Send_User_Avatar,
   Send_Playlist_Thumbnail,
+  Send_Playlist_Img,
 };

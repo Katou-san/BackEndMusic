@@ -1,6 +1,35 @@
 const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
 
+const Update_Item_User = (User_Id, Value_Object, String) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Find_User = await User.findOne({ User_Id });
+      let Value_Update = "";
+      if (String) {
+        switch (String) {
+          case "Playlist":
+            let Play_list_user = Find_User.Playlist;
+            Value_Update = {
+              Playlist: [...Play_list_user, Value_Object],
+            };
+            break;
+          default:
+            break;
+        }
+        await User.findOneAndUpdate({ User_Id }, Value_Update, {
+          new: true,
+        });
+        resolve({ status: 200, message: "Update complete" });
+      } else {
+        resolve({ status: 200, message: "Cant Understand Update something" });
+      }
+    } catch (err) {
+      reject({ status: 404, message: "Update Failed" });
+    }
+  });
+};
+
 const Create_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Post_Time, Playlist_Name, Playlist_Is_Publish, User_Id } = data;
@@ -9,9 +38,10 @@ const Create_Playlist_Service = (data) => {
       const Playlist_Id =
         User_Id +
         "_" +
-        New_PlayList_Name.replaceAll(" ", "%~%") +
+        New_PlayList_Name.replaceAll(" ", "の20の") +
         "_" +
         Post_Time;
+
       const check = await Playlist.findOne({ Playlist_Id: Playlist_Id });
       if (check != null) {
         resolve({
@@ -19,16 +49,22 @@ const Create_Playlist_Service = (data) => {
           message: "Playlist is exist",
         });
       }
+
       const playlist = await Playlist.create({
         Playlist_Id: Playlist_Id,
         Playlist_Name: New_PlayList_Name,
         User_Id,
         Playlist_Is_Publish,
       });
+
+      Update_Item_User(User_Id, playlist.Playlist_Id, "Playlist");
+
       resolve({
         status: "OK",
         message: "create playlist success",
-        data: playlist,
+        data: {
+          Playlist: playlist.Playlist_Id,
+        },
       });
     } catch (err) {
       reject(err);
@@ -97,22 +133,21 @@ const Delete_Playlist_Service = (id, iduser) => {
   });
 };
 
-const Check_Playlist_Service = (data) => {
+const Get_Playlist_Service = (Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
-    const { Id } = data;
     try {
-      const checkE = await User.findOne({ Id: Id });
-      if (checkE == null) {
+      const Find_Playlist = await Playlist.findOne({ Playlist_Id });
+      if (Find_Playlist == null) {
         resolve({
-          status: "PL_NF",
-          message: "Playlist not Exist",
-        });
-      } else {
-        resolve({
-          status: "PL_F",
-          message: "Playlist Exist",
+          status: 404,
+          message: "Not Found Play List",
         });
       }
+      resolve({
+        status: 200,
+        message: "Get Playlist Complete",
+        data: Find_Playlist,
+      });
     } catch (err) {
       reject(err);
     }
@@ -120,7 +155,7 @@ const Check_Playlist_Service = (data) => {
 };
 
 module.exports = {
-  Check_Playlist_Service,
+  Get_Playlist_Service,
   Create_Playlist_Service,
   Update_Playlist_Service,
   Delete_Playlist_Service,

@@ -16,7 +16,7 @@ const Create_Song_Service = (data, file) => {
 
     const New_Song_Name = Song_Name.toLowerCase();
     const Set_Name =
-      User_Id + "_" + New_Song_Name.replaceAll(" ", "%~%") + "_" + Post_Time;
+      User_Id + "_" + New_Song_Name.replaceAll(" ", "の20の") + "_" + Post_Time;
     try {
       const check = await Song.findOne({ Song_Id: Post_Time });
       if (check !== null) {

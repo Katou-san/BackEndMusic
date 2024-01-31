@@ -3,8 +3,8 @@ const playlistSchema = new mongoose.Schema(
   {
     Playlist_Id: { type: String, required: true, unique: true },
     Playlist_Name: { type: String, required: true },
-    Image: { type: String, default: "" },
-    Thumbnail: { type: String, default: "" },
+    Image: { type: String, default: "Img_Default_Playlist.png" },
+    Thumbnail: { type: String, default: "Thumbnail_Default_Playlist.png" },
     User_Id: { type: String, required: true },
     Playlist_Is_Publish: { type: Boolean, default: false },
     List_Song: [],
