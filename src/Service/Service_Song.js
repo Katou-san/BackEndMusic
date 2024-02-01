@@ -1,5 +1,7 @@
 const { Song } = require("../Model/Song");
 const path = require("path");
+const default_limit = 5;
+const max_item_in_page = 15;
 
 const Create_Song_Service = (data, file) => {
   return new Promise(async (resolve, reject) => {
@@ -79,23 +81,69 @@ const CheckSong = (data) => {
   });
 };
 
-const GetAllSong = () => {
+const GetAllSong = (limit_value, skip_value, page_value) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const listSong = await Song.find({ Is_Publish: true });
+      if (skip_value == 0) {
+        const listSong = await Song.find({ Is_Publish: true }).limit(
+          default_limit
+        );
+        if (listSong == null) {
+          reject({
+            status: "404",
+            message:
+              "cant get songs with limit " +
+              limit_value +
+              " skip " +
+              skip_value +
+              " page " +
+              page_value,
+          });
+        }
 
-      if (listSong == null) {
-        reject({
-          status: "404",
-          message: "cant get all songs",
+        resolve({
+          status: "200",
+          message:
+            "got songs with limit " +
+            limit_value +
+            " skip " +
+            skip_value +
+            " page " +
+            page_value,
+          data: listSong,
+        });
+      } else {
+        const song_count = await Song.countDocuments({ Is_Publish: true });
+        const listSong = await Song.find({ Is_Publish: true })
+          .limit(limit_value)
+          .skip(skip_value + max_item_in_page * page_value);
+
+        if (listSong == null) {
+          reject({
+            status: "404",
+            message:
+              "cant get songs with limit " +
+              limit_value +
+              " skip " +
+              skip_value +
+              " page " +
+              page_value,
+          });
+        }
+
+        resolve({
+          status: "200",
+          message:
+            "got songs with limit " +
+            limit_value +
+            " skip " +
+            skip_value +
+            " page " +
+            page_value,
+          data: listSong,
+          page_total: Math.ceil(song_count / max_item_in_page),
         });
       }
-
-      resolve({
-        status: "200",
-        message: "got list Song",
-        data: listSong,
-      });
     } catch (error) {
       reject(error);
     }
