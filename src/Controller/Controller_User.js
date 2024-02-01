@@ -37,14 +37,9 @@ const Sign_up_User = async (req, res) => {
 
 const Update_User = async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!id) {
-      return res.status(200).json({
-        status: 404,
-        message: "ID is required",
-      });
-    }
-    const response = await Service_User.Update_User_Service(id, req.body);
+    const User_Id = req.User_Id;
+    console.log("User_Id: " + User_Id);
+    const response = await Service_User.Update_User_Service(User_Id, req.body);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
@@ -104,7 +99,7 @@ const Login_User = async (req, res) => {
 
 const Get_Playlist_User = async (req, res) => {
   try {
-    const { User_Id } = req.body;
+    const User_Id = req.User_Id;
     if (!User_Id) {
       return res.status(200).json({
         status: 404,
@@ -126,5 +121,5 @@ module.exports = {
   Update_User,
   Delete_User,
   Login_User,
-  Get_Data_User,
+  Get_Playlist_User,
 };

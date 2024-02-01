@@ -65,19 +65,15 @@ const Update_User_Service = (User_Id, data) => {
       if (Find_User === null) {
         resolve({
           status: 404,
-          message: "Not checkuser is null found",
+          message: "User is not found",
         });
       }
-      let _id_User = Find_User._id;
-
-      const User_Update = await User.findOneAndUpdate({ _id: _id_User }, data, {
+      await User.findOneAndUpdate({ User_Id }, data, {
         new: true,
       });
-
       resolve({
         status: 200,
         message: "Update user success",
-        data: User_Update,
       });
     } catch (err) {
       reject(err);
@@ -120,15 +116,7 @@ const Check_User_Service = (data) => {
         });
       }
       if (Confirm_Hash_Password(User_Pass, check_User.User_Pass)) {
-        const {
-          User_Id,
-          User_Name,
-          Avatar,
-          Roles,
-          Playlist,
-          List_Add_Songs,
-          List_Like_Song,
-        } = check_User;
+        const { User_Id, User_Name, Avatar, Roles } = check_User;
         const Access_Token = JWT_Create_Token({
           User_Email,
           Roles: Roles,
@@ -144,9 +132,6 @@ const Check_User_Service = (data) => {
               User_Id,
               User_Name,
               Avatar,
-              Playlist,
-              List_Add_Songs,
-              List_Like_Song,
             },
           },
         });
@@ -155,6 +140,32 @@ const Check_User_Service = (data) => {
       resolve({
         status: "404",
         message: "Login failed",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+const Get_Playlist_User_Service = (User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const check_User = await User.findOne({ User_Id });
+      if (check_User == null) {
+        resolve({
+          status: 404,
+          message: "not found Email",
+        });
+      }
+      const { Playlist, List_Add_Songs, List_Like_Song } = check_User;
+      resolve({
+        status: 200,
+        message: "Login success",
+        data: {
+          Playlist,
+          List_Add_Songs,
+          List_Like_Song,
+        },
       });
     } catch (err) {
       reject(err);
@@ -207,5 +218,6 @@ module.exports = {
   Update_User_Service,
   Deleta_User_Service,
   Check_User_Service,
+  Get_Playlist_User_Service,
   Check_Token_User_Service,
 };

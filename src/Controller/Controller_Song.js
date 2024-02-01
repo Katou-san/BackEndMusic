@@ -32,4 +32,17 @@ const Create_Song = async (req, res) => {
   }
 };
 
-module.exports = { Create_Song, GetListSong };
+const Get_Song = async (req, res) => {
+  try {
+    const Song_Id = req.params.Song_Id;
+    const response = await Service_Song.Get_Song_Serice(Song_Id);
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: "404",
+      message: "Cant found song",
+    });
+  }
+};
+
+module.exports = { Create_Song, GetListSong, Get_Song };

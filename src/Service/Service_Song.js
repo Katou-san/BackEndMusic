@@ -27,7 +27,7 @@ const Create_Song_Service = (data, file) => {
       }
 
       const song = await Song.create({
-        Song_Id: Post_Time,
+        Song_Id: "Song_" + Post_Time,
         Song_Name: New_Song_Name,
         Song_Src: Set_Name + path.extname(file[0].originalname),
         Song_Image: Set_Name + path.extname(file[1].originalname),
@@ -102,4 +102,30 @@ const GetAllSong = () => {
   });
 };
 
-module.exports = { CheckSong, Create_Song_Service, GetAllSong };
+const Get_Song_Serice = (Song_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Find_Song = await Song.findOne({ Song_Id });
+      if (Find_Song === null) {
+        resolve({
+          status: 404,
+          message: "not found",
+        });
+      }
+      resolve({
+        status: "200",
+        message: "Find Song Success",
+        data: Find_Song,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+module.exports = {
+  CheckSong,
+  Create_Song_Service,
+  GetAllSong,
+  Get_Song_Serice,
+};

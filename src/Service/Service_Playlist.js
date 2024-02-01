@@ -57,13 +57,11 @@ const Create_Playlist_Service = (data) => {
         Playlist_Is_Publish,
       });
 
-      Update_Item_User(User_Id, playlist.Playlist_Id, "Playlist");
-
       resolve({
         status: "OK",
         message: "create playlist success",
-        data: {
-          Playlist: playlist.Playlist_Id,
+        Playlist: {
+          Playlist_Id: playlist.Playlist_Id,
         },
       });
     } catch (err) {

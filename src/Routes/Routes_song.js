@@ -1,3 +1,4 @@
+const { JWT_Verify_Token } = require("../Middleware/JWT_ActionS");
 const express = require("express");
 const Router = express.Router();
 const Controller_Song = require("../Controller/Controller_Song");
@@ -29,9 +30,11 @@ const uploadFile = multer({ storage: storagePath });
 
 Router.post(
   "/UploadSong",
+  JWT_Verify_Token,
   uploadFile.array("Files"),
   Controller_Song.Create_Song
 );
 Router.get("/GetAllSong", Controller_Song.GetListSong);
+Router.get("/find_song/:Song_Id", Controller_Song.Get_Song);
 
 module.exports = Router;

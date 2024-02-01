@@ -1,3 +1,4 @@
+const { JWT_Verify_Token } = require("../Middleware/JWT_ActionS");
 const express = require("express");
 const Router = express.Router();
 const Controller_Playlist = require("../Controller/Controller_Playlist");
@@ -22,7 +23,11 @@ const storagePath = multer.diskStorage({
 });
 const uploadFile = multer({ storage: storagePath });
 
-Router.post("/create_playlist", Controller_Playlist.Create_Playlist);
+Router.post(
+  "/create_playlist",
+  JWT_Verify_Token,
+  Controller_Playlist.Create_Playlist
+);
 Router.get("/find_playlist/:id", Controller_Playlist.Get_Playlist);
 Router.put("/update_playlist/:id", Controller_Playlist.Update_Playlist);
 Router.delete("/delete_playlist/:id", Controller_Playlist.Delete_Playlist);
