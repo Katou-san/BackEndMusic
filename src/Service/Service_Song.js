@@ -84,7 +84,7 @@ const CheckSong = (data) => {
 const GetAllSong = (limit_value, skip_value, page_value) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (skip_value == 0) {
+      if (skip_value == 0 && page_value == 0) {
         const listSong = await Song.find({ Is_Publish: true }).limit(
           default_limit
         );
