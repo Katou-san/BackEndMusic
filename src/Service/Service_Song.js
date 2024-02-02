@@ -81,9 +81,11 @@ const CheckSong = (data) => {
   });
 };
 
-const GetAllSong = (limit_value, skip_value, page_value) => {
+///////////////////////////////////////
+const Get_List_Song = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { limit_value, skip_value, page_value } = data;
       if (skip_value == 0 && page_value == 0) {
         const listSong = await Song.find({ Is_Publish: true }).limit(
           default_limit
@@ -116,7 +118,7 @@ const GetAllSong = (limit_value, skip_value, page_value) => {
         const song_count = await Song.countDocuments({ Is_Publish: true });
         const listSong = await Song.find({ Is_Publish: true })
           .limit(limit_value)
-          .skip(skip_value + max_item_in_page * page_value);
+          .skip(skip_value + max_item_in_page * (page_value - 1));
 
         if (listSong == null) {
           reject({
@@ -150,7 +152,7 @@ const GetAllSong = (limit_value, skip_value, page_value) => {
   });
 };
 
-const Get_Song_Serice = (Song_Id) => {
+const Get_Song_Service = (Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const Find_Song = await Song.findOne({ Song_Id });
@@ -174,6 +176,6 @@ const Get_Song_Serice = (Song_Id) => {
 module.exports = {
   CheckSong,
   Create_Song_Service,
-  GetAllSong,
-  Get_Song_Serice,
+  Get_List_Song,
+  Get_Song_Service,
 };

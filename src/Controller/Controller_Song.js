@@ -3,15 +3,15 @@ var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
 
-const GetListSong = async (req, res) => {
+const Get_List_Song = async (req, res) => {
   try {
-    const respone = await Service_Song.GetAllSong();
+    const respone = await Service_Song.Get_List_Song(req.body);
     return res.status(200).json(respone);
   } catch (err) {
     console.log(err);
     return res.status(404).json({
       status: "404",
-      message: "cant get all songs",
+      message: "Get all song ERR",
     });
   }
 };
@@ -45,4 +45,4 @@ const Get_Song = async (req, res) => {
   }
 };
 
-module.exports = { Create_Song, GetListSong, Get_Song };
+module.exports = { Create_Song, Get_List_Song, Get_Song };
