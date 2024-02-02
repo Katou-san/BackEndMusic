@@ -70,29 +70,23 @@ const Create_Playlist_Service = (data) => {
   });
 };
 
-const Update_Playlist_Service = (id, data) => {
+const Update_Playlist_Service = (User_Id, Playlist_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let idPlaylist = "";
-      const check = await Playlist.findOne({ Id: id });
-      if (check === null) {
+      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
+      if (Find_Playlist === null) {
         resolve({
-          status: "ERR",
+          status: 404,
           message: "Playlist is not exist",
         });
       }
-      idPlaylist = check._id;
-      const playlist = await Playlist.findOneAndUpdate(
-        { _id: idPlaylist },
-        data,
-        {
-          new: true,
-        }
-      );
+      await Playlist.findOneAndUpdate({ Playlist_Id, User_Id }, data, {
+        new: true,
+      });
+
       resolve({
-        status: "OK",
+        status: 200,
         message: "Update playlist success",
-        data: playlist,
       });
     } catch (err) {
       reject(err);

@@ -17,8 +17,15 @@ const Create_Playlist = async (req, res) => {
 };
 
 const Update_Playlist = async (req, res) => {
+  const User_Id = req.User_Id;
+  const Playlist_Id = req.params.id;
+  console.log(Playlist_Id);
   try {
-    const response = await Service_Playlist.Update_Playlist_Service(req.body);
+    const response = await Service_Playlist.Update_Playlist_Service(
+      User_Id,
+      Playlist_Id,
+      req.body
+    );
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);

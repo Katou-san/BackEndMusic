@@ -38,7 +38,7 @@ const Create_Song_Service = (data, file) => {
         Lyrics,
         Tag,
         Color,
-        Is_Publish,
+        Is_Publish: Is_Publish,
       });
 
       resolve({
