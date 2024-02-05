@@ -1,0 +1,49 @@
+const { Category } = require("../Model/Category");
+const { Playlist } = require("../Model/Playlist");
+const { User } = require("../Model/User");
+const { Song } = require("../Model/Song");
+
+const Search_All = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { Search_Value } = data;
+      const Search_Song = await Song.find({
+        Song_Name: { $regex: Search_Value, $options: "i" },
+        Is_Publish: true,
+      })
+        .sort({ Like: -1 })
+        .select({
+          _id: 0,
+          Song_Name: 1,
+          Song_Image: 1,
+          Song_Src: 1,
+          User_Id: 1,
+        });
+
+      const Search_Artist = await User.find({
+        User_Name: { $regex: Search_Value, $options: "i" },
+      })
+        .sort({ Follower: -1 })
+        .select({ _id: 0, User_Name: 1, Avatar: 1 });
+
+      const Search_Playlist = await Playlist.find({
+        Playlist_Name: { $regex: Search_Value, $options: "i" },
+        Playlist_Is_Publish: true,
+      }).select({ _id: 0, Playlist_Name: 1, Thumbnail: 1, User_Id: 1 });
+
+      resolve({
+        status: "200",
+        message: "Search complete",
+        list_song: Search_Song,
+        list_user: Search_Artist,
+        list_playlist: Search_Playlist,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+module.exports = {
+  Search_All,
+};
