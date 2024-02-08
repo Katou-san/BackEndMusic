@@ -45,7 +45,8 @@ const Create_User_Service = (data) => {
         User_Email,
         User_Pass: Hash_Pass,
         User_Name,
-        Playlist: [User_Id + "_Like", User_Id + "_Upload"],
+        List_Add_Songs: [User_Id + "_Upload"],
+        List_Like_Song: [User_Id + "_Like"],
       });
 
       const Access_Token = JWT_Create_Token({
