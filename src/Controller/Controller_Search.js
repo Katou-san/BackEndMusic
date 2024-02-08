@@ -2,7 +2,8 @@ const Service_Search = require("../Service/Service_Search");
 
 const Search_All = async (req, res) => {
   try {
-    const response = await Service_Search.Search_All(req.body);
+    const { Value } = req.params;
+    const response = await Service_Search.Search_All(Value);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);

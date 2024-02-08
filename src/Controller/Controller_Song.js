@@ -34,8 +34,9 @@ const Create_Song = async (req, res) => {
 
 const Get_Song = async (req, res) => {
   try {
+    console.log(req.params.Song_Id);
     const Song_Id = req.params.Song_Id;
-    const response = await Service_Song.Get_Song_Serice(Song_Id);
+    const response = await Service_Song.Get_Song_Service(Song_Id);
     return res.status(200).json(response);
   } catch (err) {
     return res.status(404).json({
