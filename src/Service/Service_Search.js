@@ -13,10 +13,7 @@ const Search_All = (Value) => {
         .sort({ Like: -1 })
         .select({
           _id: 0,
-          Song_Name: 1,
-          Song_Image: 1,
-          Song_Src: 1,
-          User_Id: 1,
+          Song_Id: 1,
         });
 
       const Search_Artist = await User.find({
@@ -28,13 +25,21 @@ const Search_All = (Value) => {
       const Search_Playlist = await Playlist.find({
         Playlist_Name: { $regex: Value, $options: "i" },
         Playlist_Is_Publish: true,
-      }).select({ _id: 0, Playlist_Name: 1, Thumbnail: 1, User_Id: 1 });
+      }).select({
+        _id: 0,
+        Playlist_Name: 1,
+        Thumbnail: 1,
+        User_Id: 1,
+        Image: 1,
+      });
 
       resolve({
         status: "200",
         message: "Search complete",
         data: {
-          List_Song: Search_Song,
+          List_Song: Search_Song.map((item) => {
+            return item.Song_Id;
+          }),
           List_Artist: Search_Artist,
           List_Playlist: Search_Playlist,
         },
