@@ -65,8 +65,8 @@ const Create_User_Service = (data) => {
             User_Name,
             Avatar: "Avatar_Default.jpg",
             Playlist: user.Playlist,
-            List_Add_Songs: user.List_Add_Songs,
-            List_Like_Song: user.List_Like_Song,
+            List_Add_Songs: [User_Id + "_Upload"],
+            List_Like_Song: [User_Id + "_Like"],
           },
         },
       });
