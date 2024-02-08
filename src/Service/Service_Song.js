@@ -81,7 +81,6 @@ const CheckSong = (data) => {
   });
 };
 
-///////////////////////////////////////
 const Get_List_Song = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -173,9 +172,19 @@ const Get_Song_Service = (Song_Id) => {
   });
 };
 
+const Like_Song_Service = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   CheckSong,
   Create_Song_Service,
   Get_List_Song,
   Get_Song_Service,
+  Like_Song_Service,
 };

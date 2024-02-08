@@ -46,4 +46,16 @@ const Get_Song = async (req, res) => {
   }
 };
 
-module.exports = { Create_Song, Get_List_Song, Get_Song };
+const Like_Song = async (req, res) => {
+  try {
+    const response = await Service_Song.Like_Song_Service(req.body);
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: "404",
+      message: "Like got error",
+    });
+  }
+};
+
+module.exports = { Create_Song, Get_List_Song, Get_Song, Like_Song };

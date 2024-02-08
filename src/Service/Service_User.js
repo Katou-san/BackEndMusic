@@ -3,6 +3,7 @@ const {
   JWT_Verify_Token,
 } = require("../Middleware/JWT_ActionS");
 const { User } = require("../Model/User");
+const { Playlist } = require("../Model/Playlist");
 const { Hash_Password, Confirm_Hash_Password } = require("./Service_Hash_Pass");
 const bcrypt = require("bcrypt");
 const salt = bcrypt.genSaltSync(10);
@@ -13,6 +14,10 @@ const Create_User_Service = (data) => {
     const Hash_Pass = Hash_Password(User_Pass);
     try {
       const check = await User.findOne({ User_Email });
+      const check_default_playlist = await Playlist.findOne().or([
+        { Playlist_Id: User_Id + "_Like" },
+        { Playlist_Id: User_Id + "_Upload" },
+      ]);
 
       if (check !== null) {
         resolve({
@@ -21,11 +26,26 @@ const Create_User_Service = (data) => {
         });
       }
 
+      if (check_default_playlist != null) {
+        resolve({
+          status: 404,
+          message: "Default user playlist create is extist",
+        });
+      }
+
+      if (!Create_default_playlist(User_Id)) {
+        resolve({
+          status: 404,
+          message: "Default user playlist create got error",
+        });
+      }
+
       const user = await User.create({
         User_Id,
         User_Email,
         User_Pass: Hash_Pass,
         User_Name,
+        Playlist: [User_Id + "_Like", User_Id + "_Upload"],
       });
 
       const Access_Token = JWT_Create_Token({
@@ -56,6 +76,26 @@ const Create_User_Service = (data) => {
       });
     }
   });
+};
+
+const Create_default_playlist = async (User_Id) => {
+  try {
+    const playlist_Like = await Playlist.create({
+      Playlist_Id: User_Id + "_Like",
+      Playlist_Name: User_Id + "_Like",
+      User_Id: User_Id,
+    });
+
+    const playlist_Upload = await Playlist.create({
+      Playlist_Id: User_Id + "_Upload",
+      Playlist_Name: User_Id + "_Upload",
+      User_Id: User_Id,
+    });
+
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 const Update_User_Service = (User_Id, data) => {
