@@ -1,5 +1,10 @@
-const { Song } = require("../Model/Song");
+const { promises } = require("dns");
+var fs = require("fs");
 const path = require("path");
+const { Song } = require("../Model/Song");
+const { Playlist } = require("../Model/Playlist");
+const { User } = require("../Model/User");
+const { rejects } = require("assert");
 const default_limit = 5;
 const max_item_in_page = 15;
 
@@ -172,9 +177,40 @@ const Get_Song_Service = (Song_Id) => {
   });
 };
 
-const Like_Song_Service = (data) => {
+const Delete_Song_Service = (User_Id, Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const Find_Song = await Song.findOne({ Song_Id });
+      if (Find_Song == null) {
+        resolve({
+          status: 404,
+          message: "Song need to delete not found",
+        });
+      } else {
+        // const CheckUser = await User.findOne({
+        //   User_Id,
+        //   List_Add_Songs: Song_Id,
+        // });
+        if (true) {
+          await Playlist.updateMany({}, { $pull: { List_Song: Song_Id } });
+          await User.updateMany(
+            {},
+            { $pull: { List_Add_Songs: Song_Id, List_Like_Song: Song_Id } }
+          );
+          fs.unlinkSync("./src/Assets/Song_Audio/" + Find_Song.Song_Src);
+          fs.unlinkSync("./src/Assets/Song_Image/" + Find_Song.Song_Image);
+          await Song.deleteOne({ Song_Id });
+          resolve({
+            status: 200,
+            message: "Song delete successfully!",
+          });
+        } else {
+          resolve({
+            status: 404,
+            message: "You not have permission delete the song!",
+          });
+        }
+      }
     } catch (err) {
       reject(err);
     }
@@ -186,5 +222,5 @@ module.exports = {
   Create_Song_Service,
   Get_List_Song,
   Get_Song_Service,
-  Like_Song_Service,
+  Delete_Song_Service,
 };

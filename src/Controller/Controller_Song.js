@@ -46,16 +46,25 @@ const Get_Song = async (req, res) => {
   }
 };
 
-const Like_Song = async (req, res) => {
+const Delete_Song = async (req, res) => {
   try {
-    const response = await Service_Song.Like_Song_Service(req.body);
-    return res.status(200).json(response);
+    if (req.User_Id && req.body.Song_Id) {
+      const response = await Service_Song.Delete_Song_Service(
+        req.User_Id,
+        req.body.Song_Id
+      );
+      return res.status(200).json(response);
+    }
+    return res.status(404).json({
+      status: "404",
+      message: "Delete song not have enough information",
+    });
   } catch (err) {
     return res.status(404).json({
       status: "404",
-      message: "Like got error",
+      message: "Can't delete song",
     });
   }
 };
 
-module.exports = { Create_Song, Get_List_Song, Get_Song, Like_Song };
+module.exports = { Create_Song, Get_List_Song, Get_Song, Delete_Song };
