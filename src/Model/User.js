@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     Playlist: [],
     List_Add_Songs: [],
     List_Like_Song: [],
-    Roles: { type: String, default: "" },
+    Roles: [],
     is_Premium: { type: Boolean, default: false },
   },
   {

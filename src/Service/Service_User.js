@@ -45,6 +45,8 @@ const Create_User_Service = (data) => {
         User_Email,
         User_Pass: Hash_Pass,
         User_Name,
+        Roles: [1],
+        Avatar: "Avatar_Default.jpg",
         List_Add_Songs: [User_Id + "_Upload"],
         List_Like_Song: [User_Id + "_Like"],
       });
@@ -52,6 +54,7 @@ const Create_User_Service = (data) => {
       const Access_Token = JWT_Create_Token({
         User_Email: user.User_Email,
         Roles: user.Roles,
+        User_Id: user.User_Id,
       });
 
       resolve({
@@ -61,12 +64,9 @@ const Create_User_Service = (data) => {
           is_Login: true,
           Access_Token: Access_Token,
           Data_User: {
-            User_Id,
-            User_Name,
-            Avatar: "Avatar_Default.jpg",
-            Playlist: user.Playlist,
-            List_Add_Songs: [User_Id + "_Upload"],
-            List_Like_Song: [User_Id + "_Like"],
+            User_Id: user.User_Id,
+            User_Name: user.User_Name,
+            Avatar: user.Avatar,
           },
         },
       });
