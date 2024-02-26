@@ -16,10 +16,43 @@ const Create_Playlist = async (req, res) => {
   }
 };
 
+const Update_Playlist_Info = async (req, res) => {
+  try {
+    const { User_Id } = req.body;
+
+    const Playlist_Id = req.params.id;
+    if (!User_Id && !Playlist_Id) {
+      return res.status(404).json({
+        status: "404",
+        message: "Can not update Playlist",
+      });
+    }
+    const response = await Service_Playlist.Update_Playlist_Info_Service(
+      User_Id,
+      Playlist_Id,
+      req.body,
+      req.files
+    );
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: "404",
+      message: "Can not update song",
+    });
+  }
+};
+
 const Update_Playlist = async (req, res) => {
   const User_Id = req.User_Id;
   const Playlist_Id = req.params.id;
-  console.log(Playlist_Id);
+
+  if (!User_Id && !Playlist_Id) {
+    return res.status(404).json({
+      status: "404",
+      message: "Can not update Playlist",
+    });
+  }
+
   try {
     const response = await Service_Playlist.Update_Playlist_Service(
       User_Id,
@@ -28,7 +61,6 @@ const Update_Playlist = async (req, res) => {
     );
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err);
     return res.status(404).json({
       status: "404",
       message: "Can not update song",
@@ -41,7 +73,6 @@ const Delete_Playlist = async (req, res) => {
     const response = await Service_Playlist.Delete_Playlist_Service(req.body);
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err);
     return res.status(404).json({
       status: "404",
       message: "Can not delete song",
@@ -69,6 +100,7 @@ const Get_Playlist = async (req, res) => {
 module.exports = {
   Create_Playlist,
   Update_Playlist,
+  Update_Playlist_Info,
   Delete_Playlist,
   Get_Playlist,
 };

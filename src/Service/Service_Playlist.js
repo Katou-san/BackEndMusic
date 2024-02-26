@@ -1,34 +1,6 @@
 const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
-
-const Update_Item_User = (User_Id, Value_Object, String) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_User = await User.findOne({ User_Id });
-      let Value_Update = "";
-      if (String) {
-        switch (String) {
-          case "Playlist":
-            let Play_list_user = Find_User.Playlist;
-            Value_Update = {
-              Playlist: [...Play_list_user, Value_Object],
-            };
-            break;
-          default:
-            break;
-        }
-        await User.findOneAndUpdate({ User_Id }, Value_Update, {
-          new: true,
-        });
-        resolve({ status: 200, message: "Update complete" });
-      } else {
-        resolve({ status: 200, message: "Cant Understand Update something" });
-      }
-    } catch (err) {
-      reject({ status: 404, message: "Update Failed" });
-    }
-  });
-};
+const path = require("path");
 
 const Create_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -147,9 +119,52 @@ const Get_Playlist_Service = (Playlist_Id) => {
   });
 };
 
+const Update_Playlist_Info_Service = (User_Id, Playlist_Id, data, file) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { Playlist_Name, Post_Time, Playlist_Is_Publish } = data;
+      const Set_Name =
+        User_Id +
+        "_" +
+        Playlist_Name.replaceAll(" ", "の20の") +
+        "_" +
+        Post_Time;
+
+      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
+      console.log(Find_Playlist);
+      if (Find_Playlist === null) {
+        resolve({
+          status: 404,
+          message: "Playlist is not exist",
+        });
+      }
+      const test = await Playlist.findOneAndUpdate(
+        { Playlist_Id, User_Id },
+        {
+          Playlist_Name,
+          Image: file[0]
+            ? Set_Name + path.extname(file[0].originalname)
+            : Find_Playlist.Image,
+          Playlist_Is_Publish,
+        },
+        {
+          new: true,
+        }
+      );
+      resolve({
+        status: 200,
+        message: "Update playlist success",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   Get_Playlist_Service,
   Create_Playlist_Service,
   Update_Playlist_Service,
   Delete_Playlist_Service,
+  Update_Playlist_Info_Service,
 };

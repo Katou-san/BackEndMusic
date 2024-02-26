@@ -7,18 +7,22 @@ const multer = require("multer");
 
 const storagePath = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./src/Playlist_Image");
+    if (file) {
+      cb(null, "./src/Assets/Playlist_Img");
+    }
   },
   filename: function (req, file, cb) {
-    cb(
-      null,
-      req.body.User_Id +
-        "_" +
-        req.body.Playlist_Name.toLowerCase().replaceAll(" ", "%~%") +
-        "_" +
-        req.body.Post_Time +
-        path.extname(file.originalname)
-    );
+    if (file) {
+      cb(
+        null,
+        req.body.User_Id +
+          "_" +
+          req.body.Playlist_Name.toLowerCase().replaceAll(" ", "の20の") +
+          "_" +
+          req.body.Post_Time +
+          path.extname(file.originalname)
+      );
+    }
   },
 });
 const uploadFile = multer({ storage: storagePath });
@@ -28,11 +32,20 @@ Router.post(
   JWT_Verify_Token,
   Controller_Playlist.Create_Playlist
 );
+
 Router.get("/find_playlist/:id", Controller_Playlist.Get_Playlist);
+
 Router.put(
   "/update_playlist/:id",
   JWT_Verify_Token,
   Controller_Playlist.Update_Playlist
 );
+Router.put(
+  "/update_playlist_Info/:id",
+  JWT_Verify_Token,
+  uploadFile.array("Files"),
+  Controller_Playlist.Update_Playlist_Info
+);
+
 Router.delete("/delete_playlist/:id", Controller_Playlist.Delete_Playlist);
 module.exports = Router;
