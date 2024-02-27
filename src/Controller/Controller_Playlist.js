@@ -74,11 +74,11 @@ const Delete_Playlist = async (req, res) => {
     const User_Id = req.User_Id;
     console.log(Playlist_Id, User_Id);
     if (Playlist_Id && User_Id) {
-      // const response = await Service_Playlist.Delete_Playlist_Service(
-      //   User_Id,
-      //   Playlist_Id
-      // );
-      return res.status(200).json("Complae");
+      const response = await Service_Playlist.Delete_Playlist_Service(
+        User_Id,
+        Playlist_Id
+      );
+      return res.status(200).json(response);
     }
 
     return res.status(404).json({
