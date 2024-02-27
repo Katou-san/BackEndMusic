@@ -47,7 +47,7 @@ Router.put(
   Controller_Playlist.Update_Playlist_Info
 );
 
-Router.delete(
+Router.post(
   "/delete_playlist",
   JWT_Verify_Token,
   Controller_Playlist.Delete_Playlist

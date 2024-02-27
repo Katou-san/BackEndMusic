@@ -18,7 +18,7 @@ const JWT_Create_Token = (Payload) => {
 };
 
 const JWT_Verify_Token = async (req, res, next) => {
-  let Token = req.headers["x-access-token"];
+  let Token = await req.headers["x-access-token"];
   if (Token) {
     jwt.verify(Token, process.env.PRIVATE_KEY_JWT, (err, decoded) => {
       if (err) {
