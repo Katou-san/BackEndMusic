@@ -70,8 +70,21 @@ const Update_Playlist = async (req, res) => {
 
 const Delete_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.Delete_Playlist_Service(req.body);
-    return res.status(200).json(response);
+    const { Playlist_Id } = req.body;
+    const User_Id = req.User_Id;
+    console.log(Playlist_Id, User_Id);
+    if (Playlist_Id && User_Id) {
+      // const response = await Service_Playlist.Delete_Playlist_Service(
+      //   User_Id,
+      //   Playlist_Id
+      // );
+      return res.status(200).json("Complae");
+    }
+
+    return res.status(404).json({
+      status: "404",
+      message: "Not Found Playlist Id",
+    });
   } catch (err) {
     return res.status(404).json({
       status: "404",

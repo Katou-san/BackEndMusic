@@ -47,5 +47,9 @@ Router.put(
   Controller_Playlist.Update_Playlist_Info
 );
 
-Router.delete("/delete_playlist/:id", Controller_Playlist.Delete_Playlist);
+Router.delete(
+  "/delete_playlist",
+  JWT_Verify_Token,
+  Controller_Playlist.Delete_Playlist
+);
 module.exports = Router;

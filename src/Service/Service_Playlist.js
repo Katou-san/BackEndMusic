@@ -1,7 +1,7 @@
 const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
 const path = require("path");
-
+var fs = require("fs");
 const Create_Playlist_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Post_Time, Playlist_Name, Playlist_Is_Publish, User_Id } = data;
@@ -67,33 +67,35 @@ const Update_Playlist_Service = (User_Id, Playlist_Id, data) => {
 };
 
 ///can fix phien ban moi
-const Delete_Playlist_Service = (id, iduser) => {
+const Delete_Playlist_Service = (User_Id, Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const check = await Playlist.findOne({ Id: id });
-      if (check === null) {
+      const Find_Playlist = await Playlist.findOne({ User_Id, Playlist_Id });
+      if (Find_Playlist === null) {
         resolve({
-          status: "ERR",
+          status: 200,
           message: "Playlist not exist",
         });
       }
 
-      const checkUser = await User.findOne({ Id: iduser });
-      if (check.Id == iduser || checkUser.isAdmin) {
-        const idPlaylist = check._id;
-        await Playlist.findByIdAndDelete({ _id: idPlaylist });
-        resolve({
-          status: "OK",
-          message: "Delete playlist success",
+      if (Find_Playlist) {
+        await User.updateMany({}, { $pull: { Playlist: Playlist_Id } });
+        if (Find_Playlist.Image !== "Img_Default_Playlist.png") {
+          fs.unlinkSync("./src/Assets/Playlist_Img/" + Find_Playlist.Image);
+        }
+
+        await Playlist.deleteOne({
+          Playlist_Id: Playlist_Id,
+          User_Id: User_Id,
         });
-      } else {
+
         resolve({
-          status: "ERR",
-          message: "Not have permission to delete that playlist",
+          status: 200,
+          message: "Playlist not exist",
         });
       }
     } catch (err) {
-      reject(err);
+      reject({ status: 404, message: "Cant delete playlist" });
     }
   });
 };
@@ -131,14 +133,17 @@ const Update_Playlist_Info_Service = (User_Id, Playlist_Id, data, file) => {
         Post_Time;
 
       const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-      console.log(Find_Playlist);
       if (Find_Playlist === null) {
         resolve({
           status: 404,
           message: "Playlist is not exist",
         });
       }
-      const test = await Playlist.findOneAndUpdate(
+      if (file[0] && Find_Playlist.Image !== "Img_Default_Playlist.png") {
+        fs.unlinkSync("./src/Assets/Playlist_Img/" + Find_Playlist.Image);
+      }
+
+      await Playlist.findOneAndUpdate(
         { Playlist_Id, User_Id },
         {
           Playlist_Name,
