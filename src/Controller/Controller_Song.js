@@ -34,9 +34,31 @@ const Create_Song = async (req, res) => {
 
 const Get_Song = async (req, res) => {
   try {
-    console.log(req.params.Song_Id);
     const Song_Id = req.params.Song_Id;
     const response = await Service_Song.Get_Song_Service(Song_Id);
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: "404",
+      message: "Cant found song",
+    });
+  }
+};
+
+const Manage_Get_Song = async (req, res) => {
+  try {
+    const Song_Id = req.params.Song_Id;
+    const User_Id = req.User_Id;
+    if (!Song_Id || !User_Id) {
+      return res.status(404).json({
+        status: "404",
+        message: "Cant get song",
+      });
+    }
+    const response = await Service_Song.Manage_Get_Song_Service(
+      Song_Id,
+      User_Id
+    );
     return res.status(200).json(response);
   } catch (err) {
     return res.status(404).json({
@@ -67,4 +89,10 @@ const Delete_Song = async (req, res) => {
   }
 };
 
-module.exports = { Create_Song, Get_List_Song, Get_Song, Delete_Song };
+module.exports = {
+  Create_Song,
+  Get_List_Song,
+  Get_Song,
+  Delete_Song,
+  Manage_Get_Song,
+};

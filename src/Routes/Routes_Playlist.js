@@ -35,6 +35,12 @@ Router.post(
 
 Router.get("/find_playlist/:id", Controller_Playlist.Get_Playlist);
 
+Router.get(
+  "/Manage_Get_Playlist/:id",
+  JWT_Verify_Token,
+  Controller_Playlist.Manage_Get_Playlist
+);
+
 Router.put(
   "/update_playlist/:id",
   JWT_Verify_Token,

@@ -217,10 +217,31 @@ const Delete_Song_Service = (User_Id, Song_Id) => {
   });
 };
 
+const Manage_Get_Song_Service = (Song_Id, User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Find_Song = await Song.findOne({ Song_Id, User_Id });
+      if (Find_Song === null) {
+        resolve({
+          status: 404,
+          message: "not found",
+        });
+      }
+      resolve({
+        status: 200,
+        message: "Find Song Success",
+        data: Find_Song,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
 module.exports = {
   CheckSong,
   Create_Song_Service,
   Get_List_Song,
   Get_Song_Service,
   Delete_Song_Service,
+  Manage_Get_Song_Service,
 };

@@ -72,7 +72,6 @@ const Delete_Playlist = async (req, res) => {
   try {
     const { Playlist_Id } = req.body;
     const User_Id = req.User_Id;
-    console.log(Playlist_Id, User_Id);
     if (Playlist_Id && User_Id) {
       const response = await Service_Playlist.Delete_Playlist_Service(
         User_Id,
@@ -110,10 +109,34 @@ const Get_Playlist = async (req, res) => {
   }
 };
 
+const Manage_Get_Playlist = async (req, res) => {
+  try {
+    const Playlist_Id = req.params.id;
+    const User_Id = req.User_Id;
+
+    if (!Playlist_Id || !User_Id) {
+      return res
+        .status(404)
+        .json({ status: "404", message: "Cant get Playlist " });
+    }
+    const response = await Service_Playlist.Manage_Get_Playlist_Service(
+      Playlist_Id,
+      User_Id
+    );
+    return res.status(200).json(response);
+  } catch (err) {
+    return res.status(404).json({
+      status: "404",
+      message: "Cant find Playlist",
+    });
+  }
+};
+
 module.exports = {
   Create_Playlist,
   Update_Playlist,
   Update_Playlist_Info,
   Delete_Playlist,
   Get_Playlist,
+  Manage_Get_Playlist,
 };

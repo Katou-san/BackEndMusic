@@ -37,6 +37,11 @@ Router.post(
 Router.get("/Get_List_Song", Controller_Song.Get_List_Song);
 
 Router.get("/find_song/:Song_Id", Controller_Song.Get_Song);
+Router.get(
+  "/manage_get_song/:Song_Id",
+  JWT_Verify_Token,
+  Controller_Song.Manage_Get_Song
+);
 
 Router.post("/delete_song", JWT_Verify_Token, Controller_Song.Delete_Song);
 

@@ -103,13 +103,18 @@ const Delete_Playlist_Service = (User_Id, Playlist_Id) => {
 const Get_Playlist_Service = (Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Find_Playlist = await Playlist.findOne({ Playlist_Id });
+      const Find_Playlist = await Playlist.findOne({
+        Playlist_Id,
+        Playlist_Is_Publish: true,
+      });
       if (Find_Playlist == null) {
         resolve({
           status: 404,
           message: "Not Found Play List",
         });
       }
+
+      console.log(Find_Playlist);
       resolve({
         status: 200,
         message: "Get Playlist Complete",
@@ -166,10 +171,33 @@ const Update_Playlist_Info_Service = (User_Id, Playlist_Id, data, file) => {
   });
 };
 
+const Manage_Get_Playlist_Service = (Playlist_Id, User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
+      if (Find_Playlist == null) {
+        resolve({
+          status: 404,
+          message: "Not Found Playlist",
+        });
+      }
+
+      resolve({
+        status: 200,
+        message: "Get Playlist Complete",
+        data: Find_Playlist,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   Get_Playlist_Service,
   Create_Playlist_Service,
   Update_Playlist_Service,
   Delete_Playlist_Service,
   Update_Playlist_Info_Service,
+  Manage_Get_Playlist_Service,
 };
