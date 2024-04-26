@@ -22,31 +22,17 @@ const JWT_Verify_Token = async (req, res, next) => {
   if (Token) {
     jwt.verify(Token, process.env.PRIVATE_KEY_JWT, (err, decoded) => {
       if (err) {
-        res.send({
-          is_Login: false,
-          Access_Token: "",
-          Data_User: {
-            User_Id: "",
-            User_Name: "",
-            Avatar: "",
-          },
-        });
+        return res.status(200).json({ status: 404, message: "Oauth Failed" });
       } else {
-        req.User_Id = decoded.User_Id;
+        req.Role = decoded.Role;
+        req.Id = decoded.User_Id || decoded.Employess_Id;
         req.User_Email = decoded.User_Email;
+        req.Employess_Email = decoded.Employess_Email;
         next();
       }
     });
   } else {
-    res.send({
-      is_Login: false,
-      Access_Token: "",
-      Data_User: {
-        User_Id: "",
-        User_Name: "",
-        Avatar: "",
-      },
-    });
+    return res.status(200).json({ status: 404, message: "Oauth Failed" });
   }
 };
 

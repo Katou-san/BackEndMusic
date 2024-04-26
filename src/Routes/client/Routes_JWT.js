@@ -1,12 +1,8 @@
-const { JWT_Verify_Token } = require("../Middleware/JWT_ActionS");
+const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 
-const User_Service = require("../Service/Service_User");
-const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken");
+const User_Service = require("../../Service/Service_User");
 const express = require("express");
 const Router = express.Router();
-
-dotenv.config();
 
 Router.get("/IsUserAuth", JWT_Verify_Token, async (req, res) => {
   try {

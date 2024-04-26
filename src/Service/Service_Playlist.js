@@ -8,11 +8,7 @@ const Create_Playlist_Service = (data) => {
     try {
       const New_PlayList_Name = Playlist_Name.toLowerCase();
       const Playlist_Id =
-        User_Id +
-        "_" +
-        New_PlayList_Name.replaceAll(" ", "の20の") +
-        "_" +
-        Post_Time;
+        User_Id + "_" + New_PlayList_Name.replaceAll(" ", "") + "_" + Post_Time;
 
       const check = await Playlist.findOne({ Playlist_Id: Playlist_Id });
       if (check != null) {
@@ -66,7 +62,6 @@ const Update_Playlist_Service = (User_Id, Playlist_Id, data) => {
   });
 };
 
-///can fix phien ban moi
 const Delete_Playlist_Service = (User_Id, Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -114,7 +109,6 @@ const Get_Playlist_Service = (Playlist_Id) => {
         });
       }
 
-      console.log(Find_Playlist);
       resolve({
         status: 200,
         message: "Get Playlist Complete",
@@ -193,6 +187,25 @@ const Manage_Get_Playlist_Service = (Playlist_Id, User_Id) => {
   });
 };
 
+const Create_default_playlist = async (User_Id) => {
+  try {
+    await Playlist.create({
+      Playlist_Id: User_Id + "_Like",
+      Playlist_Name: "Like",
+      User_Id: User_Id,
+    });
+    await Playlist.create({
+      Playlist_Id: User_Id + "_Upload",
+      Playlist_Name: "Upload",
+      User_Id: User_Id,
+    });
+
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 module.exports = {
   Get_Playlist_Service,
   Create_Playlist_Service,
@@ -200,4 +213,5 @@ module.exports = {
   Delete_Playlist_Service,
   Update_Playlist_Info_Service,
   Manage_Get_Playlist_Service,
+  Create_default_playlist,
 };

@@ -1,17 +1,12 @@
-const {
-  JWT_Create_Token,
-  JWT_Verify_Token,
-} = require("../Middleware/JWT_ActionS");
+const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
 const { User } = require("../Model/User");
 const { Playlist } = require("../Model/Playlist");
-const { Hash_Password, Confirm_Hash_Password } = require("./Service_Hash_Pass");
-const bcrypt = require("bcrypt");
-const salt = bcrypt.genSaltSync(10);
+const { Hash_Password, Confirm_Hash_Password } = require("../Middleware/Hash");
+const { Create_default_playlist } = require("./Service_Playlist");
 
 const Create_User_Service = (data) => {
   return new Promise(async (resolve, reject) => {
     const { User_Id, User_Email, User_Name, User_Pass } = data;
-    const Hash_Pass = Hash_Password(User_Pass);
     try {
       const check = await User.findOne({ User_Email });
       const check_default_playlist = await Playlist.findOne().or([
@@ -19,14 +14,14 @@ const Create_User_Service = (data) => {
         { Playlist_Id: User_Id + "_Upload" },
       ]);
 
-      if (check !== null) {
+      if (check) {
         resolve({
           status: 404,
           message: "Email is already",
         });
       }
 
-      if (check_default_playlist != null) {
+      if (check_default_playlist) {
         resolve({
           status: 404,
           message: "Default user playlist create is extist",
@@ -43,9 +38,8 @@ const Create_User_Service = (data) => {
       const user = await User.create({
         User_Id,
         User_Email,
-        User_Pass: Hash_Pass,
+        User_Pass: Hash_Password(User_Pass),
         User_Name,
-        Roles: [1],
         Avatar: "Avatar_Default.jpg",
         List_Add_Songs: [User_Id + "_Upload"],
         List_Like_Song: [User_Id + "_Like"],
@@ -53,7 +47,7 @@ const Create_User_Service = (data) => {
 
       const Access_Token = JWT_Create_Token({
         User_Email: user.User_Email,
-        Roles: user.Roles,
+        Role: user.Role,
         User_Id: user.User_Id,
       });
 
@@ -77,26 +71,6 @@ const Create_User_Service = (data) => {
       });
     }
   });
-};
-
-const Create_default_playlist = async (User_Id) => {
-  try {
-    const playlist_Like = await Playlist.create({
-      Playlist_Id: User_Id + "_Like",
-      Playlist_Name: User_Id + "_Like",
-      User_Id: User_Id,
-    });
-
-    const playlist_Upload = await Playlist.create({
-      Playlist_Id: User_Id + "_Upload",
-      Playlist_Name: User_Id + "_Upload",
-      User_Id: User_Id,
-    });
-
-    return true;
-  } catch (err) {
-    return false;
-  }
 };
 
 const Update_User_Service = (User_Id, data) => {

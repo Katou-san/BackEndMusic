@@ -19,7 +19,6 @@ const Send_Song_Audio = async (req, res) => {
 const Send_Song_Img = async (req, res) => {
   try {
     const { Id } = req.params;
-    console.log(Id);
     const filePath = { root: path.join(__dirname, "../Assets/Song_Image") };
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {

@@ -1,4 +1,4 @@
-const { Role } = require("../Model/Roles");
+const { Role } = require("../Model/Role");
 
 const Create_Role_Service = (data) => {
   return new Promise(async (resolve, reject) => {

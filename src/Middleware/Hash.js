@@ -6,7 +6,7 @@ const Hash_Password = (Pass) => {
   return Hash_Pass;
 };
 
-const Confirm_Hash_Password = (Pass, Hash) => {
+const Confirm_Hash_Password = (Pass, Hash = "") => {
   const result = bcrypt.compareSync(Pass, Hash);
   return result;
 };

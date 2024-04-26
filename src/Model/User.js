@@ -13,8 +13,9 @@ const userSchema = new mongoose.Schema(
     Playlist: [],
     List_Add_Songs: [],
     List_Like_Song: [],
-    Roles: [],
+    Role: { type: String, default: "" },
     is_Premium: { type: Boolean, default: false },
+    Status: { type: String, default: "active" },
   },
   {
     timestamps: true,

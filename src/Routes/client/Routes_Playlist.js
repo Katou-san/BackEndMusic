@@ -1,7 +1,7 @@
-const { JWT_Verify_Token } = require("../Middleware/JWT_ActionS");
+const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const express = require("express");
 const Router = express.Router();
-const Controller_Playlist = require("../Controller/Controller_Playlist");
+const Controller_Playlist = require("../../Controller/Controller_Playlist");
 const path = require("path");
 const multer = require("multer");
 
