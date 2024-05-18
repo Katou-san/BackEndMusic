@@ -2,13 +2,30 @@ const multer = require("multer");
 const path = require("path");
 const { Get_Current_Time } = require("../Util/Get_Time");
 
+const handle_Link = (nameFile = "") => {
+  switch (nameFile.toLowerCase()) {
+    case "song_src":
+      return { status: true, url: "./src/Assets/Song_Audio" };
+    case "song_image":
+      return { status: true, url: "./src/Assets/Song_Image" };
+    case "image":
+      return { status: true, url: "./src/Assets/Playlist_Img" };
+    case "thumbnail":
+      return { status: true, url: "./src/Assets/Playlist_Thumbnail" };
+    default:
+      return { status: false, url: "./src/Assets/Test" };
+  }
+};
+
 function multer_Single(src = "./src/Assets/Test") {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, src);
     },
     filename: function (req, file, cb) {
-      const Currentdate = Get_Current_Time();
+      let Currentdate = req.body.Post_Time
+        ? req.body.Post_Time
+        : Get_Current_Time();
       const FileName = Currentdate + path.extname(file.originalname);
       req.body[file.fieldname] = FileName;
       cb(null, FileName);
@@ -18,19 +35,30 @@ function multer_Single(src = "./src/Assets/Test") {
   return multer({ storage: storage });
 }
 
-function multer_Array(src = "./src/Assets/Test") {
+function multer_Array() {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, src);
+      if (file != undefined) {
+        const get_Link = handle_Link(file.fieldname);
+        if (!get_Link.status) {
+          console.error("not found Name file mutler");
+        }
+        cb(null, get_Link.url || "./src/Assets/Test");
+      }
     },
     filename: function (req, file, cb) {
-      const filename = "test" + path.extname(file.originalname);
-      req.body.Avatar = filename;
-      cb(null, filename);
+      let Currentdate = req.body.Post_Time
+        ? req.body.Post_Time
+        : Get_Current_Time();
+      if (file != undefined) {
+        const filename = Currentdate + path.extname(file.originalname);
+        req.body[file.fieldname] = filename;
+        cb(null, filename);
+      }
     },
   });
 
   return multer({ storage: storage });
 }
 
-module.exports = { multer_Single };
+module.exports = { multer_Single, multer_Array };

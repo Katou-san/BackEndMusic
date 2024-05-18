@@ -26,8 +26,7 @@ const JWT_Verify_Token = async (req, res, next) => {
       } else {
         req.Role = decoded.Role;
         req.Id = decoded.User_Id || decoded.Employess_Id;
-        req.User_Email = decoded.User_Email;
-        req.Employess_Email = decoded.Employess_Email;
+        req.email = decoded.User_Email || decoded.Employess_Email;
         next();
       }
     });

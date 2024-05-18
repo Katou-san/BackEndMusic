@@ -6,6 +6,7 @@ const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Get_Current_Time } = require("../Util/Get_Time");
+const { Delete_Many_File } = require("../Util/Handle_File");
 const { Create_default_playlist } = require("./Service_Playlist");
 
 const get_Lable_User = {
@@ -29,9 +30,13 @@ const SV__Get_User = (id) => {
           get_Lable_User
         );
         if (!result) {
-          resolve({ status: 200, message: "not found user with id" });
+          return resolve({ status: 200, message: "not found user with id" });
         }
-        resolve({ status: 200, message: "get user Complete!", data: result });
+        return resolve({
+          status: 200,
+          message: "get user Complete!",
+          data: result,
+        });
       }
 
       const allUsers = await User.find().select(get_Lable_User);
@@ -109,12 +114,9 @@ const SV__Create_User = (data) => {
     } = data;
     try {
       const check = await User.findOne({ User_Email });
-      // const check_default_playlist = await Playlist.findOne().or([
-      //   { Playlist_Id: User_Id + "_Like" },
-      //   { Playlist_Id: User_Id + "_Upload" },
-      // ]);
+
       if (check) {
-        resolve({
+        return resolve({
           status: 404,
           message: "Email is extisting",
         });
@@ -134,7 +136,7 @@ const SV__Create_User = (data) => {
       });
 
       if (!Create_default_playlist(result.User_Id)) {
-        resolve({
+        return resolve({
           status: 404,
           message: "Default user playlist create got error",
         });
@@ -175,14 +177,13 @@ const SV__Update_User = (data) => {
       const { User_Email } = data;
       const findUser = await User.findOne({ User_Email });
       if (!findUser) {
-        resolve({ status: 200, message: "not found user with email" });
+        return resolve({ status: 200, message: "not found user with email" });
       }
 
       const UpdateData = Convert_vUpdate(data, [
         "User_Id",
         "Number_Phone",
         "User_Email",
-        "User_Pass",
         "_id",
       ]);
 

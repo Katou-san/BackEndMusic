@@ -4,7 +4,7 @@ const songSchema = new mongoose.Schema(
   {
     Song_Id: { type: String, required: true, unique: true },
     Song_Name: { type: String, required: true },
-    Song_Image: { type: String, default: "" },
+    Song_Image: { type: String, default: "not image" },
     Song_Src: { type: String, default: "" },
     Like: { type: Number, default: 0 },
     User_Id: { type: String, required: true },

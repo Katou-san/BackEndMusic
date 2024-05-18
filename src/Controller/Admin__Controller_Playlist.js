@@ -25,7 +25,6 @@ const CTL__Get_Playlist = async (req, res) => {
 
 const CTL__Create_Playlist = async (req, res) => {
   try {
-    console.log(req.Id);
     const { Playlist_Name, User_Id } = req.body;
     if (!Playlist_Name || !User_Id) {
       return res.status(404).json({ status: 404, message: "Input is Empty" });

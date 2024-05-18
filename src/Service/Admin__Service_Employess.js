@@ -7,7 +7,7 @@ const { Create_Id } = require("../Util/Create_Id");
 const SV__Get_Employess = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id != null) {
+      if (id) {
         const result = await Employess.findOne({ Employess_Id: id });
         if (!result) {
           return resolve({
@@ -130,11 +130,7 @@ const SV__Update_Employess = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { Employess_Id, Employess_Pass } = data;
-      const find = Employess.findOne({ Employess_Id });
 
-      if (!find) {
-        return resolve({ status: 404, message: `Employess not found` });
-      }
       const UpdateData = Convert_vUpdate(data, [
         "Employess_Id",
         "Number_Phone",
@@ -153,10 +149,7 @@ const SV__Update_Employess = (data) => {
       }
       resolve({
         status: 200,
-        message: result
-          ? "Updated Employess complete!"
-          : "Updated Employess failed",
-        data: result,
+        message: "Updated Employess complete!",
       });
     } catch (err) {
       reject({

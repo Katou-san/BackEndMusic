@@ -9,7 +9,7 @@ const SV__Get_Role = (id) => {
       if (id) {
         const result = await Role.findOne({ Role_Id: id });
         if (!result) {
-          return resolve({ status: 200, message: "Not found Role with id" });
+          return resolve({ status: 404, message: "Not found Role with id" });
         }
         return resolve({
           status: 200,
@@ -41,7 +41,7 @@ const SV__Create_Role = (data) => {
       const { Role_Name, Description } = data;
       const findRole = await Role.findOne({ Role_Name });
       if (findRole) {
-        return resolve({ status: 200, message: "Role is existing" });
+        return resolve({ status: 404, message: "Role is existing" });
       }
 
       const result = await Role.create({
@@ -77,7 +77,7 @@ const SV__Update_Role = (id, data) => {
       }
       resolve({
         status: 200,
-        message: result ? "Updated Role complete!" : "Updated Role failed",
+        message: "Updated Role complete!",
         data: result,
       });
     } catch (err) {
@@ -110,7 +110,7 @@ const SV__Delete_Role = (id) => {
       }
       resolve({
         status: 200,
-        message: result ? "Delete Role complete!" : "Delete Role failed",
+        message: "Delete Role complete!",
       });
     } catch (err) {
       reject({

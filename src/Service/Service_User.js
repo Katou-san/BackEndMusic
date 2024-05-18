@@ -3,6 +3,7 @@ const { User } = require("../Model/User");
 const { Playlist } = require("../Model/Playlist");
 const { Hash_Password, Confirm_Hash_Password } = require("../Middleware/Hash");
 const { Create_default_playlist } = require("./Service_Playlist");
+const { Convert_vUpdate } = require("../Util/Convert_data");
 
 const Create_User_Service = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -77,12 +78,13 @@ const Update_User_Service = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const Find_User = await User.findOne({ User_Id });
-      if (Find_User === null) {
+      if (!Find_User) {
         resolve({
           status: 404,
           message: "User is not found",
         });
       }
+
       await User.findOneAndUpdate({ User_Id }, data, {
         new: true,
       });

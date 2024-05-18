@@ -1,10 +1,8 @@
-const { promises } = require("dns");
 var fs = require("fs");
 const path = require("path");
 const { Song } = require("../Model/Song");
 const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
-const { rejects } = require("assert");
 const default_limit = 5;
 const max_item_in_page = 15;
 

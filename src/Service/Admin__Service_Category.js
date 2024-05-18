@@ -8,9 +8,12 @@ const SV__Get_Category = (id) => {
       if (id != null) {
         const result = await Category.findOne({ Category_Id: id });
         if (!result) {
-          resolve({ status: 200, message: "Not found Category with id" });
+          return resolve({
+            status: 200,
+            message: "Not found Category with id",
+          });
         }
-        resolve({
+        return resolve({
           status: 200,
           message: "Get Category complete!",
           data: result,
@@ -99,13 +102,11 @@ const SV__Delete_Category = (id) => {
     try {
       const result = await Category.findOneAndDelete({ Category_Id: id });
       if (!result) {
-        resolve({ status: 200, message: "Not found Category with id" });
+        return resolve({ status: 200, message: "Not found Category with id" });
       }
       resolve({
         status: 200,
-        message: result
-          ? "Delete Category complete!"
-          : "Delete Category failed",
+        message: "Delete Category complete!",
       });
     } catch (err) {
       reject({

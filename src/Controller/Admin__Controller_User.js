@@ -102,6 +102,7 @@ const CTL__Login_User = async (req, res) => {
 const CTL__Update_User = async (req, res) => {
   try {
     const { User_Email } = req.body;
+    console.log(res.body);
     if (!User_Email) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }

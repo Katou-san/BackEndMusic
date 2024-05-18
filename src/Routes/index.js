@@ -6,8 +6,9 @@ const SendFile = require("./client/Routes_Send_File");
 const verify_JWT = require("./client/Routes_JWT");
 const Search = require("./client/Routes_Search");
 const RoleRouter = require("./client/Routes_Role");
-const RouterAdmin = require("./admin/index");
 
+const RouterAdmin = require("./admin");
+const RouterClient = require("./client");
 const routes = (app) => {
   //Todo Client routes
   //?  localhost:8080/api/user
@@ -33,6 +34,11 @@ const routes = (app) => {
 
   //?  localhost:8080/api/user
   app.use("/api/Role", RoleRouter);
+  //Todo Client routes
+  app.use("/api/v1/", RouterClient);
+  //?  localhost:8080/api/v1/user
+  //?  localhost:8080/api/v1/song
+  //?  localhost:8080/api/v1/playlist
 
   //Todo Admin routes
   app.use("/api/admin/v1/", RouterAdmin);
