@@ -2,6 +2,7 @@ const { Playlist } = require("../Model/Playlist");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
+
 const SV__Get_Playlist = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -51,7 +52,7 @@ const SV__Create_Playlist = (id, data) => {
       const find = await Playlist.findOne({ Playlist_Id });
       if (find) {
         return resolve({
-          status: "404",
+          status: 404,
           message: "Playlist is exist",
         });
       }
@@ -61,12 +62,12 @@ const SV__Create_Playlist = (id, data) => {
         Playlist_Name: String(Playlist_Name).toLowerCase(),
         User_Id: id,
         Playlist_Is_Publish,
-        Image: Image ? Image : "default.png",
-        Thumbnail: Thumbnail ? Thumbnail : "default.png",
+        Image: Image == "null" ? "default.png" : Image,
+        Thumbnail: Thumbnail == "null" ? "default.png" : Thumbnail,
       });
 
       resolve({
-        status: "OK",
+        status: 200,
         message: "create playlist success",
         data: result,
       });
@@ -92,6 +93,8 @@ const SV__Update_Playlist = (Playlist_Id, data) => {
       if (
         Image != undefined &&
         Image != find.Image &&
+        Image != "null" &&
+        Image != null &&
         find.Image != "default.png"
       ) {
         Delete_File("Playlist_Img", find.Image);
@@ -100,6 +103,8 @@ const SV__Update_Playlist = (Playlist_Id, data) => {
       if (
         Thumbnail != undefined &&
         Thumbnail != find.Thumbnail &&
+        Image != "null" &&
+        Image != null &&
         find.Thumbnail != "default.png"
       ) {
         Delete_File("Playlist_Thumbnail", find.Thumbnail);
@@ -165,9 +170,29 @@ const SV__Delete_Playlist = (id) => {
   });
 };
 
+const SV__Create_Playlist_DF = async (User_Id) => {
+  try {
+    await Playlist.create({
+      Playlist_Id: User_Id + "_Like",
+      Playlist_Name: "Like",
+      User_Id: User_Id,
+    });
+    await Playlist.create({
+      Playlist_Id: User_Id + "_Upload",
+      Playlist_Name: "Upload",
+      User_Id: User_Id,
+    });
+
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 module.exports = {
   SV__Get_Playlist,
   SV__Update_Playlist,
   SV__Delete_Playlist,
   SV__Create_Playlist,
+  SV__Create_Playlist_DF,
 };

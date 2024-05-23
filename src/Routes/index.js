@@ -2,13 +2,15 @@ const UserRouter = require("./client/Routes_User");
 const SongRouter = require("./client/Routes_song");
 const PlaylistRoutes = require("./client/Routes_Playlist");
 const CategoryRoutes = require("./client/Routes_Category");
-const SendFile = require("./client/Routes_Send_File");
+
 const verify_JWT = require("./client/Routes_JWT");
 const Search = require("./client/Routes_Search");
 const RoleRouter = require("./client/Routes_Role");
 
 const RouterAdmin = require("./admin");
 const RouterClient = require("./client");
+const RouterSend = require("./Send");
+const RouterPay = require("./Pay");
 const routes = (app) => {
   //Todo Client routes
   //?  localhost:8080/api/user
@@ -24,9 +26,6 @@ const routes = (app) => {
   app.use("/api/playlist", PlaylistRoutes);
 
   //?  localhost:8080/api/user
-  app.use("/api/send", SendFile);
-
-  //?  localhost:8080/api/user
   app.use("/api/verifyT", verify_JWT);
 
   //?  localhost:8080/api/user
@@ -34,6 +33,13 @@ const routes = (app) => {
 
   //?  localhost:8080/api/user
   app.use("/api/Role", RoleRouter);
+
+  //Todo Send File routes
+  app.use("/api/v1/send", RouterSend);
+
+  //Todo Pays routes
+  app.use("/api/v1/pay", RouterPay);
+
   //Todo Client routes
   app.use("/api/v1/", RouterClient);
   //?  localhost:8080/api/v1/user

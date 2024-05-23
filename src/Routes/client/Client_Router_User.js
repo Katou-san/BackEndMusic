@@ -10,24 +10,22 @@ const {
   CTL__Delete_User,
   CTL__Create_User,
   CTL__Login_User,
+  CTL__Oauth,
 } = require("../../Controller/Admin__Controller_User");
 const uploadFile = multer_Single();
 
 //TODO localhost:8080/api/v1/user
-Router.get(
-  "/user",
-  JWT_Verify_Token,
-  Validate_Role(["employess", "admin"]),
-  CTL__Get_User
-);
+Router.post("/user/login", CTL__Login_User);
+Router.post("/user/signup", CTL__Create_User);
+Router.post("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
+
 Router.get(
   "/user/:id",
   JWT_Verify_Token,
-  Validate_Role(["employess", "admin", "client"]),
+  Validate_Role(["client"]),
   CTL__Get_User
 );
-Router.post("/user/login", CTL__Login_User);
-Router.post("/user/signup", CTL__Create_User);
+
 Router.put(
   "/user",
   JWT_Verify_Token,

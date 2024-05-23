@@ -4,6 +4,7 @@ const {
   SV__Get_User,
   SV__Create_User,
   SV__Login_User,
+  SV__Oauth,
 } = require("../Service/Admin__Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
@@ -98,6 +99,20 @@ const CTL__Login_User = async (req, res) => {
   }
 };
 
+const CTL__Oauth = async (req, res) => {
+  try {
+    if (!req.Id || !req.Email || !req.Role) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Oauth missing data" });
+    }
+    const respone = await SV__Oauth(req.Id, req.Email, req.Role);
+    return res.status(200).json(respone);
+  } catch (error) {
+    return res.status(404).json({ status: 404, message: "Oauth failed" });
+  }
+};
+
 //! TODO: NEED UPDATE
 const CTL__Update_User = async (req, res) => {
   try {
@@ -138,4 +153,5 @@ module.exports = {
   CTL__Update_User,
   CTL__Delete_User,
   CTL__Login_User,
+  CTL__Oauth,
 };

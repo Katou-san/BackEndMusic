@@ -17,6 +17,7 @@ const Delete_Many_File = (array = [{ url: "", idFile: "" }], deny = []) => {
     if (
       !deny.includes(item.idFile) &&
       item.idFile != undefined &&
+      item.idFile != "null" &&
       item.idFile
     ) {
       Delete_File(item.url, item.idFile);

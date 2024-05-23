@@ -25,11 +25,11 @@ const CTL__Get_Playlist = async (req, res) => {
 
 const CTL__Create_Playlist = async (req, res) => {
   try {
-    const { Playlist_Name, User_Id } = req.body;
-    if (!Playlist_Name || !User_Id) {
+    const { Playlist_Name } = req.body;
+    if (!Playlist_Name || !req.Id) {
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
-    const respone = await SV__Create_Playlist(User_Id, req.body);
+    const respone = await SV__Create_Playlist(req.Id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

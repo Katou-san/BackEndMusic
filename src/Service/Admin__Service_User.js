@@ -1,13 +1,11 @@
 const { Hash_Password, Confirm_Hash_Password } = require("../Middleware/Hash");
 const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
 const { Playlist } = require("../Model/Playlist");
-const { Role } = require("../Model/Role");
 const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Get_Current_Time } = require("../Util/Get_Time");
-const { Delete_Many_File } = require("../Util/Handle_File");
-const { Create_default_playlist } = require("./Service_Playlist");
+const { SV__Create_Playlist_DF } = require("./Admin__Service_Playlist");
 
 const get_Lable_User = {
   _id: 0,
@@ -103,6 +101,47 @@ const SV__Login_User = (data) => {
   });
 };
 
+const SV__Oauth = (id, email, role) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await User.findOne({
+        User_Id: id,
+        User_Email: email,
+        Role: role,
+      });
+      if (!result) {
+        return resolve({ status: 200, message: "Error Oauth!" });
+      }
+
+      const Access_Token = JWT_Create_Token({
+        User_Email: result.User_Email,
+        Role: result.Role,
+        User_Id: result.User_Id,
+      });
+
+      resolve({
+        status: 200,
+        message: "Oauth complete!",
+        data: {
+          is_Login: true,
+          Access_Token: Access_Token,
+          Data_User: {
+            User_Id: result.User_Id,
+            User_Name: result.User_Name,
+            Avatar: result.Avatar,
+          },
+        },
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_User.js (SV_Get_User)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_User = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -135,7 +174,7 @@ const SV__Create_User = (data) => {
         List_Like_Song: [Create_Id("User", User_Name, posttime) + "_Like"],
       });
 
-      if (!Create_default_playlist(result.User_Id)) {
+      if (!SV__Create_Playlist_DF(result.User_Id)) {
         return resolve({
           status: 404,
           message: "Default user playlist create got error",
@@ -249,4 +288,5 @@ module.exports = {
   SV__Update_User,
   SV__Delete_User,
   SV__Login_User,
+  SV__Oauth,
 };
