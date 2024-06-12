@@ -8,7 +8,7 @@ const {
   CTL__Update_Playlist,
   CTL__Delete_Playlist,
   CTL__Create_Playlist,
-} = require("../../Controller/Admin__Controller_Playlist");
+} = require("../../Controller/Controller_Playlist");
 
 const uploadArray = multer_Array();
 

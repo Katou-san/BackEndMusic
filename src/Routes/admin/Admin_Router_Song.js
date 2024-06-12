@@ -8,7 +8,7 @@ const {
   CTL__Update_Song,
   CTL__Create_Song,
   CTL__Delete_Song,
-} = require("../../Controller/Admin__Controller_Song");
+} = require("../../Controller/Controller_Song");
 
 const uploadAudio = multer_Single("./src/Assets/Song_Audio");
 const uploadImg = multer_Single("./src/Assets/Song_Image");

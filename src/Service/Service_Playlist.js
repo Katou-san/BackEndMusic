@@ -1,36 +1,75 @@
 const { Playlist } = require("../Model/Playlist");
-const { User } = require("../Model/User");
-const path = require("path");
-var fs = require("fs");
-const Create_Playlist_Service = (data) => {
-  return new Promise(async (resolve, reject) => {
-    const { Post_Time, Playlist_Name, Playlist_Is_Publish, User_Id } = data;
-    try {
-      const New_PlayList_Name = Playlist_Name.toLowerCase();
-      const Playlist_Id =
-        User_Id + "_" + New_PlayList_Name.replaceAll(" ", "") + "_" + Post_Time;
+const { Convert_vUpdate } = require("../Util/Convert_data");
+const { Create_Id } = require("../Util/Create_Id");
+const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
 
-      const check = await Playlist.findOne({ Playlist_Id: Playlist_Id });
-      if (check != null) {
-        resolve({
-          status: "404",
+const SV__Get_Playlist = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (id != null) {
+        const result = await Playlist.findOne({ Playlist_Id: id });
+        if (!result) {
+          return resolve({
+            status: 200,
+            message: "Not found Playlist with id",
+          });
+        }
+        return resolve({
+          status: 200,
+          message: "Get Playlist complete!",
+          data: result,
+        });
+      }
+
+      const allPlaylists = await Playlist.find();
+      resolve({
+        status: 200,
+        message: "get all Playlist complete!",
+        data: allPlaylists,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Playlist.js (SV_Get_Playlist)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Create_Playlist = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    const {
+      Post_Time,
+      Playlist_Name,
+      Playlist_Is_Publish = true,
+      Thumbnail,
+      Image,
+    } = data;
+    try {
+      const Playlist_Id = Create_Id("Playlist", Playlist_Name, Post_Time);
+      const find = await Playlist.findOne({ Playlist_Id });
+      if (find) {
+        return resolve({
+          status: 404,
           message: "Playlist is exist",
         });
       }
 
-      const playlist = await Playlist.create({
-        Playlist_Id: Playlist_Id,
-        Playlist_Name: New_PlayList_Name,
-        User_Id,
+      const result = await Playlist.create({
+        Playlist_Id,
+        Playlist_Name: String(Playlist_Name).toLowerCase(),
+        User_Id: id,
         Playlist_Is_Publish,
+        Image: Image == "null" ? "default.png" : Image,
+        Thumbnail: Thumbnail == "null" ? "default.png" : Thumbnail,
       });
 
       resolve({
-        status: "OK",
+        status: 200,
         message: "create playlist success",
-        Playlist: {
-          Playlist_Id: playlist.Playlist_Id,
-        },
+        data: result,
       });
     } catch (err) {
       reject(err);
@@ -38,156 +77,100 @@ const Create_Playlist_Service = (data) => {
   });
 };
 
-const Update_Playlist_Service = (User_Id, Playlist_Id, data) => {
+const SV__Update_Playlist = (Playlist_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-      if (Find_Playlist === null) {
-        resolve({
-          status: 404,
-          message: "Playlist is not exist",
-        });
+      const { Image, Thumbnail } = data;
+      const Update_value = Convert_vUpdate(data, [
+        "_id",
+        "Playlist_Id",
+        "User_Id",
+      ]);
+      const find = await Playlist.findOne({ Playlist_Id });
+      if (!find) {
+        return resolve({ status: 404, message: "Not found Playlist with id" });
       }
-      await Playlist.findOneAndUpdate({ Playlist_Id, User_Id }, data, {
+      if (
+        Image != undefined &&
+        Image != find.Image &&
+        Image != "null" &&
+        Image != null &&
+        find.Image != "default.png"
+      ) {
+        Delete_File("Playlist_Img", find.Image);
+      }
+
+      if (
+        Thumbnail != undefined &&
+        Thumbnail != find.Thumbnail &&
+        Image != "null" &&
+        Image != null &&
+        find.Thumbnail != "default.png"
+      ) {
+        Delete_File("Playlist_Thumbnail", find.Thumbnail);
+      }
+
+      const result = await Playlist.updateOne({ Playlist_Id }, Update_value, {
         new: true,
       });
-
+      if (!result) {
+        return resolve({ status: 404, message: "Update Failed!" });
+      }
       resolve({
         status: 200,
-        message: "Update playlist success",
+        message: "Updated Playlist complete!",
+        data: result,
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Playlist.js (SV_Update_Playlist)",
+      });
+      throw new Error(err);
     }
   });
 };
 
-const Delete_Playlist_Service = (User_Id, Playlist_Id) => {
+const SV__Delete_Playlist = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Find_Playlist = await Playlist.findOne({ User_Id, Playlist_Id });
-      if (Find_Playlist === null) {
-        resolve({
-          status: 200,
-          message: "Playlist not exist",
-        });
+      const find = await Playlist.findOne({ Playlist_Id: id });
+      if (!find) {
+        return resolve({ status: 404, message: "Not found Playlist with id" });
       }
 
-      if (Find_Playlist) {
-        await User.updateMany({}, { $pull: { Playlist: Playlist_Id } });
-        if (Find_Playlist.Image !== "Img_Default_Playlist.png") {
-          fs.unlinkSync("./src/Assets/Playlist_Img/" + Find_Playlist.Image);
-        }
-
-        await Playlist.deleteOne({
-          Playlist_Id: Playlist_Id,
-          User_Id: User_Id,
-        });
-
-        resolve({
-          status: 200,
-          message: "Playlist not exist",
-        });
-      }
-    } catch (err) {
-      reject({ status: 404, message: "Cant delete playlist" });
-    }
-  });
-};
-
-const Get_Playlist_Service = (Playlist_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_Playlist = await Playlist.findOne({
-        Playlist_Id,
-        Playlist_Is_Publish: true,
-      });
-      if (Find_Playlist == null) {
-        resolve({
-          status: 404,
-          message: "Not Found Play List",
-        });
-      }
-
-      resolve({
-        status: 200,
-        message: "Get Playlist Complete",
-        data: Find_Playlist,
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-const Update_Playlist_Info_Service = (User_Id, Playlist_Id, data, file) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const { Playlist_Name, Post_Time, Playlist_Is_Publish } = data;
-      const Set_Name =
-        User_Id +
-        "_" +
-        Playlist_Name.replaceAll(" ", "の20の") +
-        "_" +
-        Post_Time;
-
-      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-      if (Find_Playlist === null) {
-        resolve({
-          status: 404,
-          message: "Playlist is not exist",
-        });
-      }
-      if (file[0] && Find_Playlist.Image !== "Img_Default_Playlist.png") {
-        fs.unlinkSync("./src/Assets/Playlist_Img/" + Find_Playlist.Image);
-      }
-
-      await Playlist.findOneAndUpdate(
-        { Playlist_Id, User_Id },
-        {
-          Playlist_Name,
-          Image: file[0]
-            ? Set_Name + path.extname(file[0].originalname)
-            : Find_Playlist.Image,
-          Playlist_Is_Publish,
-        },
-        {
-          new: true,
-        }
+      Delete_Many_File(
+        [
+          { url: "Playlist_Img", idFile: find.Image },
+          { url: "Playlist_Thumbnail", idFile: find.Thumbnail },
+        ],
+        ["default.png"]
       );
-      resolve({
-        status: 200,
-        message: "Update playlist success",
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
 
-const Manage_Get_Playlist_Service = (Playlist_Id, User_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-      if (Find_Playlist == null) {
-        resolve({
-          status: 404,
-          message: "Not Found Playlist",
-        });
+      const result = await Playlist.deleteOne({
+        Playlist_Id: id,
+      });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Playlist with id" });
       }
 
       resolve({
         status: 200,
-        message: "Get Playlist Complete",
-        data: Find_Playlist,
+        message: "Delete Playlist complete!",
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Playlist.js (SV_Delete_Playlist)",
+      });
+      throw new Error(err);
     }
   });
 };
 
-const Create_default_playlist = async (User_Id) => {
+const SV__Create_Playlist_DF = async (User_Id) => {
   try {
     await Playlist.create({
       Playlist_Id: User_Id + "_Like",
@@ -207,11 +190,9 @@ const Create_default_playlist = async (User_Id) => {
 };
 
 module.exports = {
-  Get_Playlist_Service,
-  Create_Playlist_Service,
-  Update_Playlist_Service,
-  Delete_Playlist_Service,
-  Update_Playlist_Info_Service,
-  Manage_Get_Playlist_Service,
-  Create_default_playlist,
+  SV__Get_Playlist,
+  SV__Update_Playlist,
+  SV__Delete_Playlist,
+  SV__Create_Playlist,
+  SV__Create_Playlist_DF,
 };

@@ -11,7 +11,7 @@ const {
   CTL__Create_User,
   CTL__Login_User,
   CTL__Oauth,
-} = require("../../Controller/Admin__Controller_User");
+} = require("../../Controller/Controller_User");
 const uploadFile = multer_Single();
 
 //TODO localhost:8080/api/v1/user

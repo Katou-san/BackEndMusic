@@ -1,52 +1,81 @@
-const Service_Category = require("../Service/Service_Category");
+const {
+  SV__Get_Category,
+  SV__Update_Category,
+  SV__Delete_Category,
+  SV__Create_Category,
+} = require("../Service/Service_Category");
 
-const Get_All_Category = async (req, res) => {
-  const response = await Service_Category.Get_All_Category_Service(req.body);
-  return res.status(200).json(response);
+const CTL__Get_Category = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (id) {
+      const respone_id = await SV__Get_Category(id);
+      return res.status(200).json(respone_id);
+    } else {
+      const respone = await SV__Get_Category(null);
+      return res.status(200).json(respone);
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get Category failed" });
+  }
 };
 
-const Create_Category = async (req, res) => {
-  const { Category_Id, Category_Name } = req.body;
-  if (!Category_Id || !Category_Name) {
-    return res.status(200).json({
-      status: "ERR",
-      message: "Category invalid",
-    });
+const CTL__Create_Category = async (req, res) => {
+  try {
+    const { Category_Name } = req.body;
+    if (!Category_Name) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "id or name for category is empty" });
+    }
+    const respone = await SV__Create_Category(req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Create Category failed" });
   }
-
-  const response = await Service_Category.Create_Category_Service(req.body);
-  return res.status(200).json(response);
 };
 
-const Update_Category = async (req, res) => {
-  const { Catalogy_Id, Catalogy_Name } = req.body;
-  if (!Catalogy_Id || !Catalogy_Name) {
-    return res.status(200).json({
-      status: "ERR",
-      message: "Category invalid",
-    });
+const CTL__Update_Category = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    const respone = await SV__Update_Category(id, req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Update Category failed" });
   }
-
-  const response = await Service_Category.Update_Category_Service(Id, req.body);
-  return res.status(200).json(response);
 };
 
-const Delete_Category = async (req, res) => {
-  const { Id, IdUser } = req.body;
-  if (!Id) {
-    return res.status(200).json({
-      status: "ERR",
-      message: "Category invalid",
-    });
+const CTL__Delete_Category = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    const respone = await SV__Delete_Category(id);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Delete user failed " });
   }
-
-  const response = await Service_Category.Delete_Category_Service(Id, IdUser);
-  return res.status(200).json(response);
 };
 
 module.exports = {
-  Create_Category,
-  Update_Category,
-  Delete_Category,
-  Get_All_Category,
+  CTL__Get_Category,
+  CTL__Update_Category,
+  CTL__Delete_Category,
+  CTL__Create_Category,
 };

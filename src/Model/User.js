@@ -5,22 +5,20 @@ const userSchema = new mongoose.Schema(
     User_Email: { type: String, unique: true, sparse: true },
     User_Pass: { type: String, required: true },
     User_Name: { type: String, required: true },
-    User_Color: { type: String, default: "#ffffff" },
-    Avatar: { type: String, default: "Avatar_Default.jpg" },
-    Number_Phone: { type: String, default: "" },
-    Follower: { type: Number, default: 0 },
-    Following: { type: Number, default: 0 },
-    Playlist: [],
-    List_Add_Songs: [],
-    List_Like_Song: [],
-    Role: { type: String, default: "" },
+    Color: { type: String, default: "#ffffff" },
+    Avatar: { type: String, default: "default.jpg" },
+    Phone: { type: String, default: "null" },
+    Role_Id: { type: String, required: true },
+    CCCD: { type: String, default: "null" },
     is_Premium: { type: Boolean, default: false },
-    Status: { type: String, default: "active" },
+    is_Admin: { type: Boolean, default: false },
+    Status: { type: String, default: 1 },
+    Create_date: { type: Date, default: Date.now },
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model("Data_User", userSchema);
+const User = mongoose.model("Users", userSchema);
 module.exports = { User };

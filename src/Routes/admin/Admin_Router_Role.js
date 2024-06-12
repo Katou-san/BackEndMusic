@@ -7,14 +7,19 @@ const {
   CTL__Create_Role,
   CTL__Update_Role,
   CTL__Delete_Role,
-} = require("../../Controller/Admin__Controller_Role");
+} = require("../../Controller/Controller_Role");
 
 //TODO localhost:8080/api/admin/v1/role
-Router.get("/role", JWT_Verify_Token, Validate_Role(["admin"]), CTL__Get_Role);
+Router.get(
+  "/role",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Get_Role
+);
 Router.get(
   "/role/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin"]),
+  Validate_Role(["admin", "employess"]),
   CTL__Get_Role
 );
 Router.post(

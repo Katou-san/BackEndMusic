@@ -10,7 +10,7 @@ const {
   CTL__Delete_User,
   CTL__Create_User,
   CTL__Login_User,
-} = require("../../Controller/Admin__Controller_User");
+} = require("../../Controller/Controller_User");
 const uploadFile = multer_Single();
 
 //TODO localhost:8080/api/admin/v1/user

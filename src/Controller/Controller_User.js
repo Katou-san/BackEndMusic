@@ -1,121 +1,158 @@
-const Service_User = require("../Service/Service_User");
+const {
+  SV__Update_User,
+  SV__Delete_User,
+  SV__Get_User,
+  SV__Create_User,
+  SV__Login_User,
+  SV__Oauth,
+} = require("../Service/Service_User");
+const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
-const Sign_up_User = async (req, res) => {
-  try {
-    const { User_Id, User_Email, User_Pass, User_Name } = req.body;
-    if (!User_Email) {
-      return res.status(404).json({
-        status: 404,
-        message: "Email is required",
-      });
-    }
-
-    if (!User_Pass && User_Pass.length >= 4) {
-      return res.status(404).json({
-        status: 404,
-        message: "Pass is required",
-      });
-    }
-
-    if (!User_Id && !User_Name) {
-      return res.status(404).json({
-        status: 404,
-        message: "Id or Username is emty",
-      });
-    }
-
-    const response = await Service_User.Create_User_Service(req.body);
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: 404,
-      message: "Create User failed",
-    });
-  }
-};
-
-const Update_User = async (req, res) => {
-  try {
-    const User_Id = req.User_Id;
-
-    const response = await Service_User.Update_User_Service(User_Id, req.body);
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: 404,
-      message: "Cant update user",
-    });
-  }
-};
-
-const Delete_User = async (req, res) => {
+// TODO: done!
+const CTL__Get_User = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) {
+    if (id) {
+      const respone_id = await SV__Get_User(id);
+      return res.status(200).json(respone_id);
+    } else {
+      const respone = await SV__Get_User(null);
+      return res.status(200).json(respone);
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get user failed" });
+  }
+};
+// TODO: Done!
+const CTL__Create_User = async (req, res) => {
+  try {
+    const { User_Email, User_Name, User_Pass, User_ConfirmPass } = req.body;
+    const Result_Validate = Validate_SignUp(
+      User_Email,
+      User_Name,
+      User_Pass,
+      User_ConfirmPass
+    );
+
+    if (!User_Email || !User_Name || !User_ConfirmPass || !User_Pass) {
       return res.status(200).json({
         status: 404,
-        message: "ID is required",
+        message: "Input null!",
+        Error: {
+          email: !User_Email ? "null" : "not null",
+          name: !User_Name ? "null" : "not null",
+          pass: !User_Pass ? "null" : "not null",
+          confiPass: !User_ConfirmPass ? "null" : "not null",
+        },
       });
     }
-    const response = await Service_User.Deleta_User_Service(id);
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: 404,
-      message: "Cant delete user",
-    });
+    if (Result_Validate.status) {
+      return res.status(200).json({
+        status: 404,
+        message: "Error Validate!",
+        Error: Result_Validate.Error,
+      });
+    }
+
+    const respone = await SV__Create_User(req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Create user failed" });
   }
 };
 
-const Login_User = async (req, res) => {
+// TODO: done!
+const CTL__Login_User = async (req, res) => {
   try {
     const { User_Email, User_Pass } = req.body;
+    console.log(User_Email);
     if (!User_Email) {
       return res.status(200).json({
         status: 404,
-        message: "Email is required",
+        message: "Email is null",
+        error: { email: "Email is null" },
       });
     }
 
     if (!User_Pass) {
       return res.status(200).json({
         status: 404,
-        message: "Pass is required",
+        message: "Pass is null",
+        error: { pass: "Pass is null" },
       });
     }
-    const response = await Service_User.Check_User_Service(req.body);
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: 404,
-      message: "Cant not Login",
-    });
+
+    if (Validate_Login(User_Email, User_Pass).status) {
+      return res.status(200).json({
+        status: 404,
+        message: "Somthing wrong!",
+        error: Validate_Login(User_Email, User_Pass).Error,
+      });
+    }
+
+    const respone = await SV__Login_User(req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    // new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Login failed" });
   }
 };
 
-const Get_Playlist_User = async (req, res) => {
+const CTL__Oauth = async (req, res) => {
   try {
-    const { User_Id } = req.body;
-    if (!User_Id) {
-      return res.status(200).json({
-        status: 404,
-        message: "Not Found Id",
-      });
+    if (!req.Id || !req.Email || !req.Role) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Oauth missing data" });
     }
-    const response = await Service_User.Get_Playlist_User_Service(User_Id);
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: 404,
-      message: "Cant get data",
-    });
+    const respone = await SV__Oauth(req.Id, req.Email, req.Role);
+    return res.status(200).json(respone);
+  } catch (error) {
+    return res.status(404).json({ status: 404, message: "Oauth failed" });
+  }
+};
+
+//! TODO: NEED UPDATE
+const CTL__Update_User = async (req, res) => {
+  try {
+    const { User_Email } = req.body;
+    console.log(res.body);
+    if (!User_Email) {
+      return res.status(200).json({ status: 404, message: "Id is empty" });
+    }
+
+    const respone = await SV__Update_User(req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Update user failed" });
+  }
+};
+
+//! TODO: NEED UPDATE
+const CTL__Delete_User = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    const respone = await SV__Delete_User(id);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Delete user failed " });
   }
 };
 
 module.exports = {
-  Sign_up_User,
-  Update_User,
-  Delete_User,
-  Login_User,
-  Get_Playlist_User,
+  CTL__Get_User,
+  CTL__Create_User,
+  CTL__Update_User,
+  CTL__Delete_User,
+  CTL__Login_User,
+  CTL__Oauth,
 };

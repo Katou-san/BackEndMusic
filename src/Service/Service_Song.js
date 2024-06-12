@@ -1,30 +1,56 @@
-var fs = require("fs");
-const path = require("path");
 const { Song } = require("../Model/Song");
-const { Playlist } = require("../Model/Playlist");
-const { User } = require("../Model/User");
-const default_limit = 5;
-const max_item_in_page = 15;
+const { Convert_vUpdate } = require("../Util/Convert_data");
+const { Create_Id } = require("../Util/Create_Id");
+const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
+const SV__Get_Song = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (id) {
+        const result = await Song.findOne({ Song_Id: id });
+        if (!result) {
+          return resolve({ status: 200, message: "Not found Song with id" });
+        }
+        return resolve({
+          status: 200,
+          message: "Get song complete!",
+          data: result,
+        });
+      }
 
-const Create_Song_Service = (data, file) => {
+      const allSongs = await Song.find();
+      resolve({
+        status: 200,
+        message: "get all Songs complete!",
+        data: allSongs,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Song.js (SV_Get_Song)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Create_Song = (data, User_Id) => {
   return new Promise(async (resolve, reject) => {
     const {
       Song_Name,
       Post_Time,
       Category_Id,
-      User_Id,
+      Song_Src,
+      Song_Image = "default.png",
       Lyrics,
       Tag,
       Color,
-      Is_Publish,
+      Is_Publish = true,
     } = data;
 
-    const New_Song_Name = Song_Name.toLowerCase();
-    const Set_Name =
-      User_Id + "_" + New_Song_Name.replaceAll(" ", "の20の") + "_" + Post_Time;
+    const IdSong = Create_Id("Song", Song_Name);
     try {
-      const check = await Song.findOne({ Song_Id: Post_Time });
-      if (check !== null) {
+      const check = await Song.findOne({ Song_Id: IdSong });
+      if (check) {
         resolve({
           status: "404",
           message: "Song already have!",
@@ -32,10 +58,10 @@ const Create_Song_Service = (data, file) => {
       }
 
       const song = await Song.create({
-        Song_Id: "Song_" + Post_Time,
-        Song_Name: New_Song_Name,
-        Song_Src: Set_Name + path.extname(file[0].originalname),
-        Song_Image: Set_Name + path.extname(file[1].originalname),
+        Song_Id: IdSong,
+        Song_Name: String(Song_Name).toLowerCase(),
+        Song_Src: Song_Src,
+        Song_Image: Song_Image != "null" ? Song_Image : "default.png",
         User_Id,
         Category_Id,
         Lyrics,
@@ -55,191 +81,74 @@ const Create_Song_Service = (data, file) => {
   });
 };
 
-const CheckSong = (data) => {
+const SV__Update_Song = (id, data, User_Id) => {
   return new Promise(async (resolve, reject) => {
-    const { Song_Id, Song_Name } = data;
     try {
-      const checkE = await Song.findOne({ Song_Id: Song_Id });
-      if (checkE == null) {
-        resolve({
-          status: "404",
-          message: "Song not found!",
-        });
-      } else {
-        if (checkE.Song_Name == Song_Name) {
-          resolve({
-            status: "200",
-            message: "Song founded",
-          });
-        } else {
-          resolve({
-            status: "404",
-            message: "Song name wrong!",
-          });
+      const Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      const result = await Song.findOneAndUpdate(
+        { Song_Id: id, User_Id },
+        Update_V,
+        {
+          new: true,
         }
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-const Get_List_Song = (data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const { limit_value, skip_value, page_value } = data;
-      if (skip_value == 0 && page_value == 0) {
-        const listSong = await Song.find({ Is_Publish: true }).limit(
-          default_limit
-        );
-        if (listSong == null) {
-          reject({
-            status: "404",
-            message:
-              "cant get songs with limit " +
-              limit_value +
-              " skip " +
-              skip_value +
-              " page " +
-              page_value,
-          });
-        }
-
-        resolve({
-          status: "200",
-          message:
-            "got songs with limit " +
-            limit_value +
-            " skip " +
-            skip_value +
-            " page " +
-            page_value,
-          data: listSong,
-        });
-      } else {
-        const song_count = await Song.countDocuments({ Is_Publish: true });
-        const listSong = await Song.find({ Is_Publish: true })
-          .limit(limit_value)
-          .skip(skip_value + max_item_in_page * (page_value - 1));
-
-        if (listSong == null) {
-          reject({
-            status: "404",
-            message:
-              "cant get songs with limit " +
-              limit_value +
-              " skip " +
-              skip_value +
-              " page " +
-              page_value,
-          });
-        }
-
-        resolve({
-          status: "200",
-          message:
-            "got songs with limit " +
-            limit_value +
-            " skip " +
-            skip_value +
-            " page " +
-            page_value,
-          data: listSong,
-          page_total: Math.ceil(song_count / max_item_in_page),
+      );
+      if (!result) {
+        return resolve({
+          status: 200,
+          message: "Not found song with id for you",
         });
       }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
 
-const Get_Song_Service = (Song_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_Song = await Song.findOne({ Song_Id });
-      if (Find_Song === null) {
-        resolve({
-          status: 404,
-          message: "not found",
-        });
-      }
-      resolve({
-        status: "200",
-        message: "Find Song Success",
-        data: Find_Song,
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-const Delete_Song_Service = (User_Id, Song_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_Song = await Song.findOne({ Song_Id });
-      if (Find_Song == null) {
-        resolve({
-          status: 404,
-          message: "Song need to delete not found",
-        });
-      } else {
-        // const CheckUser = await User.findOne({
-        //   User_Id,
-        //   List_Add_Songs: Song_Id,
-        // });
-        if (true) {
-          await Playlist.updateMany({}, { $pull: { List_Song: Song_Id } });
-          await User.updateMany(
-            {},
-            { $pull: { List_Add_Songs: Song_Id, List_Like_Song: Song_Id } }
-          );
-          fs.unlinkSync("./src/Assets/Song_Audio/" + Find_Song.Song_Src);
-          fs.unlinkSync("./src/Assets/Song_Image/" + Find_Song.Song_Image);
-          await Song.deleteOne({ Song_Id });
-          resolve({
-            status: 200,
-            message: "Song delete successfully!",
-          });
-        } else {
-          resolve({
-            status: 404,
-            message: "You not have permission delete the song!",
-          });
-        }
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-const Manage_Get_Song_Service = (Song_Id, User_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const Find_Song = await Song.findOne({ Song_Id, User_Id });
-      if (Find_Song === null) {
-        resolve({
-          status: 404,
-          message: "not found",
-        });
-      }
       resolve({
         status: 200,
-        message: "Find Song Success",
-        data: Find_Song,
+        message: "Updated Song complete!",
+        data: result,
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Song.js (SV_Update_Song)",
+      });
+      throw new Error(err);
     }
   });
 };
+
+const SV__Delete_Song = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const find = await Song.findOne({ Song_Id: id });
+      if (!find) {
+        return resolve({ status: 404, message: "Not found song with id" });
+      }
+
+      Delete_Many_File(
+        [
+          { url: "Song_Image", idFile: find.Song_Image },
+          { url: "Song_Audio", idFile: find.Song_Src },
+        ],
+        ["default.png"]
+      );
+
+      const result = await Song.deleteOne({ Song_Id: id });
+      resolve({
+        status: 200,
+        message: result ? "Delete song complete!" : "Delete song failed",
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Song.js (SV_Delete_Song)",
+      });
+    }
+  });
+};
+
 module.exports = {
-  CheckSong,
-  Create_Song_Service,
-  Get_List_Song,
-  Get_Song_Service,
-  Delete_Song_Service,
-  Manage_Get_Song_Service,
+  SV__Get_Song,
+  SV__Update_Song,
+  SV__Delete_Song,
+  SV__Create_Song,
 };

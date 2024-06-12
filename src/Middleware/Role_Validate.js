@@ -16,7 +16,13 @@ const Premium_Check = (email, id, role) => {
 
 const Validate_Role = (Permission = [], Premium = false) => {
   return async (req, res, next) => {
-    const Get_Role = await Role.findOne({ Role_Id: req.Role });
+    const Get_User = await User.findOne({
+      User_Id: req.Id,
+      User_Email: req.email,
+      Role_Id: req.Role,
+    });
+
+    const Get_Role = await Role.findOne({ Role_Id: Get_User.Role_Id });
     if (!Get_Role) {
       return res.status(200).json({ status: 404, message: "Not found role" });
     }

@@ -1,142 +1,79 @@
-const Service_Playlist = require("../Service/Service_Playlist");
+const {
+  SV__Get_Playlist,
+  SV__Update_Playlist,
+  SV__Delete_Playlist,
+  SV__Create_Playlist,
+} = require("../Service/Service_Playlist");
 
-const Create_Playlist = async (req, res) => {
+const CTL__Get_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.Create_Playlist_Service(req.body);
-    return res.status(200).json({
-      status: 200,
-      message: "Playlist created successfully",
-      data: response,
-    });
-  } catch (err) {
-    return res.status(404).json({
-      status: "404",
-      message: "Can not create Playlist",
-    });
-  }
-};
-
-const Update_Playlist_Info = async (req, res) => {
-  try {
-    const { User_Id } = req.body;
-
-    const Playlist_Id = req.params.id;
-    if (!User_Id && !Playlist_Id) {
-      return res.status(404).json({
-        status: "404",
-        message: "Can not update Playlist",
-      });
+    const id = req.params.id;
+    if (id) {
+      const respone_id = await SV__Get_Playlist(id);
+      return res.status(200).json(respone_id);
+    } else {
+      const respone = await SV__Get_Playlist(null);
+      return res.status(200).json(respone);
     }
-    const response = await Service_Playlist.Update_Playlist_Info_Service(
-      User_Id,
-      Playlist_Id,
-      req.body,
-      req.files
-    );
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: "404",
-      message: "Can not update song",
-    });
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get Playlist failed" });
   }
 };
 
-const Update_Playlist = async (req, res) => {
-  const User_Id = req.User_Id;
-  const Playlist_Id = req.params.id;
-
-  if (!User_Id && !Playlist_Id) {
-    return res.status(404).json({
-      status: "404",
-      message: "Can not update Playlist",
-    });
-  }
-
+const CTL__Create_Playlist = async (req, res) => {
   try {
-    const response = await Service_Playlist.Update_Playlist_Service(
-      User_Id,
-      Playlist_Id,
-      req.body
-    );
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: "404",
-      message: "Can not update song",
-    });
-  }
-};
-
-const Delete_Playlist = async (req, res) => {
-  try {
-    const { Playlist_Id } = req.body;
-    const User_Id = req.User_Id;
-    if (Playlist_Id && User_Id) {
-      const response = await Service_Playlist.Delete_Playlist_Service(
-        User_Id,
-        Playlist_Id
-      );
-      return res.status(200).json(response);
+    const { Playlist_Name } = req.body;
+    if (!Playlist_Name || !req.Id) {
+      return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
-
-    return res.status(404).json({
-      status: "404",
-      message: "Not Found Playlist Id",
-    });
-  } catch (err) {
-    return res.status(404).json({
-      status: "404",
-      message: "Can not delete song",
-    });
+    const respone = await SV__Create_Playlist(req.Id, req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get Playlist failed" });
   }
 };
 
-const Get_Playlist = async (req, res) => {
+const CTL__Update_Playlist = async (req, res) => {
   try {
-    const Playlist_Id = req.params.id;
-    if (!Playlist_Id) {
-      return res.status(404).json({ status: "404", message: "Cant get " });
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
     }
-    const response = await Service_Playlist.Get_Playlist_Service(Playlist_Id);
-    return res.status(200).json(response);
-  } catch (err) {
-    console.log(err);
-    return res.status(404).json({
-      status: "404",
-      message: "Can not delete song",
-    });
+    const respone = await SV__Update_Playlist(id, req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Update Playlist failed" });
   }
 };
 
-const Manage_Get_Playlist = async (req, res) => {
+const CTL__Delete_Playlist = async (req, res) => {
   try {
-    const Playlist_Id = req.params.id;
-    const User_Id = req.User_Id;
-
-    if (!Playlist_Id || !User_Id) {
-      return res
-        .status(404)
-        .json({ status: "404", message: "Cant get Playlist " });
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
     }
-    const response = await Service_Playlist.Manage_Get_Playlist_Service(
-      Playlist_Id,
-      User_Id
-    );
-    return res.status(200).json(response);
-  } catch (err) {
-    return res.status(404).json({
-      status: "404",
-      message: "Cant find Playlist",
-    });
+    const respone = await SV__Delete_Playlist(id);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Delete playlist failed " });
   }
 };
 
 module.exports = {
-  Create_Playlist,
-  Update_Playlist,
-  Update_Playlist_Info,
-  Delete_Playlist,
-  Get_Playlist,
-  Manage_Get_Playlist,
+  CTL__Get_Playlist,
+  CTL__Update_Playlist,
+  CTL__Delete_Playlist,
+  CTL__Create_Playlist,
 };

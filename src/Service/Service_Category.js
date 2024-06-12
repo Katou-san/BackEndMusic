@@ -1,41 +1,63 @@
 const { Category } = require("../Model/Category");
-const { User } = require("../Model/User");
+const { Convert_vUpdate } = require("../Util/Convert_data");
+const { Create_Id } = require("../Util/Create_Id");
 
-const Get_All_Category_Service = (data) => {
+const SV__Get_Category = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Values_Category = await Category.find();
+      if (id != null) {
+        const result = await Category.findOne({ Category_Id: id });
+        if (!result) {
+          return resolve({
+            status: 200,
+            message: "Not found Category with id",
+          });
+        }
+        return resolve({
+          status: 200,
+          message: "Get Category complete!",
+          data: result,
+        });
+      }
+
+      const allCategorys = await Category.find();
       resolve({
         status: 200,
-        message: "Get add Category success",
-        data: Values_Category,
+        message: "get all Categorys complete!",
+        data: allCategorys,
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Category.js (SV_Get_Category)",
+      });
+      throw new Error(err);
     }
   });
 };
 
-const Create_Category_Service = (data) => {
+const SV__Create_Category = (data) => {
   return new Promise(async (resolve, reject) => {
-    const { Category_Id, Category_Name } = data;
     try {
-      const check = await Category.findOne({ Category_Id });
-      if (check !== null) {
-        resolve({
+      const { Category_Name } = data;
+      const findCate = await Category.findOne({ Category_Name });
+      if (findCate) {
+        return resolve({
           status: 404,
           message: "Category is exist",
         });
       }
-      const category = await Category.create({
-        Category_Id,
+
+      const result = await Category.create({
+        Category_Id: Create_Id("Category", Category_Name),
         Category_Name,
       });
 
       resolve({
         status: 200,
         message: "create Category success",
-        data: category,
+        data: result,
       });
     } catch (err) {
       reject(err);
@@ -43,70 +65,63 @@ const Create_Category_Service = (data) => {
   });
 };
 
-const Update_Category_Service = (id, data) => {
+const SV__Update_Category = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let idCategory = "";
-      const check = await Category.findOne({ Id: id });
-      if (check === null) {
-        resolve({
-          status: "ERR",
-          message: "Category is not exist",
-        });
-      }
-      idCategory = check._id;
-      const category = await Category.findOneAndUpdate(
-        { _id: idCategory },
-        data,
+      const Update_Value = Convert_vUpdate(data, ["Category_Id", "_id"]);
+      const result = await Category.findOneAndUpdate(
+        { Category_Id: id },
+        Update_Value,
         {
           new: true,
         }
       );
+
+      if (!result) {
+        return resolve({ status: 200, message: "Not found Category with id" });
+      }
+
       resolve({
-        status: "OK",
-        message: "Update Category success",
-        data: category,
+        status: 200,
+        message: "Updated Category complete!",
+        data: result,
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Category.js (SV_Update_Category)",
+      });
+      throw new Error(err);
     }
   });
 };
 
-const Delete_Category_Service = (id, iduser) => {
+const SV__Delete_Category = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const check = await Category.findOne({ Id: id });
-      if (check === null) {
-        resolve({
-          status: "ERR",
-          message: "Playlist not exist",
-        });
+      const result = await Category.findOneAndDelete({ Category_Id: id });
+      if (!result) {
+        return resolve({ status: 200, message: "Not found Category with id" });
       }
-
-      const checkUser = await User.findOne({ Id: iduser });
-      if (checkUser.isAdmin) {
-        const idCategory = check._id;
-        await Category.findByIdAndDelete({ _id: idCategory });
-        resolve({
-          status: "OK",
-          message: "Delete Category success",
-        });
-      } else {
-        resolve({
-          status: "ERR",
-          message: "Not have permission to delete that Category",
-        });
-      }
+      resolve({
+        status: 200,
+        message: "Delete Category complete!",
+      });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Category.js (SV_Delete_Category)",
+      });
+      throw new Error(err);
     }
   });
 };
 
 module.exports = {
-  Create_Category_Service,
-  Delete_Category_Service,
-  Update_Category_Service,
-  Get_All_Category_Service,
+  SV__Get_Category,
+  SV__Update_Category,
+  SV__Delete_Category,
+  SV__Create_Category,
 };

@@ -1,34 +1,132 @@
 const { Role } = require("../Model/Role");
+const { User } = require("../Model/User");
+const { Create_Id } = require("../Util/Create_Id");
 
-const Create_Role_Service = (data) => {
+//todo done!
+const SV__Get_Role = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Role_Id, Role_Name } = data;
-      const check = await Role.findOne().or([
-        { Role_Id: Role_Id },
-        { Role_Name: Role_Name },
-      ]);
-      if (check !== null) {
-        resolve({
-          status: "404",
-          message: "Role already have!",
+      if (id) {
+        const result = await Role.findOne({ Role_Id: id });
+        if (!result) {
+          return resolve({ status: 404, message: "Not found Role with id" });
+        }
+        return resolve({
+          status: 200,
+          message: "Get Role complete!",
+          data: result,
         });
       }
 
-      const role = await Role.create({
-        Role_Id: "Role_" + Post_Time,
-        Role_Name: Role_Name,
-      });
-
+      const allRoles = await Role.find();
       resolve({
-        status: "200",
-        message: "Role created!",
-        data: role,
+        status: 200,
+        message: "get all Roles complete!",
+        data: allRoles,
       });
     } catch (err) {
-      reject(err);
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Role.js (SV_Get_Role)",
+      });
+      throw new Error(err);
     }
   });
 };
 
-module.exports = { Create_Role_Service };
+//! Need Check
+const SV__Create_Role = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { Role_Name, Description } = data;
+      const findRole = await Role.findOne({
+        Role_Name: String(Role_Name).toLowerCase(),
+      });
+      if (findRole) {
+        return resolve({ status: 404, message: "Role is existing" });
+      }
+      const result = await Role.create({
+        Role_Id: Create_Id("Role", Role_Name),
+        Role_Name: String(Role_Name).toLowerCase(),
+        Description: Description ? Description : "",
+      });
+      resolve({
+        status: 200,
+        message: result ? "Create Role complete!" : "Create Role failed",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Role.js (SV_Create_Role)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+//! Need Check
+const SV__Update_Role = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await Role.findOneAndUpdate({ Role_Id: id }, data, {
+        new: true,
+      });
+      if (!result) {
+        return resolve({ status: 200, message: "Not found Role with id" });
+      }
+      resolve({
+        status: 200,
+        message: "Updated Role complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Role.js (SV_Update_Role)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+//! Need Check
+const SV__Delete_Role = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Check_Role = await User.findOne({ Role: id });
+      if (Check_Role) {
+        return resolve({
+          status: 404,
+          message: "Role is using!",
+          error: "Role is using",
+        });
+      }
+
+      const result = await Role.findOneAndDelete({ Role_Id: id });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Role with id" });
+      }
+      resolve({
+        status: 200,
+        message: "Delete Role complete!",
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Role.js (SV_Delete_Role)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+module.exports = {
+  SV__Get_Role,
+  SV__Update_Role,
+  SV__Delete_Role,
+  SV__Create_Role,
+};
