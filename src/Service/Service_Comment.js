@@ -4,20 +4,18 @@ const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
-const SV__Get_Comment = (id) => {
+const SV__Get_Comment = (Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id) {
-        const result = await Comment.find({ Song_Id: id });
-        if (!result) {
-          return resolve({ status: 404, message: "Not found Comment with id" });
-        }
-        return resolve({
-          status: 200,
-          message: "Get comment for song complete!",
-          data: result,
-        });
+      const result = await Comment.find({ Song_Id });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Comment with id" });
       }
+      return resolve({
+        status: 200,
+        message: "Get comment for song complete!",
+        data: result,
+      });
     } catch (err) {
       reject({
         status: 404,
@@ -44,7 +42,7 @@ const SV__Create_Comment = (data, User_Id) => {
         });
       }
       const result = await Comment.create({
-        Comment_Id: Create_Id("Comment", Math.random() * 1000),
+        Comment_Id: Create_Id("Comment", Math.floor(Math.random() * 1000)),
         Song_Id,
         User_Id,
         Content,
@@ -66,7 +64,7 @@ const SV__Create_Comment = (data, User_Id) => {
 };
 
 //! Need Check
-const SV__Update_Comment = (id, data, User_Id) => {
+const SV__Update_Comment = (Comment_Id, data, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const UpdateData = Convert_vUpdate(data, [
@@ -77,7 +75,7 @@ const SV__Update_Comment = (id, data, User_Id) => {
         "Post_Time",
       ]);
       const result = await Comment.findOneAndUpdate(
-        { Comment_Id: id, User_Id },
+        { Comment_Id, User_Id },
         UpdateData,
         {
           new: true,
@@ -103,11 +101,11 @@ const SV__Update_Comment = (id, data, User_Id) => {
 };
 
 //! Need Check
-const SV__Delete_Comment = (id, User_Id) => {
+const SV__Delete_Comment = (Comment_Id, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await Comment.findOneAndDelete({
-        Comment_Id: id,
+        Comment_Id,
         User_Id,
       });
       if (!result) {

@@ -7,7 +7,7 @@ const {
 
 const CTL__Get_Like = async (req, res) => {
   try {
-    const Topic_Id = req.params.id;
+    const Topic_Id = req.params.topic;
     const Type = req.params.type;
     const respone_id = await SV__Get_Like(Topic_Id, Type);
     return res.status(200).json(respone_id);
@@ -33,15 +33,19 @@ const CTL__Create_Like = async (req, res) => {
 
 const CTL__Update_Like = async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!id) {
-      return res.status(200).json({ status: 404, message: "id is empty" });
+    const Topic_Id = req.params.topic;
+    const Type = req.params.type;
+    const { State } = req.body;
+    if (!Topic_Id || !Type || !State) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Cant update state" });
     }
-    const respone = await SV__Update_Like(id, req.body);
+    const respone = await SV__Update_Like(Topic_Id, Type, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
-    return res.status(404).json({ status: 404, message: "Update Like failed" });
+    return res.status(404).json({ status: 404, message: "Update like failed" });
   }
 };
 

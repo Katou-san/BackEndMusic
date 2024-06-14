@@ -22,7 +22,13 @@ const Validate_Role = (Permission = [], Premium = false) => {
       Role_Id: req.Role,
     });
 
-    const Get_Role = await Role.findOne({ Role_Id: Get_User.Role_Id });
+    if (!Get_User) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Something is changed!" });
+    }
+
+    const Get_Role = await Role.findOne({ Role_Id: req.Role });
     if (!Get_Role) {
       return res.status(200).json({ status: 404, message: "Not found role" });
     }

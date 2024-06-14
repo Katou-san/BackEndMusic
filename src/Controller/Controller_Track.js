@@ -58,6 +58,5 @@ const CTL__Delete_Track = async (req, res) => {
 module.exports = {
   CTL__Get_Track,
   CTL__Create_Track,
-  CTL__Update_Track,
   CTL__Delete_Track,
 };

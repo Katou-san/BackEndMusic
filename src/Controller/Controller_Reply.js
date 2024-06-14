@@ -28,7 +28,7 @@ const CTL__Create_Reply = async (req, res) => {
     if (!Comment_Id || !req.Id || !Content) {
       return res
         .status(404)
-        .json({ status: 404, message: "Not found id user" });
+        .json({ status: 404, message: "Infomation is missing!" });
     }
     const respone = await SV__Create_Reply(req.body, req.Id);
     return res.status(200).json(respone);
@@ -44,9 +44,7 @@ const CTL__Update_Reply = async (req, res) => {
   try {
     const id = req.params.id;
     if (!req.Id) {
-      return res
-        .status(404)
-        .json({ status: 404, message: "Not found id user" });
+      return res.status(404).json({ status: 404, message: "Cant edit reply" });
     }
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });

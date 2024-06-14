@@ -7,14 +7,14 @@ const {
 
 const CTL__Get_Comment = async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!id) {
+    const Song_Id = req.params.id;
+    if (!Song_Id) {
       return res.status(200).json({
         status: 404,
         message: "Infomation is missing a comment",
       });
     }
-    const respone_id = await SV__Get_Comment(id);
+    const respone_id = await SV__Get_Comment(Song_Id);
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);
@@ -25,7 +25,7 @@ const CTL__Get_Comment = async (req, res) => {
 const CTL__Create_Comment = async (req, res) => {
   try {
     const { Song_Id, Content } = req.body;
-    if (!Song_Id || !User_Id || !Content) {
+    if (!Song_Id || !req.Id || !Content) {
       return res
         .status(404)
         .json({ status: 404, message: "Not found id user" });
@@ -42,16 +42,16 @@ const CTL__Create_Comment = async (req, res) => {
 
 const CTL__Update_Comment = async (req, res) => {
   try {
-    const id = req.params.id;
+    const Comment_Id = req.params.id;
     if (!req.Id) {
       return res
         .status(404)
         .json({ status: 404, message: "Not found id user" });
     }
-    if (!id) {
+    if (!Comment_Id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
-    const respone = await SV__Update_Comment(id, req.body, req.Id);
+    const respone = await SV__Update_Comment(Comment_Id, req.body, req.Id);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

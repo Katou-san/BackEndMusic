@@ -6,6 +6,7 @@ const PremiumSchema = new mongoose.Schema(
     Premium_Title: { type: String, required: true },
     Price: { type: Number, required: true },
     Content: { type: String, required: true },
+    Storage: { type: String, required: true },
     Duration: { type: String, required: true },
     Status: { type: Boolean, required: true, default: true },
     Create_Date: { type: Date, default: Date.now },

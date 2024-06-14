@@ -23,14 +23,14 @@ const CTL__Get_Song = async (req, res) => {
 
 const CTL__Create_Song = async (req, res) => {
   try {
-    const { Song_Name, Song_Src, Category_Id } = req.body;
+    const { Song_Name, Song_Audio, Category_Id, Artist } = req.body;
     if (!req.Id) {
       return res
         .status(404)
         .json({ status: 404, message: "Not found id user" });
     }
 
-    if (!Song_Name || !Song_Src || !Category_Id) {
+    if (!Song_Name || !Song_Audio || !Category_Id || !Artist) {
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
     const respone = await SV__Create_Song(req.body, req.Id);

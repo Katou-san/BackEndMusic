@@ -49,6 +49,7 @@ Router.post("/payment", async (req, res) => {
     order.embed_data +
     "|" +
     order.item;
+
   order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   try {

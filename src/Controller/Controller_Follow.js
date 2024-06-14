@@ -7,6 +7,17 @@ const {
 
 const CTL__Get_Follower = async (req, res) => {
   try {
+    const Id = req.params.id;
+    if (!Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Infomation is missing!",
+        error: {
+          Follower: "Infomation is missing!",
+        },
+        data: {},
+      });
+    }
     const respone_id = await SV__Get_Follower(req.Id);
     return res.status(200).json(respone_id);
   } catch (e) {
@@ -17,7 +28,18 @@ const CTL__Get_Follower = async (req, res) => {
 
 const CTL__Get_Following = async (req, res) => {
   try {
-    const respone_id = await SV__Get_Following(req.Id);
+    const Id = req.params.id;
+    if (!Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Infomation is missing!",
+        error: {
+          Following: "Infomation is missing!",
+        },
+        data: {},
+      });
+    }
+    const respone_id = await SV__Get_Following(Id);
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);

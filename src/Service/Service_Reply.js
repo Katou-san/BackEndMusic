@@ -1,5 +1,5 @@
 const { Reply } = require("../Model/Reply");
-const { User } = require("../Model/User");
+const { Like } = require("../Model/Like");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
@@ -7,23 +7,15 @@ const { Create_Id } = require("../Util/Create_Id");
 const SV__Get_Reply = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id) {
-        const result = await Reply.find({ Comment_Id: id });
-        if (!result) {
-          return resolve({ status: 404, message: "Not found Reply with id" });
-        }
-        return resolve({
-          status: 200,
-          message: "Get Reply complete!",
-          data: result,
-        });
+      const result = await Reply.find({ Comment_Id: id });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Reply with id" });
       }
 
-      const allReplys = await Reply.find();
-      resolve({
+      return resolve({
         status: 200,
-        message: "get all Replys complete!",
-        data: allReplys,
+        message: "Get Reply complete!",
+        data: result,
       });
     } catch (err) {
       reject({
@@ -43,7 +35,7 @@ const SV__Create_Reply = (data, User_Id) => {
       const { Comment_Id, Content } = data;
 
       const result = await Reply.create({
-        Reply_Id: Create_Id("Reply", Song_Id),
+        Reply_Id: Create_Id("Reply", Math.floor(Math.random() * 1000)),
         Comment_Id,
         User_Id,
         Content,
@@ -108,6 +100,9 @@ const SV__Delete_Reply = (id, User_Id) => {
       const result = await Reply.findOneAndDelete({ Reply_Id: id, User_Id });
       if (!result) {
         return resolve({ status: 404, message: "Not found Reply with id" });
+      }
+      const Delete_Like = await Like.findOneAndDelete({ Topic_Id: id });
+      if (!Delete_Like) {
       }
       resolve({
         status: 200,

@@ -4,7 +4,7 @@ const { Get_Current_Time } = require("../Util/Get_Time");
 
 const handle_Link = (nameFile = "") => {
   switch (nameFile.toLowerCase()) {
-    case "song_src":
+    case "song_audio":
       return { status: true, url: "./src/Assets/Song_Audio" };
     case "song_image":
       return { status: true, url: "./src/Assets/Song_Image" };

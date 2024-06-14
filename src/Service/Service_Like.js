@@ -50,7 +50,7 @@ const SV__Create_Like = (data) => {
 };
 
 //! Need Check
-const SV__Update_Like = (id, data) => {
+const SV__Update_Like = (Topic_Id, Type, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const UpdateData = Convert_vUpdate(data, [
@@ -59,9 +59,13 @@ const SV__Update_Like = (id, data) => {
         "Type",
         "User_Id",
       ]);
-      const result = await Like.findOneAndUpdate({ Like_Id: id }, UpdateData, {
-        new: true,
-      });
+      const result = await Like.findOneAndUpdate(
+        { Topic_Id, Type },
+        UpdateData,
+        {
+          new: true,
+        }
+      );
       if (!result) {
         return resolve({ status: 200, message: "Not found Like with id" });
       }

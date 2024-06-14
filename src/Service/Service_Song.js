@@ -38,13 +38,14 @@ const SV__Create_Song = (data, User_Id) => {
     const {
       Song_Name,
       Post_Time,
+      Artist,
       Category_Id,
-      Song_Src,
+      Song_Audio,
       Song_Image = "default.png",
       Lyrics,
       Tag,
       Color,
-      Is_Publish = true,
+      is_Publish = true,
     } = data;
 
     const IdSong = Create_Id("Song", Song_Name);
@@ -56,18 +57,18 @@ const SV__Create_Song = (data, User_Id) => {
           message: "Song already have!",
         });
       }
-
       const song = await Song.create({
         Song_Id: IdSong,
         Song_Name: String(Song_Name).toLowerCase(),
-        Song_Src: Song_Src,
+        Song_Audio,
         Song_Image: Song_Image != "null" ? Song_Image : "default.png",
+        Artist,
         User_Id,
         Category_Id,
         Lyrics,
         Tag,
         Color,
-        Is_Publish: Is_Publish,
+        is_Publish,
       });
 
       resolve({
