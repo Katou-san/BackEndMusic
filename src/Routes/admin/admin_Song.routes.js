@@ -10,8 +10,6 @@ const {
   CTL__Delete_Song,
 } = require("../../Controller/Controller_Song");
 
-const uploadAudio = multer_Single("./src/Assets/Song_Audio");
-const uploadImg = multer_Single("./src/Assets/Song_Image");
 const uploadArray = multer_Array();
 
 //TODO localhost:8080/api/admin/v1/song

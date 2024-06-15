@@ -54,6 +54,18 @@ const SV__Create_Storage = (User_Id) => {
         });
       }
 
+      const checkStorage = await Storage.findOne({ User_Id });
+      if (checkStorage) {
+        return resolve({
+          status: 404,
+          message: "Storage is exists!",
+          error: {
+            Storage: "Storage is exists!",
+          },
+          data: {},
+        });
+      }
+
       const result = await Storage.create({
         User_Id,
       });

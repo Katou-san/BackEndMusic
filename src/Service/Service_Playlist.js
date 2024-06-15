@@ -2,34 +2,26 @@ const { Playlist } = require("../Model/Playlist");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
+const { match, join, project } = require("../Util/QueryDB");
 
-const SV__Get_Playlist = (id) => {
+const getValue = {
+  _id: 0,
+  Playlist_Id: 1,
+  Playlist_Name: 1,
+  Artist: 1,
+  Image: 1,
+  User_Id: 1,
+  is_Publish: 1,
+};
+
+const SV__Get_Playlist = (Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id != null) {
-        // const result = await Playlist.findOne({ Playlist_Id: id });
-
+      if (Playlist_Id != null) {
         const result = await Playlist.aggregate([
-          {
-            $lookup: {
-              from: "tracks",
-              localField: "Playlist_Id",
-              foreignField: "Playlist_Id",
-              as: "PlaylistSong",
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              Playlist_Id: 1,
-              Playlist_Name: 1,
-              Artist: 1,
-              Image: 1,
-              User_Id: 1,
-              is_Publish: 1,
-              Tracks: "$PlaylistSong.Song_Id",
-            },
-          },
+          match("Playlist_Id", Playlist_Id),
+          join("tracks", "Playlist_Id", "Playlist_Id", "PlaylistSong"),
+          project(getValue, { Tracks: "$PlaylistSong.Song_Id" }),
         ]);
 
         if (!result) {
@@ -45,7 +37,28 @@ const SV__Get_Playlist = (id) => {
         });
       }
 
-      const allPlaylists = await Playlist.find();
+      const allPlaylists = await Playlist.aggregate([
+        {
+          $lookup: {
+            from: "tracks",
+            localField: "Playlist_Id",
+            foreignField: "Playlist_Id",
+            as: "PlaylistSong",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            Playlist_Id: 1,
+            Playlist_Name: 1,
+            Artist: 1,
+            Image: 1,
+            User_Id: 1,
+            is_Publish: 1,
+            Tracks: "$PlaylistSong.Song_Id",
+          },
+        },
+      ]);
       resolve({
         status: 200,
         message: "get all Playlist complete!",

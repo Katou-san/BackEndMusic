@@ -5,8 +5,8 @@ const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Get_Current_Time } = require("../Util/Get_Time");
+const { SV__Create_Storage } = require("../Service/Service_Storage");
 const { SV__Create_Playlist_DF } = require("./Service_Playlist");
-
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -79,7 +79,7 @@ const SV__Login_User = (data) => {
 
       resolve({
         status: 200,
-        message: result ? "Login complete!" : "Login failed!",
+        message: "Login complete!",
         data: {
           is_Login: true,
           Access_Token: Access_Token,
@@ -170,6 +170,10 @@ const SV__Create_User = (data) => {
           status: 404,
           message: "Default user playlist create got error",
         });
+      }
+
+      if (result) {
+        SV__Create_Storage(result.User_Id);
       }
 
       const Access_Token = JWT_Create_Token({
