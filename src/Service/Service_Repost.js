@@ -1,5 +1,6 @@
 const { Repost } = require("../Model/Repost");
 const { User } = require("../Model/User");
+const { Song } = require("../Model/Song");
 const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
@@ -8,7 +9,7 @@ const SV__Get_Repost = (User_Id) => {
     try {
       const result = await Repost.find({ User_Id });
       if (!result) {
-        return resolve({ status: 404, message: "No repost for user" });
+        return resolve({ status: 404, message: "There are no reposts" });
       }
       return resolve({
         status: 200,
@@ -31,15 +32,27 @@ const SV__Create_Repost = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { Song_Id } = data;
+      const checkSong = await Song.findOne({ Song_Id });
+      if (!checkSong) {
+        return resolve({
+          status: 404,
+          message: "Not found song!",
+          error: {
+            Repost: "Not found song!",
+          },
+          data: {},
+        });
+      }
+
       const findRepost = await Repost.findOne({
         Song_Id,
         User_Id,
       });
       if (findRepost) {
-        return resolve({ status: 404, message: "You have posted! " });
+        return resolve({ status: 404, message: "You reposted! " });
       }
       const result = await Repost.create({
-        Repost_Id: Create_Id("Repost", Math.random() * 1000),
+        Repost_Id: Create_Id("Repost"),
         User_Id,
         Song_Id,
       });
@@ -89,18 +102,9 @@ const SV__Update_Repost = (id, data) => {
 const SV__Delete_Repost = (User_Id, Repost_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Check_Repost = await User.findOne({ User_Id });
-      if (Check_Repost) {
-        return resolve({
-          status: 404,
-          message: "Repost is using!",
-          error: "Repost is using",
-        });
-      }
-
       const result = await Repost.findOneAndDelete({ Repost_Id, User_Id });
       if (!result) {
-        return resolve({ status: 404, message: "Not found Repost for user" });
+        return resolve({ status: 404, message: "Not found repost for user" });
       }
       resolve({
         status: 200,

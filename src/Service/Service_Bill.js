@@ -1,5 +1,6 @@
 const { Bill } = require("../Model/Bill");
 const { Premium } = require("../Model/Premium");
+const { Create_Id } = require("../Util/Create_Id");
 //todo done!
 const SV__Get_Bill = (id) => {
   return new Promise(async (resolve, reject) => {
@@ -61,6 +62,7 @@ const SV__Create_Bill = (User_Id, Premium_Id) => {
       }
 
       const result = await Bill.create({
+        Bill_Id: Create_Id("Bill"),
         User_Id,
         Premium_Id,
         Create_Date: today.toUTCString(),

@@ -23,8 +23,8 @@ const CTL__Get_Premium = async (req, res) => {
 
 const CTL__Create_Premium = async (req, res) => {
   try {
-    const { Premium_Title, Price, Content, Duration } = req.body;
-    if (!Premium_Title || !Price || !Content || !Duration) {
+    const { Premium_Title, Price, Content, Duration, Storage } = req.body;
+    if (!Premium_Title || !Price || !Content || !Duration || !Storage) {
       return res
         .status(200)
         .json({ status: 404, message: "Infonmation is missing!" });

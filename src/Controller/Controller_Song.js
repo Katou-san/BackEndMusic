@@ -31,6 +31,7 @@ const CTL__Create_Song = async (req, res) => {
     }
 
     if (!Song_Name || !Song_Audio || !Category_Id || !Artist) {
+      console.log(req.body);
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
     const respone = await SV__Create_Song(req.body, req.Id);

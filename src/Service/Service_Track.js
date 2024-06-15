@@ -1,6 +1,6 @@
 const { Track } = require("../Model/Track");
+const { Song } = require("../Model/Song");
 const { Playlist } = require("../Model/Playlist");
-const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
 const SV__Get_Track = (Playlist_Id) => {
@@ -29,12 +29,21 @@ const SV__Create_Track = (User_Id, data) => {
     try {
       const { Playlist_Id, Song_Id } = data;
       const check_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-
       if (!check_Playlist) {
         return resolve({
           status: 404,
           message: "You cant add song to playlist!",
           error: { track: "You cant add song to playlist!" },
+          data: {},
+        });
+      }
+
+      const checkSong = await Song.findOne({ Song_Id });
+      if (!checkSong) {
+        return resolve({
+          status: 404,
+          message: "Not found this song!",
+          error: { track: "Not found this song!" },
           data: {},
         });
       }
@@ -73,22 +82,29 @@ const SV__Create_Track = (User_Id, data) => {
 };
 
 //! Need Check
-const SV__Delete_Track = (id, data) => {
+const SV__Delete_Track = (User_Id, Playlist_Id, Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Playlist_Id, Song_Id } = data;
-      const Check_Track = await Playlist.findOne({ Playlist_Id });
-      if (Check_Track) {
+      const checkPlaylist = await Playlist.findOne({ Playlist_Id, User_Id });
+      if (!checkPlaylist) {
         return resolve({
           status: 404,
-          message: "Track is using!",
-          error: "Track is using",
+          message: "Playlist isn't your!",
+          error: {
+            Track: "Playlist isn't your!",
+          },
+          data: {},
         });
       }
 
-      const result = await Track.findOneAndDelete({ Track_Id: id });
+      const result = await Track.findOneAndDelete({ Playlist_Id, Song_Id });
       if (!result) {
-        return resolve({ status: 404, message: "Not found Track with id" });
+        return resolve({
+          status: 404,
+          message: "Track not exsit!",
+          error: { Track: "Track not exsit!" },
+          data: {},
+        });
       }
       resolve({
         status: 200,

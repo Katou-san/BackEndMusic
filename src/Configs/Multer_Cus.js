@@ -27,6 +27,7 @@ function multer_Single(src = "./src/Assets/Test") {
         ? req.body.Post_Time
         : Get_Current_Time();
       const FileName = Currentdate + path.extname(file.originalname);
+      console.log(FileName);
       req.body[file.fieldname] = FileName;
       cb(null, FileName);
     },

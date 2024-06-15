@@ -10,19 +10,20 @@ const {
 } = require("../../Controller/Controller_Like");
 
 //TODO localhost:8080/api/admin/v1/like
-Router.get("/like/:topic/:type", CTL__Get_Like);
+Router.get("/likes/:topic/:type", CTL__Get_Like);
+Router.get("/like/:topic/:type", JWT_Verify_Token, CTL__Get_Like);
 Router.post("/like", JWT_Verify_Token, CTL__Create_Like);
 Router.put(
   "/like/:topic/:type",
   JWT_Verify_Token,
-  Validate_Role(["admin"]),
+  Validate_Role(["admin", "employess"]),
   CTL__Update_Like
 );
 
 Router.delete(
   "/like/:topic/:type",
   JWT_Verify_Token,
-  Validate_Role(["admin"]),
+  Validate_Role(["admin", "employess"]),
   CTL__Delete_Like
 );
 

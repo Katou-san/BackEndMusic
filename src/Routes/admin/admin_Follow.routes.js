@@ -3,22 +3,15 @@ const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const express = require("express");
 const Router = express.Router();
 const {
-  CTL__Get_Follower,
-  CTL__Get_Following,
   CTL__Create_Follow,
   CTL__Delete_Follow,
+  CTL__Get_Follow,
 } = require("../../Controller/Controller_Follow");
 
-//TODO localhost:8080/api/admin/v1/Follow
-Router.get("/Follower/:id", CTL__Get_Follower);
-Router.get("/Following/:id", CTL__Get_Following);
-Router.post("/Follow", CTL__Create_Follow);
+//TODO localhost:8080/api/admin/v1/follow
+Router.get("/follow/:id", CTL__Get_Follow);
+Router.post("/follow", JWT_Verify_Token, CTL__Create_Follow);
 
-Router.delete(
-  "/Follow/:id",
-  JWT_Verify_Token,
-  Validate_Role(["admin"]),
-  CTL__Delete_Follow
-);
+Router.delete("/follow/:id", JWT_Verify_Token, CTL__Delete_Follow);
 
 module.exports = Router;

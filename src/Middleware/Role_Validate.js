@@ -25,7 +25,7 @@ const Validate_Role = (Permission = [], Premium = false) => {
     if (!Get_User) {
       return res
         .status(404)
-        .json({ status: 404, message: "Something is changed!" });
+        .json({ status: 404, message: "Token is changed!" });
     }
 
     const Get_Role = await Role.findOne({ Role_Id: req.Role });

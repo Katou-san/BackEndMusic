@@ -9,6 +9,10 @@ const CTL__Get_Like = async (req, res) => {
   try {
     const Topic_Id = req.params.topic;
     const Type = req.params.type;
+    if (req.Id) {
+      const respone_id = await SV__Get_Like(Topic_Id, Type, req.Id);
+      return res.status(200).json(respone_id);
+    }
     const respone_id = await SV__Get_Like(Topic_Id, Type);
     return res.status(200).json(respone_id);
   } catch (e) {
@@ -36,12 +40,12 @@ const CTL__Update_Like = async (req, res) => {
     const Topic_Id = req.params.topic;
     const Type = req.params.type;
     const { State } = req.body;
-    if (!Topic_Id || !Type || !State) {
+    if (!Topic_Id || Type == null || State == null) {
       return res
         .status(200)
         .json({ status: 404, message: "Cant update state" });
     }
-    const respone = await SV__Update_Like(Topic_Id, Type, req.body);
+    const respone = await SV__Update_Like(Topic_Id, req.Id, Type, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

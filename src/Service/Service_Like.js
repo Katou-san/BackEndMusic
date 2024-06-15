@@ -3,9 +3,17 @@ const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
-const SV__Get_Like = (Topic_Id, Type) => {
+const SV__Get_Like = (Topic_Id, Type, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (User_Id) {
+        const result = await Like.find({ Topic_Id, Type, User_Id });
+        return resolve({
+          status: 200,
+          message: "Get Like complete!",
+          data: result,
+        });
+      }
       const result = await Like.find({ Topic_Id, Type });
       return resolve({
         status: 200,
@@ -23,10 +31,10 @@ const SV__Get_Like = (Topic_Id, Type) => {
 };
 
 //! Need Check
-const SV__Create_Like = (data) => {
+const SV__Create_Like = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Topic_Id, User_Id, Type, State } = data;
+      const { Topic_Id, Type, State = 1 } = data;
       const result = await Like.create({
         Topic_Id,
         User_Id,
@@ -50,7 +58,7 @@ const SV__Create_Like = (data) => {
 };
 
 //! Need Check
-const SV__Update_Like = (Topic_Id, Type, data) => {
+const SV__Update_Like = (Topic_Id, User_Id, Type, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const UpdateData = Convert_vUpdate(data, [
@@ -60,7 +68,7 @@ const SV__Update_Like = (Topic_Id, Type, data) => {
         "User_Id",
       ]);
       const result = await Like.findOneAndUpdate(
-        { Topic_Id, Type },
+        { Topic_Id, Type, User_Id },
         UpdateData,
         {
           new: true,

@@ -24,13 +24,13 @@ const CTL__Get_Repost = async (req, res) => {
 
 const CTL__Create_Repost = async (req, res) => {
   try {
-    const { Repost_Name } = req.body;
-    if (!Repost_Name) {
+    const { Song_Id } = req.body;
+    if (!Song_Id) {
       return res
         .status(200)
         .json({ status: 404, message: "id or name for Repost is empty" });
     }
-    const respone = await SV__Create_Repost(req.body);
+    const respone = await SV__Create_Repost(req.Id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

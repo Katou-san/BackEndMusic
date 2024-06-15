@@ -40,13 +40,11 @@ const SV__Get_Premium = (id) => {
 const SV__Create_Premium = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Premium_Title, Price, Content, Duration } = data;
-      if (findPremium) {
-        return resolve({ status: 404, message: "Premium is existing" });
-      }
+      const { Premium_Title, Price, Content, Duration, Storage } = data;
       const result = await Premium.create({
         Premium_Id: Create_Id("Premium", Premium_Title),
         Premium_Title,
+        Storage,
         Price,
         Content,
         Duration,

@@ -8,7 +8,7 @@ const playlistSchema = new mongoose.Schema(
     Thumbnail: { type: String, default: "default.png" },
     User_Id: { type: String, required: true },
     is_Publish: { type: Boolean, default: false },
-    type: { type: Number, required: true, default: 0 },
+    Type: { type: Number, required: true, default: 0 },
     Create_Date: { type: Date, default: Date.now },
   },
   {

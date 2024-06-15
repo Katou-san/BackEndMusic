@@ -3,20 +3,31 @@ const { User } = require("../Model/User");
 const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
-const SV__Get_Following = (User_Id) => {
+const SV__Get_Follow = (User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id) {
-        const result = await Follow.find({ Follower: User_Id });
-        if (!result) {
-          return resolve({ status: 404, message: "Not found Follow with id" });
-        }
+      const checkUser = await User.findOne({ User_Id });
+      if (!checkUser) {
         return resolve({
-          status: 200,
-          message: "Get Follow complete!",
-          data: result,
+          status: 404,
+          message: "Not found user!",
+          error: {
+            Follow: "Not found user!",
+          },
+          data: {},
         });
       }
+
+      const Following = await Follow.find({ Follower: User_Id });
+      const Follower = await Follow.find({ Following: User_Id });
+      return resolve({
+        status: 200,
+        message: "Get Follow complete!",
+        data: {
+          Following,
+          Follower,
+        },
+      });
     } catch (err) {
       reject({
         status: 404,
@@ -28,38 +39,24 @@ const SV__Get_Following = (User_Id) => {
   });
 };
 
-const SV__Get_Follower = (User_Id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (id) {
-        const result = await Follow.find({ Following: User_Id });
-        if (!result) {
-          return resolve({ status: 404, message: "Not found Follow with id" });
-        }
-        return resolve({
-          status: 200,
-          message: "Get Follow complete!",
-          data: result,
-        });
-      }
-    } catch (err) {
-      reject({
-        status: 404,
-        message:
-          "something went wrong in Admin_Service_Follow.js (SV_Get_Follow)",
-      });
-      throw new Error(err);
-    }
-  });
-};
 //! Need Check
 const SV__Create_Follow = (Following, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (Following == User_Id) {
+        return resolve({
+          status: 404,
+          message: "Cant follow you!",
+          error: {
+            Follow: "Cant follow you!",
+          },
+          data: {},
+        });
+      }
       const findFollowing = await User.findOne({
         User_Id: Following,
       });
-      if (findFollowing) {
+      if (!findFollowing) {
         return resolve({ status: 404, message: "User not is existing" });
       }
 
@@ -93,7 +90,7 @@ const SV__Create_Follow = (Following, User_Id) => {
 };
 
 //! Need Check
-const SV__Delete_Follow = (Following, User_Id) => {
+const SV__Delete_Follow = (User_Id, Following) => {
   return new Promise(async (resolve, reject) => {
     try {
       const Check_Follow = await User.findOne({ User_Id: Following });
@@ -108,14 +105,15 @@ const SV__Delete_Follow = (Following, User_Id) => {
 
       const result = await Follow.findOneAndDelete({
         Follower: User_Id,
-        Following: Following,
+        Following,
       });
+
       if (!result) {
         return resolve({ status: 404, message: "Cant unfollow" });
       }
       resolve({
         status: 200,
-        message: "Delete follow complete!",
+        message: "Unfollow complete!",
       });
     } catch (err) {
       reject({
@@ -129,8 +127,7 @@ const SV__Delete_Follow = (Following, User_Id) => {
 };
 
 module.exports = {
-  SV__Get_Follower,
-  SV__Get_Following,
+  SV__Get_Follow,
   SV__Delete_Follow,
   SV__Create_Follow,
 };

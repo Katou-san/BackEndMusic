@@ -1,11 +1,10 @@
 const {
+  SV__Get_Follow,
   SV__Delete_Follow,
   SV__Create_Follow,
-  SV__Get_Following,
-  SV__Get_Follower,
 } = require("../Service/Service_Follow");
 
-const CTL__Get_Follower = async (req, res) => {
+const CTL__Get_Follow = async (req, res) => {
   try {
     const Id = req.params.id;
     if (!Id) {
@@ -18,28 +17,7 @@ const CTL__Get_Follower = async (req, res) => {
         data: {},
       });
     }
-    const respone_id = await SV__Get_Follower(req.Id);
-    return res.status(200).json(respone_id);
-  } catch (e) {
-    new Error(e.message);
-    return res.status(404).json({ status: 404, message: "Get Follow failed" });
-  }
-};
-
-const CTL__Get_Following = async (req, res) => {
-  try {
-    const Id = req.params.id;
-    if (!Id) {
-      return res.status(200).json({
-        status: 404,
-        message: "Infomation is missing!",
-        error: {
-          Following: "Infomation is missing!",
-        },
-        data: {},
-      });
-    }
-    const respone_id = await SV__Get_Following(Id);
+    const respone_id = await SV__Get_Follow(Id);
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);
@@ -50,7 +28,8 @@ const CTL__Get_Following = async (req, res) => {
 const CTL__Create_Follow = async (req, res) => {
   try {
     const { Following } = req.body;
-    if (!Following) {
+
+    if (!Following || !req.Id) {
       return res
         .status(200)
         .json({ status: 404, message: "Name for Follow is empty" });
@@ -68,7 +47,7 @@ const CTL__Create_Follow = async (req, res) => {
 const CTL__Delete_Follow = async (req, res) => {
   try {
     const Following = req.params.id;
-    if (!id) {
+    if (!Following || !req.Id) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
     const respone = await SV__Delete_Follow(req.Id, Following);
@@ -80,8 +59,7 @@ const CTL__Delete_Follow = async (req, res) => {
 };
 
 module.exports = {
-  CTL__Get_Follower,
-  CTL__Get_Following,
+  CTL__Get_Follow,
   CTL__Create_Follow,
   CTL__Delete_Follow,
 };

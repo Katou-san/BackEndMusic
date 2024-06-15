@@ -50,7 +50,7 @@ const SV__Create_Category = (data) => {
       }
 
       const result = await Category.create({
-        Category_Id: Create_Id("Category", Category_Name),
+        Category_Id: Create_Id("Category"),
         Category_Name,
       });
 

@@ -42,7 +42,7 @@ const SV__Create_Comment = (data, User_Id) => {
         });
       }
       const result = await Comment.create({
-        Comment_Id: Create_Id("Comment", Math.floor(Math.random() * 1000)),
+        Comment_Id: Create_Id("Comment"),
         Song_Id,
         User_Id,
         Content,

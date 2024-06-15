@@ -7,10 +7,10 @@ const {
 const CTL__Get_Track = async (req, res) => {
   try {
     const id = req.params.id;
-    if (id) {
+    if (!id) {
       return res.status(200).json({
         status: 404,
-        message: "Id playlist is emty",
+        message: "Id playlist is missing!",
       });
     }
     const respone_id = await SV__Get_Track(id);
@@ -41,11 +41,14 @@ const CTL__Create_Track = async (req, res) => {
 
 const CTL__Delete_Track = async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!id) {
-      return res.status(200).json({ status: 404, message: "Id is empty" });
+    const Playlist_Id = req.params.playlist;
+    const Song_Id = req.params.song;
+    if (!Playlist_Id || !Song_Id || !req.Id) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Infomation is missing!" });
     }
-    const respone = await SV__Delete_Track(id);
+    const respone = await SV__Delete_Track(req.Id, Playlist_Id, Song_Id);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
