@@ -38,26 +38,8 @@ const SV__Get_Playlist = (Playlist_Id) => {
       }
 
       const allPlaylists = await Playlist.aggregate([
-        {
-          $lookup: {
-            from: "tracks",
-            localField: "Playlist_Id",
-            foreignField: "Playlist_Id",
-            as: "PlaylistSong",
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            Playlist_Id: 1,
-            Playlist_Name: 1,
-            Artist: 1,
-            Image: 1,
-            User_Id: 1,
-            is_Publish: 1,
-            Tracks: "$PlaylistSong.Song_Id",
-          },
-        },
+        join("tracks", "Playlist_Id", "Playlist_Id", "PlaylistSong"),
+        project(getValue, { Tracks: "$PlaylistSong.Song_Id" }),
       ]);
       resolve({
         status: 200,
