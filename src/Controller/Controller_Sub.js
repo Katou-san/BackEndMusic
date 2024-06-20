@@ -1,18 +1,18 @@
 const {
-  SV__Get_Premium,
-  SV__Update_Premium,
-  SV__Delete_Premium,
-  SV__Create_Premium,
-} = require("../Service/Service_Premium");
+  SV__Get_Subscription,
+  SV__Update_Subscription,
+  SV__Delete_Subscription,
+  SV__Create_Subscription,
+} = require("../Service/Service_Sub");
 
-const CTL__Get_Premium = async (req, res) => {
+const CTL__Get_Subscription = async (req, res) => {
   try {
     const id = req.params.id;
     if (id) {
-      const respone_id = await SV__Get_Premium(id);
+      const respone_id = await SV__Get_Subscription(id);
       return res.status(200).json(respone_id);
     } else {
-      const respone = await SV__Get_Premium();
+      const respone = await SV__Get_Subscription();
       return res.status(200).json(respone);
     }
   } catch (e) {
@@ -21,31 +21,31 @@ const CTL__Get_Premium = async (req, res) => {
   }
 };
 
-const CTL__Create_Premium = async (req, res) => {
+const CTL__Create_Subscription = async (req, res) => {
   try {
-    const { Premium_Title, Price, Content, Duration, Storage } = req.body;
-    if (!Premium_Title || !Price || !Content || !Duration || !Storage) {
+    const { Sub_Title, Price, Content, Duration, Storage } = req.body;
+    if (!Sub_Title || !Price || !Content || !Duration || !Storage) {
       return res
         .status(200)
         .json({ status: 404, message: "Infonmation is missing!" });
     }
-    const respone = await SV__Create_Premium(req.body);
+    const respone = await SV__Create_Subscription(req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res
       .status(404)
-      .json({ status: 404, message: "Create Premium failed" });
+      .json({ status: 404, message: "Create subscription failed" });
   }
 };
 
-const CTL__Update_Premium = async (req, res) => {
+const CTL__Update_Subscription = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
-    const respone = await SV__Update_Premium(id, req.body);
+    const respone = await SV__Update_Subscription(id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
@@ -55,13 +55,13 @@ const CTL__Update_Premium = async (req, res) => {
   }
 };
 
-const CTL__Delete_Premium = async (req, res) => {
+const CTL__Delete_Subscription = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
-    const respone = await SV__Delete_Premium(id);
+    const respone = await SV__Delete_Subscription(id);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
@@ -72,8 +72,8 @@ const CTL__Delete_Premium = async (req, res) => {
 };
 
 module.exports = {
-  CTL__Get_Premium,
-  CTL__Create_Premium,
-  CTL__Update_Premium,
-  CTL__Delete_Premium,
+  CTL__Get_Subscription,
+  CTL__Create_Subscription,
+  CTL__Update_Subscription,
+  CTL__Delete_Subscription,
 };

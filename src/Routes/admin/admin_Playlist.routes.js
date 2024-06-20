@@ -13,8 +13,8 @@ const {
 const uploadArray = multer_Array();
 
 //TODO localhost:8080/api/admin/v1/playlist
-Router.get("/playlist", CTL__Get_Playlist);
-Router.get("/playlist/:id", CTL__Get_Playlist);
+Router.get("/playlist/:type", CTL__Get_Playlist);
+Router.get("/playlist/:type/:id", CTL__Get_Playlist);
 Router.post(
   "/playlist",
   JWT_Verify_Token,

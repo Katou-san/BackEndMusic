@@ -1,12 +1,18 @@
 const { Hash_Password, Confirm_Hash_Password } = require("../Middleware/Hash");
 const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
-const { Playlist } = require("../Model/Playlist");
 const { User } = require("../Model/User");
+const { Role } = require("../Model/Role");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
-const { Get_Current_Time } = require("../Util/Get_Time");
-const { SV__Create_Storage } = require("../Service/Service_Storage");
-const { SV__Create_Playlist_DF } = require("./Service_Playlist");
+const {
+  SV__Create_Storage,
+  SV__Delete_Storage,
+} = require("../Service/Service_Storage");
+const {
+  SV__Create_Playlist_DF,
+  SV__Delete_Playlist_DF,
+} = require("./Service_Playlist");
+const { match, join, project } = require("../Util/QueryDB");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -15,21 +21,42 @@ const get_Lable_User = {
   Avatar: 1,
   is_Premium: 1,
   Status: 1,
-  Role: 1,
+  Role_Id: 1,
   createdAt: 1,
 };
 
+const getRole = {
+  _id: 0,
+  Role_Name: 1,
+};
+
 //! Need Check
-const SV__Get_User = (id) => {
+const SV__Get_User = (id, type) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id != null) {
-        const result = await User.findOne({ User_Email: id }).select(
-          get_Lable_User
-        );
-        if (!result) {
-          return resolve({ status: 200, message: "not found user with id" });
+      let result = null;
+      if (id != null && type != null) {
+        if (type == "email") {
+          result = await User.aggregate([
+            match("User_Email", id),
+            join("roles", "Role_Id", "Role_Id", "GetRole"),
+            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+          ]);
+        } else if (type == "id") {
+          result = await User.aggregate([
+            match("User_Id", id),
+            join("roles", "Role_Id", "Role_Id", "GetRole"),
+            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+          ]);
         }
+
+        if (!result) {
+          return resolve({
+            status: 200,
+            message: `Not found user with ${type}`,
+          });
+        }
+
         return resolve({
           status: 200,
           message: "get user Complete!",
@@ -37,7 +64,13 @@ const SV__Get_User = (id) => {
         });
       }
 
-      const allUsers = await User.find().select(get_Lable_User);
+      const allUsers = await User.aggregate([
+        join("roles", "Role_Id", "Role_Id", "GetRole"),
+        project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+        {
+          $unwind: "$Role_Name",
+        },
+      ]);
       resolve({
         status: 200,
         message: "get all users complete!",
@@ -61,7 +94,7 @@ const SV__Login_User = (data) => {
       const result = await User.findOne({ User_Email });
 
       if (!result) {
-        return resolve({ status: 200, message: "Not found email" });
+        return resolve({ status: 404, message: "Not found email" });
       }
 
       if (!Confirm_Hash_Password(User_Pass, result?.User_Pass)) {
@@ -141,11 +174,12 @@ const SV__Oauth = (id, email, role) => {
 //! Need Check
 const SV__Create_User = (data) => {
   return new Promise(async (resolve, reject) => {
+    const getRole = await Role.findOne({ Role_Name: "client" });
     const {
       User_Email,
       User_Name,
       User_Pass,
-      Role = "@Role2024341551982655client",
+      Role_Id = getRole.Role_Id,
     } = data;
     try {
       const check = await User.findOne({ User_Email });
@@ -156,24 +190,40 @@ const SV__Create_User = (data) => {
           message: "Email is extisting",
         });
       }
-      const posttime = Get_Current_Time();
       const result = await User.create({
-        User_Id: Create_Id("User", User_Name, posttime),
+        User_Id: Create_Id("User", User_Name),
         User_Email,
         User_Pass: Hash_Password(User_Pass),
         User_Name,
-        Role_Id: Role,
+        Role_Id: Role_Id,
       });
 
-      if (!SV__Create_Playlist_DF(result.User_Id)) {
+      const statePlaylist = await SV__Create_Playlist_DF(
+        result.User_Id,
+        result.User_Name
+      );
+
+      if (!statePlaylist.state) {
         return resolve({
           status: 404,
-          message: "Default user playlist create got error",
+          message: stateStorage.message,
+          error: {
+            User: "Create playlist failed!",
+            detail: statePlaylist.error,
+          },
         });
       }
 
-      if (result) {
-        SV__Create_Storage(result.User_Id);
+      const stateStorage = await SV__Create_Storage(result.User_Id);
+      if (!stateStorage.state) {
+        return resolve({
+          status: 404,
+          message: stateStorage.message,
+          error: {
+            User: "Create storage failed!",
+            detail: stateStorage.error,
+          },
+        });
       }
 
       const Access_Token = JWT_Create_Token({
@@ -248,21 +298,48 @@ const SV__Update_User = (data) => {
 };
 
 //! Need Update
-const SV__Delete_User = (id) => {
+const SV__Delete_User = (User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const findUser = await User.findOne({ User_Email: id });
-      if (!findUser) {
-        return resolve({ status: 200, message: "Not found user with id" });
+      let error = {};
+      const checkUser = await User.findOne({ User_Id });
+      if (!checkUser) {
+        return resolve({ status: 404, message: "Not found user with id" });
       }
 
-      await User.deleteOne({ _id: findUser._id });
-      await Playlist.deleteOne({ Playlist_Id: findUser.List_Like_Song[0] });
-      await Playlist.deleteOne({ Playlist_Id: findUser.List_Add_Songs[0] });
+      const deletePlaylistDF = await SV__Delete_Playlist_DF(User_Id);
+      if (!deletePlaylistDF.state) {
+        error = {
+          playlist: {
+            User: "Delete playlist failed!",
+            detail: deletePlaylistDF.error,
+          },
+        };
+      }
+
+      const deleteStorage = await SV__Delete_Storage(User_Id);
+      if (!deleteStorage.state) {
+        error = { ...error, ...deleteStorage.error };
+        return resolve({
+          status: 404,
+          error,
+          message: "Delete storage failed",
+        });
+      }
+
+      const result = await User.findOneAndDelete({ User_Id });
+      if (!result) {
+        return resolve({
+          status: 404,
+          error,
+          message: "Not found user!",
+        });
+      }
 
       resolve({
         status: 200,
-        message: "Delete user complete",
+        error,
+        message: "Delete user complete!",
       });
     } catch (err) {
       reject({

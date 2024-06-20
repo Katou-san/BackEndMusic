@@ -21,7 +21,7 @@ Router.get(
   CTL__Get_User
 );
 Router.get(
-  "/user/:id",
+  "/user/:type/:id",
   JWT_Verify_Token,
   Validate_Role(["employess", "admin", "client"]),
   CTL__Get_User

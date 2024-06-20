@@ -31,7 +31,7 @@ const CTL__Create_Category = async (req, res) => {
         .status(200)
         .json({ status: 404, message: "id or name for category is empty" });
     }
-    const respone = await SV__Create_Category(req.body);
+    const respone = await SV__Create_Category(req.Id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

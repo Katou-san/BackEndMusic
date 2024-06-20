@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const PremiumSchema = new mongoose.Schema(
+const SubscriptionSchema = new mongoose.Schema(
   {
-    Premium_Id: { type: String, required: true, unique: true },
-    Premium_Title: { type: String, required: true },
+    Sub_Id: { type: String, required: true, unique: true },
+    Sub_Title: { type: String, required: true },
     Price: { type: Number, required: true },
     Content: { type: String, required: true },
     Storage: { type: Number, required: true },
@@ -15,5 +15,5 @@ const PremiumSchema = new mongoose.Schema(
   }
 );
 
-const Premium = mongoose.model("Premiums", PremiumSchema);
-module.exports = { Premium };
+const Subscription = mongoose.model("Subscriptions", SubscriptionSchema);
+module.exports = { Subscription };

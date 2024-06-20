@@ -8,6 +8,11 @@ const {
 
 const CTL__Get_Storage = async (req, res) => {
   try {
+    const User_Id = req.params.id;
+    if (User_Id) {
+      const respone_id = await SV__Get_Storage(User_Id);
+      return res.status(200).json(respone_id);
+    }
     if (!req.Id) {
       return res.status(200).json({
         status: 404,

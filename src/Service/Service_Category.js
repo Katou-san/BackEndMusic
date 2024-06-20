@@ -38,7 +38,7 @@ const SV__Get_Category = (id) => {
   });
 };
 
-const SV__Create_Category = (data) => {
+const SV__Create_Category = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { Category_Name } = data;
@@ -52,6 +52,7 @@ const SV__Create_Category = (data) => {
 
       const result = await Category.create({
         Category_Id: Create_Id("Category"),
+        User_Id,
         Category_Name,
       });
 

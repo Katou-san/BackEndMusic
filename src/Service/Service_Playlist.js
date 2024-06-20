@@ -1,51 +1,51 @@
 const { Playlist } = require("../Model/Playlist");
+const { Track } = require("../Model/Track");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
-const { match, join, project } = require("../Util/QueryDB");
-
+const { match, join, project, matchMany } = require("../Util/QueryDB");
 const getValue = {
   _id: 0,
   Playlist_Id: 1,
   Playlist_Name: 1,
   Artist: 1,
+  Thumbnail: 1,
   Image: 1,
   User_Id: 1,
   is_Publish: 1,
+  Type: 1,
+  Create_Date: 1,
+  createdAt: 1,
 };
 
-const SV__Get_Playlist = (Playlist_Id) => {
+const SV__Get_Playlist = (type = 1, Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (Playlist_Id != null) {
-        const result = await Playlist.aggregate([
-          match("Playlist_Id", Playlist_Id),
+      if (type) {
+        if (Playlist_Id != null) {
+          const result = await Playlist.aggregate([
+            matchMany([{ Playlist_Id: Playlist_Id }, { Type: Number(type) }]),
+            join("tracks", "Playlist_Id", "Playlist_Id", "PlaylistSong"),
+            project(getValue, { Tracks: "$PlaylistSong.Song_Id" }),
+          ]);
+          return resolve({
+            status: 200,
+            message: "Get Playlist complete!",
+            data: result,
+          });
+        }
+        const getAllDefault = await Playlist.aggregate([
+          match("Type", Number(type)),
           join("tracks", "Playlist_Id", "Playlist_Id", "PlaylistSong"),
           project(getValue, { Tracks: "$PlaylistSong.Song_Id" }),
         ]);
 
-        if (!result) {
-          return resolve({
-            status: 200,
-            message: "Not found Playlist with id",
-          });
-        }
         return resolve({
           status: 200,
-          message: "Get Playlist complete!",
-          data: result,
+          message: "Get Playlist default complete!",
+          data: getAllDefault,
         });
       }
-
-      const allPlaylists = await Playlist.aggregate([
-        join("tracks", "Playlist_Id", "Playlist_Id", "PlaylistSong"),
-        project(getValue, { Tracks: "$PlaylistSong.Song_Id" }),
-      ]);
-      resolve({
-        status: 200,
-        message: "get all Playlist complete!",
-        data: allPlaylists,
-      });
     } catch (err) {
       reject({
         status: 404,
@@ -163,7 +163,12 @@ const SV__Delete_Playlist = (id) => {
       if (!find) {
         return resolve({ status: 404, message: "Not found Playlist with id" });
       }
-
+      const result = await Playlist.findOneAndDelete({
+        Playlist_Id: id,
+      });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Playlist with id" });
+      }
       Delete_Many_File(
         [
           { url: "Playlist_Img", idFile: find.Image },
@@ -171,13 +176,6 @@ const SV__Delete_Playlist = (id) => {
         ],
         ["default.png"]
       );
-
-      const result = await Playlist.deleteOne({
-        Playlist_Id: id,
-      });
-      if (!result) {
-        return resolve({ status: 404, message: "Not found Playlist with id" });
-      }
 
       resolve({
         status: 200,
@@ -194,20 +192,117 @@ const SV__Delete_Playlist = (id) => {
   });
 };
 
-const SV__Create_Playlist_DF = async (User_Id) => {
+const SV__Create_Playlist_DF = async (User_Id, User_Name) => {
   try {
-    await Playlist.create({
-      Playlist_Id: User_Id + "_Like",
-      Playlist_Name: "Like",
-      User_Id: User_Id,
-    });
-    await Playlist.create({
-      Playlist_Id: User_Id + "_Upload",
-      Playlist_Name: "Upload",
-      User_Id: User_Id,
+    const checkLike = await Playlist.findOne({
+      User_Id,
+      Playlist_Name: "like",
+      Type: 0,
     });
 
-    return true;
+    const checkUpload = await Playlist.findOne({
+      User_Id,
+      Playlist_Name: "upload",
+      Type: 0,
+    });
+
+    if (checkLike != null || checkUpload != null) {
+      return {
+        state: false,
+        error: {
+          PlaylistLike: checkLike
+            ? "Playlist like already exists!"
+            : "Not error!",
+          PlaylistUpload: checkUpload
+            ? "Playlist upload already exists"
+            : "Not error!",
+        },
+        message: "Error when create!",
+      };
+    }
+
+    const createLike = await Playlist.create({
+      Playlist_Id: Create_Id("Playlist", "User_Name", "", "_like"),
+      Playlist_Name: "like",
+      Artist: User_Name,
+      User_Id,
+      Type: 0,
+      is_Publish: false,
+      User_Id,
+    });
+
+    const createUpdate = await Playlist.create({
+      Playlist_Id: Create_Id("Playlist", "User_Name", "", "_upload"),
+      Playlist_Name: "upload",
+      Artist: User_Name,
+      is_Publish: false,
+      User_Id,
+      Type: 0,
+      User_Id,
+    });
+
+    if (!createLike || !createUpdate) {
+      return {
+        state: false,
+        error: { Playlist: "Error when create!" },
+        message: "Error when create!",
+      };
+    }
+
+    return {
+      state: true,
+      error: {},
+      message: "Create complete!",
+    };
+  } catch (err) {
+    return false;
+  }
+};
+
+const SV__Delete_Playlist_DF = async (User_Id) => {
+  try {
+    const find = await Playlist.find({ User_Id });
+    if (!find.length) {
+      return {
+        state: false,
+        error: {
+          Playlist: "Not found playlist default for user!",
+        },
+        message: "Not found playlist default for user!",
+      };
+    }
+    find.map(async (item) => {
+      const valueDelete = await Playlist.findOneAndDelete({
+        Playlist_Id: item.Playlist_Id,
+        Type: 0,
+      });
+      if (!valueDelete) {
+        return {
+          state: false,
+          error: {
+            Playlist: "Not found playlist default for user!",
+          },
+          message: "Not found playlist default for user!",
+        };
+      }
+
+      Delete_Many_File(
+        [
+          { url: "Playlist_Img", idFile: item.Image },
+          { url: "Playlist_Thumbnail", idFile: item.Thumbnail },
+        ],
+        ["default.png"]
+      );
+      await Track.findOneAndDelete({ Playlist_Id: item.Playlist_Id });
+    });
+
+    return {
+      state: false,
+      error: {
+        Playlist: "Not found playlist default for user!",
+      },
+      message: "Not found playlist default for user!",
+    };
   } catch (err) {
     return false;
   }
@@ -219,4 +314,5 @@ module.exports = {
   SV__Delete_Playlist,
   SV__Create_Playlist,
   SV__Create_Playlist_DF,
+  SV__Delete_Playlist_DF,
 };

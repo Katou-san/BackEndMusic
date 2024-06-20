@@ -24,7 +24,7 @@ const Validate_Role = (Permission = [], Premium = false) => {
 
     if (!Get_User) {
       return res
-        .status(404)
+        .status(200)
         .json({ status: 404, message: "Token is changed!" });
     }
 

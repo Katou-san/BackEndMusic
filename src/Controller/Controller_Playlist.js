@@ -8,11 +8,12 @@ const {
 const CTL__Get_Playlist = async (req, res) => {
   try {
     const id = req.params.id;
+    const type = req.params.type;
     if (id) {
-      const respone_id = await SV__Get_Playlist(id);
+      const respone_id = await SV__Get_Playlist(type ? type : 1, id);
       return res.status(200).json(respone_id);
     } else {
-      const respone = await SV__Get_Playlist(null);
+      const respone = await SV__Get_Playlist(type ? type : 1, null);
       return res.status(200).json(respone);
     }
   } catch (e) {

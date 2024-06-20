@@ -9,7 +9,12 @@ const {
 } = require("../../Controller/Controller_Bill");
 
 //TODO localhost:8080/api/admin/v1/Bill
-Router.get("/bill", CTL__Get_Bill);
+Router.get(
+  "/bill",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Get_Bill
+);
 Router.get("/bill/:id", JWT_Verify_Token, CTL__Get_Bill);
 Router.post(
   "/bill",

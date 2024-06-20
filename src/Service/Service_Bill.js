@@ -1,5 +1,5 @@
 const { Bill } = require("../Model/Bill");
-const { Premium } = require("../Model/Premium");
+const { Subscription } = require("../Model/Subscription");
 const { Create_Id } = require("../Util/Create_Id");
 //todo done!
 const SV__Get_Bill = (id) => {
@@ -37,11 +37,11 @@ const SV__Get_Bill = (id) => {
 };
 
 //! Need Check
-const SV__Create_Bill = (User_Id, Premium_Id) => {
+const SV__Create_Bill = (User_Id, Sub_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const today = new Date();
-      const Check_Premium = await Premium.findOne({ Premium_Id });
+      const Check_Premium = await Subscription.findOne({ Sub_Id });
       const Check_User = await User.findOne({ User_Id });
       if (!Check_Premium) {
         return resolve({
@@ -64,7 +64,7 @@ const SV__Create_Bill = (User_Id, Premium_Id) => {
       const result = await Bill.create({
         Bill_Id: Create_Id("Bill"),
         User_Id,
-        Premium_Id,
+        Sub_Id,
         Create_Date: today.toUTCString(),
         Expiration_Date: new Date(
           new Date().setDate(today.getDate() + Check_Premium.Duration)

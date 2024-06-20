@@ -97,6 +97,15 @@ const SV__Delete_Track = (User_Id, Playlist_Id, Song_Id) => {
         });
       }
 
+      if (!Song_Id) {
+        const result = await Track.findOneAndDelete({ Playlist_Id });
+        return resolve({
+          status: 404,
+          message: "Track not exsit!",
+          error: { Track: "Track not exsit!" },
+          data: {},
+        });
+      }
       const result = await Track.findOneAndDelete({ Playlist_Id, Song_Id });
       if (!result) {
         return resolve({

@@ -1,4 +1,4 @@
-const join = (Table, Id, foreign_Id, as_Name) => {
+const join = (Table, Id, foreign_Id, as_Name, Unwind = false) => {
   return {
     $lookup: {
       as: as_Name,
@@ -30,4 +30,17 @@ const match = (Name, Value) => {
   };
 };
 
-module.exports = { join, match, project };
+const matchMany = (array = [{}]) => {
+  let temp = {};
+  array.map((item, index) => {
+    let Arrakey = Object.keys(item);
+    Arrakey.map((key) => {
+      temp[key] = item[key];
+    });
+  });
+  return {
+    $match: temp,
+  };
+};
+
+module.exports = { join, match, project, matchMany };

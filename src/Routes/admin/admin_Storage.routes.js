@@ -10,7 +10,7 @@ const {
 } = require("../../Controller/Controller_Storage");
 
 //TODO localhost:8080/api/admin/v1/Storage
-
+Router.get("/Storage", JWT_Verify_Token, CTL__Get_Storage);
 Router.get("/Storage/:id", JWT_Verify_Token, CTL__Get_Storage);
 
 module.exports = Router;

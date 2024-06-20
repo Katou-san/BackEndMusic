@@ -12,11 +12,34 @@ const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 const CTL__Get_User = async (req, res) => {
   try {
     const id = req.params.id;
-    if (id) {
-      const respone_id = await SV__Get_User(id);
-      return res.status(200).json(respone_id);
+    const type = req.params.type;
+    if (type) {
+      if (type != "email" && type != "id") {
+        return res.status(200).json({
+          status: 404,
+          message: "Invalid type",
+          error: {
+            User: "Invalid type",
+          },
+          data: {},
+        });
+      } else {
+        if (id) {
+          const respone_id = await SV__Get_User(id, type);
+          return res.status(200).json(respone_id);
+        } else {
+          return res.status(200).json({
+            status: 404,
+            message: "Invalid id",
+            error: {
+              User: "Invalid id",
+            },
+            data: {},
+          });
+        }
+      }
     } else {
-      const respone = await SV__Get_User(null);
+      const respone = await SV__Get_User(null, null);
       return res.status(200).json(respone);
     }
   } catch (e) {
