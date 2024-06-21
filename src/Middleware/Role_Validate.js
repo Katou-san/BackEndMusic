@@ -18,7 +18,7 @@ const Validate_Role = (Permission = [], Premium = false) => {
   return async (req, res, next) => {
     const Get_User = await User.findOne({
       User_Id: req.Id,
-      User_Email: req.email,
+      User_Email: req.Email,
       Role_Id: req.Role,
     });
 
