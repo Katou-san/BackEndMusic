@@ -12,27 +12,27 @@ const {
 
 const uploadArray = multer_Array();
 
-//TODO localhost:8080/api/v1/playlist
-Router.get("/playlist", CTL__Get_Playlist);
-Router.get("/playlist/:id", CTL__Get_Playlist);
+//TODO localhost:8080/api/admin/v1/playlist
+Router.get("/playlist/:type", CTL__Get_Playlist);
+Router.get("/playlist/:type/:id", CTL__Get_Playlist);
 Router.post(
   "/playlist",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["admin"]),
   uploadArray.fields([{ name: "Image" }, { name: "Thumbnail" }]),
   CTL__Create_Playlist
 );
 Router.put(
   "/playlist/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["admin"]),
   uploadArray.fields([{ name: "Image" }, { name: "Thumbnail" }]),
   CTL__Update_Playlist
 );
 Router.delete(
   "/playlist/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["admin", "client"]),
   CTL__Delete_Playlist
 );
 

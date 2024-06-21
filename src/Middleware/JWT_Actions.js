@@ -25,8 +25,8 @@ const JWT_Verify_Token = async (req, res, next) => {
         return res.status(200).json({ status: 404, message: "Oauth Failed" });
       } else {
         req.Role = decoded.Role;
-        req.Id = decoded.User_Id || decoded.Employess_Id;
-        req.email = decoded.User_Email || decoded.Employess_Email;
+        req.Id = decoded.User_Id;
+        req.Email = decoded.User_Email;
         next();
       }
     });

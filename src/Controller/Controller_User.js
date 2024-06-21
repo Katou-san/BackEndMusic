@@ -90,7 +90,6 @@ const CTL__Create_User = async (req, res) => {
 const CTL__Login_User = async (req, res) => {
   try {
     const { User_Email, User_Pass } = req.body;
-    console.log(User_Email);
     if (!User_Email) {
       return res.status(200).json({
         status: 404,

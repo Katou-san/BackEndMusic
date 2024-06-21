@@ -138,7 +138,7 @@ const SV__Oauth = (id, email, role) => {
       const result = await User.findOne({
         User_Id: id,
         User_Email: email,
-        Role: role,
+        Role_Id: role,
       });
       if (!result) {
         return resolve({ status: 200, message: "Error Oauth!" });

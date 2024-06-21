@@ -1,16 +1,36 @@
 const { Track } = require("../Model/Track");
 const { Song } = require("../Model/Song");
 const { Playlist } = require("../Model/Playlist");
+const { match, join, project } = require("../Util/QueryDB");
+
+const getValue = {
+  _id: 0,
+};
 
 //todo done!
 const SV__Get_Track = (Playlist_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allTracks = await Track.find({ Playlist_Id });
+      const result = await Track.aggregate([
+        match("Playlist_Id", Playlist_Id),
+        join("songs", "Song_Id", "Song_Id", "Song"),
+        project(getValue, { Songs: "$Song" }),
+        {
+          $unwind: "$Songs",
+        },
+      ]);
+
+      let ArraySong = [];
+      if (result.length != 0) {
+        result.map((item) => {
+          ArraySong.push(item.Songs);
+        });
+      }
+
       resolve({
         status: 200,
         message: "get all Tracks complete!",
-        data: allTracks,
+        data: ArraySong,
       });
     } catch (err) {
       reject({
