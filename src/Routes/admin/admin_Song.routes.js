@@ -18,7 +18,7 @@ Router.get("/song/:id", CTL__Get_Song);
 Router.post(
   "/song",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess", "client"], true),
+  Validate_Role(["admin", "employess"], true),
   uploadArray.fields([{ name: "Song_Image" }, { name: "Song_Audio" }]),
   CTL__Create_Song
 );
