@@ -17,7 +17,7 @@ const uploadFile = multer_Single();
 //TODO localhost:8080/api/v1/user
 Router.post("/user/login", CTL__Login_User);
 Router.post("/user/signup", CTL__Create_User);
-Router.post("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
+Router.get("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
 
 Router.get(
   "/user/:id",

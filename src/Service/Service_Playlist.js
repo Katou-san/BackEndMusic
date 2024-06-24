@@ -57,6 +57,51 @@ const SV__Get_Playlist = (type = 1, Playlist_Id) => {
   });
 };
 
+const SV__Get_PlaylistM = (by, type = 1) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result;
+      switch (by) {
+        case "user":
+          result = await Playlist.aggregate([
+            join("users", "User_Id", "User_Id", "User"),
+            project(getValue, { is_Admin: "$User.is_Admin" }),
+            {
+              $unwind: "$is_Admin",
+            },
+            matchMany([{ is_Admin: false, Type: Number(type) }]),
+          ]);
+          break;
+
+        case "admin":
+          result = await Playlist.aggregate([
+            join("users", "User_Id", "User_Id", "User"),
+            project(getValue, { is_Admin: "$User.is_Admin" }),
+            {
+              $unwind: "$is_Admin",
+            },
+            matchMany([{ is_Admin: true, Type: Number(type) }]),
+          ]);
+          break;
+        default:
+          result = await Playlist.find();
+          break;
+      }
+      resolve({
+        status: 200,
+        message: `get ${type == 1 ? "playlist" : "album"} complete!`,
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Song.js (SV_Get_Song)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 const SV__Create_Playlist = (id, data) => {
   return new Promise(async (resolve, reject) => {
     const {
@@ -315,4 +360,5 @@ module.exports = {
   SV__Create_Playlist,
   SV__Create_Playlist_DF,
   SV__Delete_Playlist_DF,
+  SV__Get_PlaylistM,
 };

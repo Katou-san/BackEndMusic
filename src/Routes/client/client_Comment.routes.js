@@ -16,7 +16,7 @@ Router.get("/comment/:id", JWT_Verify_Token, CTL__Get_Comment);
 Router.post(
   "/comment",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess"]),
+  Validate_Role(["client"]),
   CTL__Create_Comment
 );
 

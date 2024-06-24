@@ -11,6 +11,7 @@ const {
   CTL__Create_User,
   CTL__Login_User,
   CTL__Oauth,
+  CTL__Get_UserM,
 } = require("../../Controller/Controller_User");
 const uploadFile = multer_Single();
 
@@ -21,10 +22,18 @@ Router.get(
   Validate_Role(["employess", "admin"]),
   CTL__Get_User
 );
+
+Router.get(
+  "/users/:type",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Get_UserM
+);
+
 Router.get(
   "/user/:type/:id",
   JWT_Verify_Token,
-  Validate_Role(["employess", "admin", "client"]),
+  Validate_Role(["employess", "admin"]),
   CTL__Get_User
 );
 

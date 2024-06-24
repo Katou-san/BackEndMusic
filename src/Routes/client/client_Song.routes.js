@@ -19,7 +19,7 @@ Router.get("/song/:id", CTL__Get_Song);
 Router.post(
   "/song",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess", "client"], true),
+  Validate_Role(["client"], true),
   uploadArray.fields([{ name: "Song_Src" }, { name: "Song_Image" }]),
   CTL__Create_Song
 );
@@ -27,7 +27,7 @@ Router.post(
 Router.put(
   "/song/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
+  Validate_Role(["client"]),
   uploadArray.fields([{ name: "Song_Src" }, { name: "Song_Image" }]),
   CTL__Update_Song
 );
@@ -35,7 +35,7 @@ Router.put(
 Router.delete(
   "/song/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
+  Validate_Role(["client"]),
   CTL__Delete_Song
 );
 

@@ -3,6 +3,7 @@ const {
   SV__Update_Song,
   SV__Create_Song,
   SV__Delete_Song,
+  SV__Get_SongM,
 } = require("../Service/Service_Song");
 
 const CTL__Get_Song = async (req, res) => {
@@ -21,6 +22,37 @@ const CTL__Get_Song = async (req, res) => {
   }
 };
 
+const CTL__Get_SongM = async (req, res) => {
+  try {
+    const type = req.params.type;
+    if (type) {
+      if (
+        String(type).toLowerCase() != "user" &&
+        String(type).toLowerCase() != "admin"
+      ) {
+        return res.status(200).json({
+          status: 404,
+          message: "Type not supported",
+          error: { Song_Manage: "Type not supported" },
+        });
+      }
+      const respone = await SV__Get_SongM(String(type).toLowerCase());
+      return res.status(200).json(respone);
+    } else {
+      return res.status(200).json({
+        status: 404,
+        message: "Invalid type",
+        error: { Song_Manage: "Invalid type" },
+      });
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get song manage failed" });
+  }
+};
+
 const CTL__Create_Song = async (req, res) => {
   try {
     const { Song_Name, Song_Audio, Category_Id, Artist } = req.body;
@@ -31,7 +63,6 @@ const CTL__Create_Song = async (req, res) => {
     }
 
     if (!Song_Name || !Song_Audio || !Category_Id || !Artist) {
-      console.log(req.body);
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
     const respone = await SV__Create_Song(req.body, req.Id);
@@ -82,4 +113,5 @@ module.exports = {
   CTL__Update_Song,
   CTL__Delete_Song,
   CTL__Create_Song,
+  CTL__Get_SongM,
 };

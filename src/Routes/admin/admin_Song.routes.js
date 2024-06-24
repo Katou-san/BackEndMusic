@@ -8,6 +8,8 @@ const {
   CTL__Update_Song,
   CTL__Create_Song,
   CTL__Delete_Song,
+  CTL__Get_Song_Admin,
+  CTL__Get_SongM,
 } = require("../../Controller/Controller_Song");
 
 const uploadArray = multer_Array();
@@ -15,6 +17,14 @@ const uploadArray = multer_Array();
 //TODO localhost:8080/api/admin/v1/song
 Router.get("/song", CTL__Get_Song);
 Router.get("/song/:id", CTL__Get_Song);
+
+Router.get(
+  "/songs/:type",
+  JWT_Verify_Token,
+  Validate_Role(["employess", "admin"]),
+  CTL__Get_SongM
+);
+
 Router.post(
   "/song",
   JWT_Verify_Token,

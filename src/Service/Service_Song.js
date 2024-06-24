@@ -1,7 +1,25 @@
 const { Song } = require("../Model/Song");
+const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
+const { match, join, project } = require("../Util/QueryDB");
+
+const getValue = {
+  Song_Id: 1,
+  Song_Name: 1,
+  Song_Image: 1,
+  Song_Audio: 1,
+  Artist: 1,
+  User_Id: 1,
+  Category_Id: 1,
+  Lyrics: 1,
+  Tag: 1,
+  Color: 1,
+  is_Publish: 1,
+  Create_Date: 1,
+};
+
 const SV__Get_Song = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -22,6 +40,51 @@ const SV__Get_Song = (id) => {
         status: 200,
         message: "get all Songs complete!",
         data: allSongs,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Song.js (SV_Get_Song)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Get_SongM = (type) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result;
+      switch (type) {
+        case "user":
+          result = await Song.aggregate([
+            join("users", "User_Id", "User_Id", "User"),
+            project(getValue, { is_Admin: "$User.is_Admin" }),
+            {
+              $unwind: "$is_Admin",
+            },
+            match("is_Admin", false),
+          ]);
+          break;
+
+        case "admin":
+          result = await Song.aggregate([
+            join("users", "User_Id", "User_Id", "User"),
+            project(getValue, { is_Admin: "$User.is_Admin" }),
+            {
+              $unwind: "$is_Admin",
+            },
+            match("is_Admin", true),
+          ]);
+          break;
+        default:
+          result = await Song.find();
+          break;
+      }
+      resolve({
+        status: 200,
+        message: "get all Songs complete!",
+        data: result,
       });
     } catch (err) {
       reject({
@@ -152,4 +215,5 @@ module.exports = {
   SV__Update_Song,
   SV__Delete_Song,
   SV__Create_Song,
+  SV__Get_SongM,
 };

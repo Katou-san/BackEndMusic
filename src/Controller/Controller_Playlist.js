@@ -3,6 +3,7 @@ const {
   SV__Update_Playlist,
   SV__Delete_Playlist,
   SV__Create_Playlist,
+  SV__Get_PlaylistM,
 } = require("../Service/Service_Playlist");
 
 const CTL__Get_Playlist = async (req, res) => {
@@ -24,6 +25,41 @@ const CTL__Get_Playlist = async (req, res) => {
   }
 };
 
+const CTL__Get_PlaylistM = async (req, res) => {
+  try {
+    const by = req.params.by;
+    const type = req.params.type;
+    if (by) {
+      if (
+        String(by).toLowerCase() != "user" &&
+        String(by).toLowerCase() != "admin"
+      ) {
+        return res.status(200).json({
+          status: 404,
+          message: `${by} not supported`,
+          error: { Playlist_Manage: `${by} not supported` },
+        });
+      }
+      const respone = await SV__Get_PlaylistM(
+        String(by).toLowerCase(),
+        type ?? 1
+      );
+      return res.status(200).json(respone);
+    } else {
+      return res.status(200).json({
+        status: 404,
+        message: "Invalid by",
+        error: { Song_Manage: "Invalid by" },
+      });
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get song manage failed" });
+  }
+};
+
 const CTL__Create_Playlist = async (req, res) => {
   try {
     const { Playlist_Name } = req.body;
@@ -31,8 +67,6 @@ const CTL__Create_Playlist = async (req, res) => {
     if (!Playlist_Name || !req.Id) {
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
-
-    console.log(req.body);
 
     const respone = await SV__Create_Playlist(req.Id, req.body);
     return res.status(200).json(respone);
@@ -81,4 +115,5 @@ module.exports = {
   CTL__Update_Playlist,
   CTL__Delete_Playlist,
   CTL__Create_Playlist,
+  CTL__Get_PlaylistM,
 };

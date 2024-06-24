@@ -5,13 +5,42 @@ const {
   SV__Create_User,
   SV__Login_User,
   SV__Oauth,
+  SV__Get_UserM,
 } = require("../Service/Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
 // TODO: done!
+const CTL__Get_UserM = async (req, res) => {
+  try {
+    const type = req.params.type;
+    if (type) {
+      if (
+        String(type).toLowerCase() != "user" &&
+        String(type).toLowerCase() != "admin"
+      ) {
+        return res.status(200).json({
+          status: 404,
+          message: "Type not supported",
+          error: { Song_Manage: "Type not supported" },
+        });
+      }
+      const respone = await SV__Get_UserM(String(type).toLowerCase());
+      return res.status(200).json(respone);
+    } else {
+      return res.status(200).json({
+        status: 404,
+        message: "Invalid type",
+        error: { Song_Manage: "Invalid type" },
+      });
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get user failed" });
+  }
+};
+
 const CTL__Get_User = async (req, res) => {
   try {
-    const id = req.params.id;
     const type = req.params.type;
     if (type) {
       if (type != "email" && type != "id") {
@@ -140,7 +169,6 @@ const CTL__Oauth = async (req, res) => {
 const CTL__Update_User = async (req, res) => {
   try {
     const { User_Email } = req.body;
-    console.log(res.body);
     if (!User_Email) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
@@ -177,4 +205,5 @@ module.exports = {
   CTL__Delete_User,
   CTL__Login_User,
   CTL__Oauth,
+  CTL__Get_UserM,
 };

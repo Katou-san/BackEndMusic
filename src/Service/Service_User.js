@@ -12,7 +12,7 @@ const {
   SV__Create_Playlist_DF,
   SV__Delete_Playlist_DF,
 } = require("./Service_Playlist");
-const { match, join, project } = require("../Util/QueryDB");
+const { match, join, project, matchMany } = require("../Util/QueryDB");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -22,6 +22,7 @@ const get_Lable_User = {
   is_Premium: 1,
   Status: 1,
   Role_Id: 1,
+  is_Admin: 1,
   createdAt: 1,
 };
 
@@ -86,6 +87,49 @@ const SV__Get_User = (id, type) => {
   });
 };
 
+const SV__Get_UserM = (type) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result;
+      switch (type) {
+        case "user":
+          result = await User.aggregate([
+            join("roles", "Role_Id", "Role_Id", "GetRole"),
+            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+            {
+              $unwind: "$Role_Name",
+            },
+            match("is_Admin", false),
+          ]);
+          break;
+        case "admin":
+          result = await User.aggregate([
+            join("roles", "Role_Id", "Role_Id", "GetRole"),
+            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+            {
+              $unwind: "$Role_Name",
+            },
+            match("is_Admin", true),
+          ]);
+          break;
+      }
+
+      resolve({
+        status: 200,
+        message: `Get all ${type} complete!`,
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_User.js (SV_Login_User)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //TODO Done!
 const SV__Login_User = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -141,7 +185,17 @@ const SV__Oauth = (id, email, role) => {
         Role_Id: role,
       });
       if (!result) {
-        return resolve({ status: 200, message: "Error Oauth!" });
+        return resolve({
+          status: 404,
+          message: "Error Oauth!",
+          data: {
+            is_Login: false,
+            Access_Token: " ",
+            User_Id: "",
+            User_Name: "",
+            Avatar: "",
+          },
+        });
       }
 
       const Access_Token = JWT_Create_Token({
@@ -359,4 +413,5 @@ module.exports = {
   SV__Delete_User,
   SV__Login_User,
   SV__Oauth,
+  SV__Get_UserM,
 };

@@ -8,6 +8,7 @@ const {
   CTL__Update_Playlist,
   CTL__Delete_Playlist,
   CTL__Create_Playlist,
+  CTL__Get_PlaylistM,
 } = require("../../Controller/Controller_Playlist");
 
 const uploadArray = multer_Array();
@@ -15,6 +16,14 @@ const uploadArray = multer_Array();
 //TODO localhost:8080/api/admin/v1/playlist
 Router.get("/playlist/:type", CTL__Get_Playlist);
 Router.get("/playlist/:type/:id", CTL__Get_Playlist);
+
+Router.get(
+  "/playlists/:by/:type",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Get_PlaylistM
+);
+
 Router.post(
   "/playlist",
   JWT_Verify_Token,
