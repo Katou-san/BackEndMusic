@@ -118,6 +118,7 @@ const CTL__Create_User = async (req, res) => {
 // TODO: done!
 const CTL__Login_User = async (req, res) => {
   try {
+    const type = req.params.type;
     const { User_Email, User_Pass } = req.body;
     if (!User_Email) {
       return res.status(200).json({
@@ -142,9 +143,15 @@ const CTL__Login_User = async (req, res) => {
         error: Validate_Login(User_Email, User_Pass).Error,
       });
     }
+    if (type == "admin") {
+      const respone = await SV__Login_User(req.body, type);
+      return res.status(200).json(respone);
+    }
 
-    const respone = await SV__Login_User(req.body);
-    return res.status(200).json(respone);
+    if (type == "client") {
+      const respone = await SV__Login_User(req.body, type);
+      return res.status(200).json(respone);
+    }
   } catch (e) {
     // new Error(e.message);
     return res.status(404).json({ status: 404, message: "Login failed" });
@@ -189,6 +196,7 @@ const CTL__Delete_User = async (req, res) => {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
     const respone = await SV__Delete_User(id);
+
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

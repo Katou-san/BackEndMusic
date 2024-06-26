@@ -131,7 +131,7 @@ const SV__Get_UserM = (type) => {
 };
 
 //TODO Done!
-const SV__Login_User = (data) => {
+const SV__Login_User = (data, type) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { User_Email, User_Pass } = data;
@@ -148,11 +148,56 @@ const SV__Login_User = (data) => {
           error: { pass: "Pass not match" },
         });
       }
+
       const Access_Token = JWT_Create_Token({
         User_Email: result.User_Email,
         Role: result.Role_Id,
         User_Id: result.User_Id,
       });
+
+      if (type == "admin") {
+        if (result.is_Admin == true) {
+          resolve({
+            status: 200,
+            message: "Login complete!",
+            data: {
+              is_Login: true,
+              Access_Token: Access_Token,
+              User_Id: result.User_Id,
+              User_Name: result.User_Name,
+              Avatar: result.Avatar,
+            },
+          });
+        } else {
+          resolve({
+            status: 404,
+            message: "You cant login in admin page",
+            error: { pass: "You cant login in admin page" },
+          });
+        }
+      }
+
+      if (type == "client") {
+        if (result.is_Admin == false) {
+          resolve({
+            status: 200,
+            message: "Login complete!",
+            data: {
+              is_Login: true,
+              Access_Token: Access_Token,
+              User_Id: result.User_Id,
+              User_Name: result.User_Name,
+              Avatar: result.Avatar,
+            },
+          });
+        } else {
+          resolve({
+            status: 404,
+            message: "You cant login in client page",
+            error: { pass: "You cant login in client page" },
+          });
+        }
+      }
 
       resolve({
         status: 200,

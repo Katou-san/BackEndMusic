@@ -44,7 +44,7 @@ Router.put(
 Router.delete(
   "/song/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
+  Validate_Role(["admin"]),
   CTL__Delete_Song
 );
 

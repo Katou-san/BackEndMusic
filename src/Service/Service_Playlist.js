@@ -31,7 +31,7 @@ const SV__Get_Playlist = (type = 1, Playlist_Id) => {
           return resolve({
             status: 200,
             message: "Get Playlist complete!",
-            data: result,
+            data: result[0],
           });
         }
         const getAllDefault = await Playlist.aggregate([

@@ -13,6 +13,7 @@ const Client_Router_Reply = require("./client_Reply.routes");
 const Client_Router_Repost = require("./client_Repost.routes");
 const Client_Router_Storage = require("./client_Storage.routes");
 const Client_Router_Track = require("./client_Track.routes");
+const Client_Router_Trending = require("./client_Trending.routes");
 Router.use(Client_Router_User);
 Router.use(Client_Router_Category);
 Router.use(Client_Router_Song);
@@ -26,5 +27,6 @@ Router.use(Client_Router_Reply);
 Router.use(Client_Router_Repost);
 Router.use(Client_Router_Storage);
 Router.use(Client_Router_Track);
+Router.use(Client_Router_Trending);
 
 module.exports = Router;
