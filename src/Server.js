@@ -19,6 +19,9 @@ app.use(bodyParser.json({ extended: true }));
 
 routes(app);
 
+app.use("/", (req, res) => {
+  res.status(200).json({ hello: "hello" });
+});
 mongoose
   .connect(`${process.env.MONGODB_URI}`)
   .then(() => {

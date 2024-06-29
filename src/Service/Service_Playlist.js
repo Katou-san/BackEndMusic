@@ -1,5 +1,6 @@
 const { Playlist } = require("../Model/Playlist");
 const { Track } = require("../Model/Track");
+const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
@@ -47,6 +48,39 @@ const SV__Get_Playlist = (type = 1, Playlist_Id) => {
         });
       }
     } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Playlist.js (SV_Get_Playlist)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Get_PlaylistDF = (User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({ User_Id });
+      if (!checkUser) {
+        return resolve({
+          status: 404,
+          message: "Not found user",
+          error: {
+            Get_Playlist: "Not found user",
+          },
+          data: {},
+        });
+      }
+
+      const playlists = await Playlist.find({ User_Id });
+      return resolve({
+        status: 200,
+        message: "Get playlist successfully",
+        error: {},
+        data: playlists,
+      });
+    } catch (error) {
       reject({
         status: 404,
         message:
@@ -358,6 +392,7 @@ module.exports = {
   SV__Update_Playlist,
   SV__Delete_Playlist,
   SV__Create_Playlist,
+  SV__Get_PlaylistDF,
   SV__Create_Playlist_DF,
   SV__Delete_Playlist_DF,
   SV__Get_PlaylistM,

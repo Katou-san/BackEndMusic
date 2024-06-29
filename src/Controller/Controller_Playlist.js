@@ -4,6 +4,7 @@ const {
   SV__Delete_Playlist,
   SV__Create_Playlist,
   SV__Get_PlaylistM,
+  SV__Get_PlaylistDF,
 } = require("../Service/Service_Playlist");
 
 const CTL__Get_Playlist = async (req, res) => {
@@ -52,6 +53,26 @@ const CTL__Get_PlaylistM = async (req, res) => {
         error: { Song_Manage: "Invalid by" },
       });
     }
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Get song manage failed" });
+  }
+};
+
+const CTL__Get_PlaylistDF = async (req, res) => {
+  try {
+    if (!req.Id) {
+      return res.status(200).json({
+        status: 404,
+        message: `Not found id user`,
+        error: { Get_Playlist: `Not found id user` },
+      });
+    }
+
+    const respone = await SV__Get_PlaylistDF(req.Id);
+    return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res
@@ -116,4 +137,5 @@ module.exports = {
   CTL__Delete_Playlist,
   CTL__Create_Playlist,
   CTL__Get_PlaylistM,
+  CTL__Get_PlaylistDF,
 };

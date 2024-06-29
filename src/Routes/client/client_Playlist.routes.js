@@ -1,4 +1,4 @@
-const { multer_Single, multer_Array } = require("../../Configs/Multer_Cus");
+const { multer_Array } = require("../../Configs/Multer_Cus");
 const { Validate_Role } = require("../../Middleware/Role_Validate");
 const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const express = require("express");
@@ -7,6 +7,7 @@ const {
   CTL__Get_Playlist,
   CTL__Update_Playlist,
   CTL__Delete_Playlist,
+  CTL__Get_PlaylistDF,
   CTL__Create_Playlist,
 } = require("../../Controller/Controller_Playlist");
 
@@ -15,6 +16,13 @@ const uploadArray = multer_Array();
 //TODO localhost:8080/api/admin/v1/playlist
 Router.get("/playlist/:type", CTL__Get_Playlist);
 Router.get("/playlist/:type/:id", CTL__Get_Playlist);
+Router.get(
+  "/playlists/user",
+  JWT_Verify_Token,
+  Validate_Role(["client"]),
+  CTL__Get_PlaylistDF
+);
+
 Router.post(
   "/playlist",
   JWT_Verify_Token,
