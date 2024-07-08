@@ -18,6 +18,8 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.2.0",
     "formidable": "^3.5.1",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",

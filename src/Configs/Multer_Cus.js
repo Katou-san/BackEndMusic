@@ -12,6 +12,13 @@ const handle_Link = (nameFile = "") => {
       return { status: true, url: "./src/Assets/Playlist_Img" };
     case "thumbnail":
       return { status: true, url: "./src/Assets/Playlist_Thumbnail" };
+    case "logo":
+      return { status: true, url: "./src/Assets/Partner" };
+    case "partner_image":
+      return { status: true, url: "./src/Assets/Partner" };
+    case "partner_audio":
+      return { status: true, url: "./src/Assets/Partner" };
+
     default:
       return { status: false, url: "./src/Assets/Test" };
   }

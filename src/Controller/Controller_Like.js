@@ -24,7 +24,7 @@ const CTL__Get_Like = async (req, res) => {
 const CTL__Create_Like = async (req, res) => {
   try {
     const { Topic_Id, Type, State } = req.body;
-    if (!Topic_Id || !Type || !State) {
+    if (!Topic_Id || Type == undefined || State == undefined) {
       return res.status(200).json({ status: 404, message: "Cant like" });
     }
     const respone = await SV__Create_Like(req.Id, req.body);

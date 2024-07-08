@@ -99,7 +99,6 @@ const SV__Create_Song = (data, User_Id) => {
   return new Promise(async (resolve, reject) => {
     const {
       Song_Name,
-      Post_Time,
       Artist,
       Category_Id,
       Song_Audio,

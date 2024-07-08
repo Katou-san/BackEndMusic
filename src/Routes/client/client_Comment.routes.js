@@ -11,7 +11,7 @@ const {
 
 //TODO localhost:8080/api/admin/v1/comment
 
-Router.get("/comment/:id", JWT_Verify_Token, CTL__Get_Comment);
+Router.get("/comment/:id", CTL__Get_Comment);
 
 Router.post(
   "/comment",

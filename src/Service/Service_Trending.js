@@ -1,6 +1,8 @@
 const { Song } = require("../Model/Song");
+const { Playlist } = require("../Model/Playlist");
 const { join, match, project, matchMany } = require("../Util/QueryDB");
-const getValue = {
+const { Get_Max_Array } = require("../Util/Convert_data");
+const getValueSong = {
   _id: 0,
   Song_Id: 1,
   Song_Name: 1,
@@ -15,44 +17,32 @@ const getValue = {
   is_Publish: 1,
   Create_Date: 1,
 };
+
+const getValuePlaylist = {
+  _id: 0,
+  Artist: 1,
+  User_Id: 1,
+  is_Publish: 1,
+  Create_Date: 1,
+  Playlist_Id: 1,
+  Playlist_Name: 1,
+  Image: 1,
+  Thumbnail: 1,
+  Type: 1,
+};
 const SV__Get_Slider = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const getSong = await Song.aggregate([
         match("is_Publish", true),
         join("likes", "Song_Id", "Topic_Id", "like"),
-        project(getValue, { likes: "$like.State" }),
+        project(getValueSong, { likes: "$like.State" }),
       ]);
 
-      let arrayMax = [];
-      let arrayTemp = [];
-      for (let i = 0; i < getSong.length; i++) {
-        let max = 0;
-        let index = 0;
-        for (let j = 0; j < getSong.length; j++) {
-          if (
-            getSong[j].likes.length >= max &&
-            !arrayTemp.includes(getSong[j].Song_Id)
-          ) {
-            max = getSong[j].likes.length;
-            index = j;
-          }
-        }
-
-        if (arrayMax.length < 6) {
-          if (!arrayTemp.includes(getSong[index].Song_Id)) {
-            arrayTemp.push(getSong[index].Song_Id);
-            arrayMax.push(getSong[index]);
-          }
-        }
-        max = 0;
-      }
-
-      console.log(arrayTemp);
-
+      const result = Get_Max_Array(getSong, "likes", "Song_Id", 20);
       resolve({
         status: 200,
-        data: arrayMax,
+        data: result,
       });
     } catch (err) {
       reject({
@@ -68,7 +58,18 @@ const SV__Get_Slider = () => {
 const SV__Get_Trending_Song = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      resolve({});
+      const getSong = await Song.aggregate([
+        match("is_Publish", true),
+        join("likes", "Song_Id", "Topic_Id", "like"),
+        project(getValueSong, { likes: "$like.State" }),
+      ]);
+
+      const result = Get_Max_Array(getSong, "likes", "Song_Id", 20);
+
+      resolve({
+        status: 200,
+        data: result,
+      });
     } catch (err) {
       reject({
         status: 404,
@@ -83,7 +84,17 @@ const SV__Get_Trending_Song = () => {
 const SV__Get_Trending_Playlist = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      resolve({});
+      const getPlaylist = await Playlist.aggregate([
+        match("is_Publish", true),
+        join("likes", "Playlist_Id", "Topic_Id", "like"),
+        project(getValuePlaylist, { likes: "$like.State" }),
+      ]);
+
+      const result = Get_Max_Array(getPlaylist, "likes", "Playlist_Id", 20);
+      resolve({
+        status: 200,
+        data: result,
+      });
     } catch (err) {
       reject({
         status: 404,

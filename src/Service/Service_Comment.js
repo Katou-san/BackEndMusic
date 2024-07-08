@@ -1,16 +1,33 @@
 const { Comment } = require("../Model/Comment");
 const { Song } = require("../Model/Song");
-const { Convert_vUpdate } = require("../Util/Convert_data");
+const { Convert_vUpdate, Get_Only__Array } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
+const { match, join, project } = require("../Util/QueryDB");
+
+const getValue = {
+  _id: 0,
+  Comment_Id: 1,
+  Song_Id: 1,
+  User_Id: 1,
+  Content: 1,
+  Post_Time: 1,
+};
 
 //todo done!
 const SV__Get_Comment = (Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await Comment.find({ Song_Id });
-      if (!result) {
-        return resolve({ status: 404, message: "Not found Comment with id" });
-      }
+      // const result = await Comment.find({ Song_Id });
+      const value = await Comment.aggregate([
+        match("Song_Id", Song_Id),
+        join("users", "User_Id", "User_Id", "User"),
+        project(getValue, { User: "$User" }),
+        {
+          $unwind: "$User",
+        },
+      ]);
+
+      const result = Get_Only__Array(value, "User", ["User_Name", "Avatar"]);
       return resolve({
         status: 200,
         message: "Get comment for song complete!",

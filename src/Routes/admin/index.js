@@ -14,6 +14,7 @@ const Admin_Router_Reply = require("./admin_Reply.routes");
 const Admin_Router_Repost = require("./admin_Repost.routes");
 const Admin_Router_Storage = require("./admin_Storage.routes");
 const Admin_Router_Track = require("./admin_Track.routes");
+const Admin_Router_Partner = require("./admin_Partner.routes");
 Router.use(Admin_Router_User);
 Router.use(Admin_Router_Category);
 Router.use(Admin_Router_Role);
@@ -28,5 +29,5 @@ Router.use(Admin_Router_Reply);
 Router.use(Admin_Router_Repost);
 Router.use(Admin_Router_Storage);
 Router.use(Admin_Router_Track);
-
+Router.use(Admin_Router_Partner);
 module.exports = Router;
