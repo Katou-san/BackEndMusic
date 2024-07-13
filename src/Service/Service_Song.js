@@ -1,4 +1,6 @@
+const { Playlist } = require("../Model/Playlist");
 const { Song } = require("../Model/Song");
+const { Track } = require("../Model/Track");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_File, Delete_Many_File } = require("../Util/Handle_File");
@@ -118,6 +120,24 @@ const SV__Create_Song = (data, User_Id) => {
           message: "Song already have!",
         });
       }
+
+      const checkUpload = await Playlist.findOne({
+        User_Id,
+        Type: 0,
+        Playlist_Name: "upload",
+      });
+
+      // console.log(checkUpload);
+
+      if (!checkUpload) {
+        return resolve({
+          status: 404,
+          message: "Cant upload when not found playlist default",
+          error: { song: "Cant upload when not found playlist default" },
+          data: {},
+        });
+      }
+
       const song = await Song.create({
         Song_Id: IdSong,
         Song_Name: String(Song_Name).toLowerCase(),
@@ -132,10 +152,24 @@ const SV__Create_Song = (data, User_Id) => {
         is_Publish,
       });
 
+      if (!song) {
+        return resolve({
+          status: 404,
+          message: "Create song failed!",
+          error: { song: "Create song failed!" },
+          data: {},
+        });
+      }
+
+      await Track.create({
+        Song_Id: song.Song_Id,
+        Playlist_Id: checkUpload.Playlist_Id,
+      });
+
       resolve({
-        status: "200",
+        status: 200,
         message: "Song created!",
-        data: song,
+        data: "song",
       });
     } catch (err) {
       reject(err);
@@ -146,7 +180,9 @@ const SV__Create_Song = (data, User_Id) => {
 const SV__Update_Song = (id, data, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { Song_Image } = data;
       const Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      const state_Song = await Song.findOne({ Song_Id: id });
       const result = await Song.findOneAndUpdate(
         { Song_Id: id, User_Id },
         Update_V,
@@ -159,6 +195,16 @@ const SV__Update_Song = (id, data, User_Id) => {
           status: 200,
           message: "Not found song with id for you",
         });
+      }
+      if (
+        Song_Image != undefined &&
+        Song_Image != null &&
+        !Song_Image != "null"
+      ) {
+        Delete_Many_File(
+          [{ url: "Song_Image", idFile: state_Song.Song_Image }],
+          ["default.png"]
+        );
       }
 
       resolve({
@@ -185,6 +231,8 @@ const SV__Delete_Song = (id) => {
         return resolve({ status: 404, message: "Not found song with id" });
       }
 
+      const result = await Song.deleteOne({ Song_Id: id });
+
       Delete_Many_File(
         [
           { url: "Song_Image", idFile: find.Song_Image },
@@ -193,7 +241,8 @@ const SV__Delete_Song = (id) => {
         ["default.png"]
       );
 
-      const result = await Song.deleteOne({ Song_Id: id });
+      await Track.deleteMany({ Song_Id: find.Song_Id });
+
       resolve({
         status: 200,
         message: result ? "Delete song complete!" : "Delete song failed",

@@ -63,6 +63,7 @@ const CTL__Get_PlaylistM = async (req, res) => {
 
 const CTL__Get_PlaylistDF = async (req, res) => {
   try {
+    const type = req.params.type;
     if (!req.Id) {
       return res.status(200).json({
         status: 404,
@@ -71,7 +72,15 @@ const CTL__Get_PlaylistDF = async (req, res) => {
       });
     }
 
-    const respone = await SV__Get_PlaylistDF(req.Id);
+    if (!type) {
+      return res.status(200).json({
+        status: 404,
+        message: `Not found type playlist`,
+        error: { Get_Playlist: `Not found type playlist` },
+      });
+    }
+
+    const respone = await SV__Get_PlaylistDF(req.Id, type);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

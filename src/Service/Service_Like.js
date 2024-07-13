@@ -7,7 +7,7 @@ const SV__Get_Like = (Topic_Id, Type, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (User_Id) {
-        const result = await Like.find({ Topic_Id, Type, User_Id });
+        const result = await Like.findOne({ Topic_Id, Type, User_Id });
         return resolve({
           status: 200,
           message: "Get Like complete!",
@@ -61,6 +61,24 @@ const SV__Create_Like = (User_Id, data) => {
 const SV__Update_Like = (Topic_Id, User_Id, Type, data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { State } = data;
+      const checkLike = await Like.findOne({ Topic_Id, User_Id });
+
+      if (!checkLike) {
+        const resultCreate = await Like.create({
+          Topic_Id,
+          User_Id,
+          Type,
+          State,
+        });
+
+        return resolve({
+          status: 200,
+          message: "Create Like complete!",
+          data: resultCreate,
+        });
+      }
+
       const UpdateData = Convert_vUpdate(data, [
         "_id",
         "Topic_Id",
@@ -74,12 +92,14 @@ const SV__Update_Like = (Topic_Id, User_Id, Type, data) => {
           new: true,
         }
       );
+
       if (!result) {
         return resolve({ status: 200, message: "Not found Like with id" });
       }
+
       resolve({
         status: 200,
-        message: "Updated Like complete!",
+        message: "Update Like complete!",
         data: result,
       });
     } catch (err) {

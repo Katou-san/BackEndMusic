@@ -58,7 +58,7 @@ const SV__Get_Playlist = (type = 1, Playlist_Id) => {
   });
 };
 
-const SV__Get_PlaylistDF = (User_Id) => {
+const SV__Get_PlaylistDF = (User_Id, type = 0) => {
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({ User_Id });
@@ -73,7 +73,7 @@ const SV__Get_PlaylistDF = (User_Id) => {
         });
       }
 
-      const playlists = await Playlist.find({ User_Id });
+      const playlists = await Playlist.find({ User_Id, Type: type });
       return resolve({
         status: 200,
         message: "Get playlist successfully",
@@ -86,7 +86,7 @@ const SV__Get_PlaylistDF = (User_Id) => {
         message:
           "something went wrong in Admin_Service_Playlist.js (SV_Get_Playlist)",
       });
-      throw new Error(err);
+      throw new Error(error);
     }
   });
 };

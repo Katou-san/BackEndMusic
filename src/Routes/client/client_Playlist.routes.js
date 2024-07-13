@@ -17,7 +17,7 @@ const uploadArray = multer_Array();
 Router.get("/playlist/:type", CTL__Get_Playlist);
 Router.get("/playlist/:type/:id", CTL__Get_Playlist);
 Router.get(
-  "/playlists/user",
+  "/playlists/:type",
   JWT_Verify_Token,
   Validate_Role(["client"]),
   CTL__Get_PlaylistDF

@@ -39,7 +39,7 @@ const SV__Get_Slider = () => {
         project(getValueSong, { likes: "$like.State" }),
       ]);
 
-      const result = Get_Max_Array(getSong, "likes", "Song_Id", 20);
+      const result = Get_Max_Array(getSong, "likes", "Song_Id", 5);
       resolve({
         status: 200,
         data: result,

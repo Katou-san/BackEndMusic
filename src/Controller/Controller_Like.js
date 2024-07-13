@@ -37,9 +37,7 @@ const CTL__Create_Like = async (req, res) => {
 
 const CTL__Update_Like = async (req, res) => {
   try {
-    const Topic_Id = req.params.topic;
-    const Type = req.params.type;
-    const { State } = req.body;
+    const { Type, Topic_Id, State } = req.body;
     if (!Topic_Id || Type == null || State == null) {
       return res
         .status(200)
