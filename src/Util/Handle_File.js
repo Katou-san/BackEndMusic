@@ -25,4 +25,10 @@ const Delete_Many_File = (array = [{ url: "", idFile: "" }], deny = []) => {
   });
 };
 
-module.exports = { Delete_File, Delete_Many_File };
+const getFileSize = (file) => {
+  const getfile = fs.statSync(`./src/Assets/Song_Audio/${file}`);
+  const fileSize = getfile.size / (1024 * 1024);
+  return fileSize;
+};
+
+module.exports = { Delete_File, Delete_Many_File, getFileSize };

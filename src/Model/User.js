@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     CCCD: { type: String, default: "null" },
     is_Premium: { type: Boolean, default: false },
     is_Admin: { type: Boolean, default: false },
-    Status: { type: String, default: 1 },
+    Status: { type: Number, default: 1 },
     Create_date: { type: Date, default: Date.now },
   },
   {

@@ -4,6 +4,8 @@ const {
   SV__Create_Song,
   SV__Delete_Song,
   SV__Get_SongM,
+  SV__Delete_Song_Admin,
+  SV__Update_Song_Admin,
 } = require("../Service/Service_Song");
 
 const CTL__Get_Song = async (req, res) => {
@@ -98,13 +100,59 @@ const CTL__Delete_Song = async (req, res) => {
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
-    const respone = await SV__Delete_Song(id);
+
+    if (!req.Id) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found id user" });
+    }
+    const respone = await SV__Delete_Song(id, req.Id);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res
       .status(404)
-      .json({ status: 404, message: "Delete user failed " });
+      .json({ status: 404, message: "Delete song failed " });
+  }
+};
+
+const CTL__Delete_Song_Admin = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    if (!req.Id) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found id user" });
+    }
+    const respone = await SV__Delete_Song_Admin(id);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Delete song failed " });
+  }
+};
+
+const CTL__Update_Song_Admin = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!req.Id) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found id user" });
+    }
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    const respone = await SV__Update_Song_Admin(id, req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Update Song failed" });
   }
 };
 
@@ -114,4 +162,6 @@ module.exports = {
   CTL__Delete_Song,
   CTL__Create_Song,
   CTL__Get_SongM,
+  CTL__Delete_Song_Admin,
+  CTL__Update_Song_Admin,
 };

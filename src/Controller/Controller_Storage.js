@@ -1,7 +1,6 @@
 const {
   SV__Get_Storage,
   SV__Update_Storage,
-  SV__Update_Storage_Premium,
   SV__Delete_Storage,
   SV__Create_Storage,
 } = require("../Service/Service_Storage");

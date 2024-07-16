@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const StorageSchema = new mongoose.Schema(
   {
     User_Id: { type: String, required: true },
-    Limit: { type: Number, required: true, default: 500 },
+    Limit: { type: Number, required: true, default: 50 },
     Used: { type: Number, default: 0 },
   },
   {

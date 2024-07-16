@@ -10,6 +10,8 @@ const {
   CTL__Delete_Song,
   CTL__Get_Song_Admin,
   CTL__Get_SongM,
+  CTL__Delete_Song_Admin,
+  CTL__Update_Song_Admin,
 } = require("../../Controller/Controller_Song");
 
 const uploadArray = multer_Array();
@@ -28,7 +30,7 @@ Router.get(
 Router.post(
   "/song",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess"], true),
+  Validate_Role(["admin", "employess"]),
   uploadArray.fields([{ name: "Song_Image" }, { name: "Song_Audio" }]),
   CTL__Create_Song
 );
@@ -36,16 +38,16 @@ Router.post(
 Router.put(
   "/song/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
+  Validate_Role(["admin", "employess"]),
   uploadArray.fields([{ name: "Song_Audio" }, { name: "Song_Image" }]),
-  CTL__Update_Song
+  CTL__Update_Song_Admin
 );
 
 Router.delete(
   "/song/:id",
   JWT_Verify_Token,
   Validate_Role(["admin"]),
-  CTL__Delete_Song
+  CTL__Delete_Song_Admin
 );
 
 module.exports = Router;

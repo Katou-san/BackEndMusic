@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const { Get_Current_Time } = require("../Util/Get_Time");
+const { getFileSize } = require("../Util/Handle_File");
 
 const handle_Link = (nameFile = "") => {
   switch (nameFile.toLowerCase()) {
@@ -34,7 +35,6 @@ function multer_Single(src = "./src/Assets/Test") {
         ? req.body.Post_Time
         : Get_Current_Time();
       const FileName = Currentdate + path.extname(file.originalname);
-      console.log(FileName);
       req.body[file.fieldname] = FileName;
       cb(null, FileName);
     },
@@ -66,7 +66,7 @@ function multer_Array() {
     },
   });
 
-  return multer({ storage: storage });
+  return multer({ storage: storage, limits: { fieldSize: 2097152 } });
 }
 
 module.exports = { multer_Single, multer_Array };

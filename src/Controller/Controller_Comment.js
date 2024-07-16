@@ -67,6 +67,13 @@ const CTL__Delete_Comment = async (req, res) => {
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
+    if (!req.Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Not found Token",
+        error: { delete: "Cant get token user" },
+      });
+    }
     const respone = await SV__Delete_Comment(id, req.Id);
     return res.status(200).json(respone);
   } catch (e) {

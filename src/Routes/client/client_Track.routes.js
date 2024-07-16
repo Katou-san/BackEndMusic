@@ -19,7 +19,7 @@ Router.post(
 );
 
 Router.delete(
-  "/track/:id",
+  "/track/:playlist/:song",
   JWT_Verify_Token,
   Validate_Role(["client"]),
   CTL__Delete_Track

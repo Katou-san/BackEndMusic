@@ -8,13 +8,22 @@ const SV__Get_Like = (Topic_Id, Type, User_Id) => {
     try {
       if (User_Id) {
         const result = await Like.findOne({ Topic_Id, Type, User_Id });
+
+        if (!result) {
+          return resolve({
+            status: 404,
+            message: "Not found like for user!",
+            data: result,
+          });
+        }
+
         return resolve({
           status: 200,
           message: "Get Like complete!",
           data: result,
         });
       }
-      const result = await Like.find({ Topic_Id, Type });
+      const result = await Like.find({ Topic_Id, Type, State: 1 });
       return resolve({
         status: 200,
         message: "Get Like complete!",

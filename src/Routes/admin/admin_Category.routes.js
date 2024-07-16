@@ -11,7 +11,7 @@ const {
 
 //TODO localhost:8080/api/admin/v1/category
 Router.get("/category", CTL__Get_Category);
-Router.get("/category/:id", JWT_Verify_Token, CTL__Get_Category);
+Router.get("/category/:id", CTL__Get_Category);
 Router.post(
   "/category",
   JWT_Verify_Token,
