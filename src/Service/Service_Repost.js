@@ -27,6 +27,52 @@ const SV__Get_Repost = (User_Id) => {
   });
 };
 
+const SV__Get_Repost_Current = (User_Id, Song_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await Repost.findOne({ User_Id, Song_Id });
+      if (!result) {
+        return resolve({ status: 404, message: "There are no reposts" });
+      }
+      return resolve({
+        status: 200,
+        message: "Get Repost complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Repost.js (SV_Get_Repost)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Get_Repost_Song = (Song_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await Repost.find({ Song_Id });
+      if (!result) {
+        return resolve({ status: 404, message: "There are no reposts" });
+      }
+      return resolve({
+        status: 200,
+        message: "Get Repost complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Repost.js (SV_Get_Repost)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_Repost = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
@@ -126,4 +172,6 @@ module.exports = {
   SV__Update_Repost,
   SV__Delete_Repost,
   SV__Create_Repost,
+  SV__Get_Repost_Song,
+  SV__Get_Repost_Current,
 };

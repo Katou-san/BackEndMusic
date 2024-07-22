@@ -6,11 +6,15 @@ const {
   CTL__Get_Repost,
   CTL__Create_Repost,
   CTL__Delete_Repost,
+  CTL__Get_Repost_Song,
+  CTL__Get_Repost_Current,
   // CTL__Update_Repost,
 } = require("../../Controller/Controller_Repost");
 
 //TODO localhost:8080/api/admin/v1/repost
 Router.get("/repost/:id", CTL__Get_Repost);
+Router.get("/reposts/:id", CTL__Get_Repost_Song);
+Router.get("/reposts/:id/:song", CTL__Get_Repost_Current);
 Router.post(
   "/repost",
   JWT_Verify_Token,

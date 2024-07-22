@@ -2,6 +2,8 @@ const { Song } = require("../Model/Song");
 const { Playlist } = require("../Model/Playlist");
 const { join, match, project, matchMany } = require("../Util/QueryDB");
 const { Get_Max_Array } = require("../Util/Convert_data");
+const { User } = require("../Model/User");
+const { Role } = require("../Model/Role");
 const getValueSong = {
   _id: 0,
   Song_Id: 1,
@@ -29,6 +31,19 @@ const getValuePlaylist = {
   Image: 1,
   Thumbnail: 1,
   Type: 1,
+};
+
+const getValueUser = {
+  _id: 0,
+  User_Id: 1,
+  User_Name: 1,
+  Avatar: 1,
+  Phone: 1,
+  is_Premium: 1,
+  Status: 1,
+  Role_Id: 1,
+  createdAt: 1,
+  Create_date: 1,
 };
 const SV__Get_Slider = () => {
   return new Promise(async (resolve, reject) => {
@@ -109,7 +124,17 @@ const SV__Get_Trending_Playlist = () => {
 const SV__Get_Trending_Artist = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      resolve({});
+      const getRole = await Role.findOne({ Role_Name: "creator" });
+
+      const result = await User.find({
+        Status: 1,
+        Role_Id: getRole.Role_Id,
+      }).select(getValueUser);
+
+      resolve({
+        status: 200,
+        data: result,
+      });
     } catch (err) {
       reject({
         status: 404,

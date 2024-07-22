@@ -39,7 +39,7 @@ const SV__Get_Storage = (User_Id) => {
 };
 
 //! Need Check
-const SV__Create_Storage = async (User_Id) => {
+const SV__Create_Storage = async (User_Id, is_Admin) => {
   try {
     const CheckUser = await User.findOne({ User_Id });
     if (!CheckUser) {
@@ -59,16 +59,31 @@ const SV__Create_Storage = async (User_Id) => {
       };
     }
 
-    const result = await Storage.create({
-      User_Id,
-    });
+    if (is_Admin) {
+      const result = await Storage.create({
+        User_Id,
+        Limit: 500000,
+      });
 
-    if (!result) {
-      return {
-        state: false,
-        error: { storage: "Create storage failed!" },
-        message: "Create storage failed!",
-      };
+      if (!result) {
+        return {
+          state: false,
+          error: { storage: "Create storage failed!" },
+          message: "Create storage failed!",
+        };
+      }
+    } else {
+      const result = await Storage.create({
+        User_Id,
+      });
+
+      if (!result) {
+        return {
+          state: false,
+          error: { storage: "Create storage failed!" },
+          message: "Create storage failed!",
+        };
+      }
     }
 
     return {

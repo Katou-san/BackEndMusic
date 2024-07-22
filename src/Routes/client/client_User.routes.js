@@ -1,4 +1,4 @@
-const { multer_Single } = require("../../Configs/Multer_Cus");
+const { multer_Single, multer_Array } = require("../../Configs/Multer_Cus");
 const { Validate_Role } = require("../../Middleware/Role_Validate");
 const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const express = require("express");
@@ -11,26 +11,22 @@ const {
   CTL__Create_User,
   CTL__Login_User,
   CTL__Oauth,
+  CTL__Get_User__Client,
 } = require("../../Controller/Controller_User");
-const uploadFile = multer_Single();
+const uploadArray = multer_Array();
 
 //TODO localhost:8080/api/v1/user
 Router.post("/user/login/:type", CTL__Login_User);
 Router.post("/user/signup", CTL__Create_User);
 Router.get("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
 
-Router.get(
-  "/user/:id",
-  JWT_Verify_Token,
-  Validate_Role(["client"]),
-  CTL__Get_User
-);
+Router.get("/user/:type/:id", JWT_Verify_Token, CTL__Get_User__Client);
 
 Router.put(
   "/user",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
-  uploadFile.single("Avatar"),
+  Validate_Role(["client"]),
+  uploadArray.fields([{ name: "Avatar" }]),
   CTL__Update_User
 );
 

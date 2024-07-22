@@ -11,8 +11,18 @@ const {
 const {
   SV__Create_Playlist_DF,
   SV__Delete_Playlist_DF,
+  SV__Delete_Playlist,
 } = require("./Service_Playlist");
 const { match, join, project, matchMany } = require("../Util/QueryDB");
+const { Delete_Many_File } = require("../Util/Handle_File");
+const { Like } = require("../Model/Like");
+const { Repost } = require("../Model/Repost");
+const { Comment } = require("../Model/Comment");
+const { Reply } = require("../Model/Reply");
+const { Follow } = require("../Model/Follow");
+const { Playlist } = require("../Model/Playlist");
+const { Song } = require("../Model/Song");
+const { SV__Delete_Song } = require("./Service_Song");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -24,6 +34,21 @@ const get_Lable_User = {
   Role_Id: 1,
   is_Admin: 1,
   createdAt: 1,
+};
+
+const get_Lable_Emply = {
+  _id: 0,
+  User_Id: 1,
+  User_Name: 1,
+  User_Email: 1,
+  Avatar: 1,
+  is_Premium: 1,
+  Status: 1,
+  Role_Id: 1,
+  is_Admin: 1,
+  createdAt: 1,
+  CCCD: 1,
+  Phone: 1,
 };
 
 const getRole = {
@@ -95,7 +120,7 @@ const SV__Get_UserM = (type) => {
         case "user":
           result = await User.aggregate([
             join("roles", "Role_Id", "Role_Id", "GetRole"),
-            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+            project(get_Lable_Emply, { Role_Name: "$GetRole.Role_Name" }),
             {
               $unwind: "$Role_Name",
             },
@@ -105,7 +130,7 @@ const SV__Get_UserM = (type) => {
         case "admin":
           result = await User.aggregate([
             join("roles", "Role_Id", "Role_Id", "GetRole"),
-            project(get_Lable_User, { Role_Name: "$GetRole.Role_Name" }),
+            project(get_Lable_Emply, { Role_Name: "$GetRole.Role_Name" }),
             {
               $unwind: "$Role_Name",
             },
@@ -279,6 +304,10 @@ const SV__Create_User = (data) => {
       User_Name,
       User_Pass,
       Role_Id = getRole.Role_Id,
+      Status = 1,
+      is_Admin = false,
+      Phone = "",
+      CCCD = "",
     } = data;
     try {
       const check = await User.findOne({ User_Email });
@@ -291,10 +320,14 @@ const SV__Create_User = (data) => {
       }
       const result = await User.create({
         User_Id: Create_Id("User", User_Name),
-        User_Email,
+        User_Email: String(User_Email).toLowerCase(),
         User_Pass: Hash_Password(User_Pass),
         User_Name,
         Role_Id: Role_Id,
+        is_Admin,
+        Status: Number(Status),
+        Phone,
+        CCCD,
       });
 
       const statePlaylist = await SV__Create_Playlist_DF(
@@ -313,7 +346,10 @@ const SV__Create_User = (data) => {
         });
       }
 
-      const stateStorage = await SV__Create_Storage(result.User_Id);
+      const stateStorage = await SV__Create_Storage(
+        result.User_Id,
+        result.is_Admin
+      );
       if (!stateStorage.state) {
         return resolve({
           status: 404,
@@ -352,25 +388,26 @@ const SV__Create_User = (data) => {
 };
 
 //! Need Check
-const SV__Update_User = (data) => {
+const SV__Update_User = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { User_Email } = data;
-      const findUser = await User.findOne({ User_Email });
+      const { Avatar } = data;
+      const findUser = await User.findOne({ User_Id });
       if (!findUser) {
-        return resolve({ status: 200, message: "not found user with email" });
+        return resolve({ status: 404, message: "not found user with id" });
       }
-
       const UpdateData = Convert_vUpdate(data, [
         "User_Id",
-        "Number_Phone",
         "User_Email",
         "_id",
       ]);
-
-      const result = await User.findOneAndUpdate({ User_Email }, UpdateData, {
-        new: true,
-      });
+      const result = await User.findOneAndUpdate(
+        { User_Id: findUser.User_Id },
+        UpdateData,
+        {
+          new: true,
+        }
+      );
 
       if (!result) {
         return resolve({
@@ -378,6 +415,19 @@ const SV__Update_User = (data) => {
           message: "Update Failed!",
           error: "Update failed",
         });
+      }
+
+      if (
+        Avatar != undefined &&
+        Avatar != null &&
+        Avatar != "null" &&
+        Avatar != "" &&
+        Avatar != "undefined"
+      ) {
+        Delete_Many_File(
+          [{ url: "User_Avatar", idFile: findUser.Avatar }],
+          ["default.jpg"]
+        );
       }
 
       resolve({
@@ -425,6 +475,16 @@ const SV__Delete_User = (User_Id) => {
           message: "Delete storage failed",
         });
       }
+
+      const getPlaylist = await Playlist.find({ User_Id });
+      const getSong = await Song.find({ User_Id });
+
+      await Like.deleteMany({ User_Id });
+      await Repost.deleteMany({ User_Id });
+      await Comment.deleteMany({ User_Id });
+      await Reply.deleteMany({ User_Id });
+      await Follow.deleteMany({ Follower: User_Id });
+      await Follow.deleteMany({ Following: User_Id });
 
       const result = await User.findOneAndDelete({ User_Id });
       if (!result) {

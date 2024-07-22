@@ -1,8 +1,9 @@
 const {
   SV__Get_Repost,
-  // SV__Update_Repost,
   SV__Delete_Repost,
   SV__Create_Repost,
+  SV__Get_Repost_Song,
+  SV__Get_Repost_Current,
 } = require("../Service/Service_Repost");
 
 const CTL__Get_Repost = async (req, res) => {
@@ -15,6 +16,41 @@ const CTL__Get_Repost = async (req, res) => {
       });
     }
     const respone_id = await SV__Get_Repost(User_Id);
+    return res.status(200).json(respone_id);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Repost failed" });
+  }
+};
+
+const CTL__Get_Repost_Current = async (req, res) => {
+  try {
+    const User_Id = req.params.id;
+    const Song_Id = req.params.song;
+    if (!User_Id || !Song_Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Infomation is missing!",
+      });
+    }
+    const respone_id = await SV__Get_Repost_Current(User_Id, Song_Id);
+    return res.status(200).json(respone_id);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Repost failed" });
+  }
+};
+
+const CTL__Get_Repost_Song = async (req, res) => {
+  try {
+    const Song_Id = req.params.id;
+    if (!Song_Id) {
+      return res.status(200).json({
+        status: 404,
+        message: "Infomation is missing!",
+      });
+    }
+    const respone_id = await SV__Get_Repost_Song(Song_Id);
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);
@@ -61,4 +97,6 @@ module.exports = {
   // CTL__Update_Repost,
   CTL__Delete_Repost,
   CTL__Create_Repost,
+  CTL__Get_Repost_Song,
+  CTL__Get_Repost_Current,
 };

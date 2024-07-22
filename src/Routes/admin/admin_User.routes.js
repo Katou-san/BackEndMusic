@@ -40,13 +40,17 @@ Router.get(
 Router.get("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
 // Router.post("/user/login", CTL__Login_User);
 Router.post("/user/login/:type", CTL__Login_User);
-Router.post("/user/signup", CTL__Create_User);
+Router.post(
+  "/user/signup",
+  JWT_Verify_Token,
+  Validate_Role(["admin"]),
+  CTL__Create_User
+);
 
 Router.put(
-  "/user",
+  "/user/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "client"]),
-  uploadFile.single("Avatar"),
+  Validate_Role(["admin"]),
   CTL__Update_User
 );
 

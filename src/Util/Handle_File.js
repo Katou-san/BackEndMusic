@@ -3,9 +3,14 @@ var fs = require("fs");
 const Delete_File = (file, id) => {
   if (!id) return true;
   if (id && file) {
-    if (id != "null") {
-      fs.unlinkSync(`./src/Assets/${file}/${id}`);
-      return true;
+    if (id != "null" && id != "undefined" && id != "") {
+      try {
+        fs.unlinkSync(`./src/Assets/${file}/${id}`);
+        return true;
+      } catch (error) {
+        console.log("not found file " + id + " in " + file);
+        return false;
+      }
     }
   } else {
     return false;

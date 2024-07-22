@@ -1,3 +1,4 @@
+const { SV__Get_User__Client } = require("../Service/client_Sevice_User");
 const {
   SV__Update_User,
   SV__Delete_User,
@@ -41,6 +42,7 @@ const CTL__Get_UserM = async (req, res) => {
 
 const CTL__Get_User = async (req, res) => {
   try {
+    const id = req.params.id;
     const type = req.params.type;
     if (type) {
       if (type != "email" && type != "id") {
@@ -76,6 +78,46 @@ const CTL__Get_User = async (req, res) => {
     return res.status(404).json({ status: 404, message: "Get user failed" });
   }
 };
+
+const CTL__Get_User__Client = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const type = req.params.type;
+    if (type) {
+      if (type != "email" && type != "id") {
+        return res.status(200).json({
+          status: 404,
+          message: "Invalid type",
+          error: {
+            User: "Invalid type",
+          },
+          data: {},
+        });
+      } else {
+        if (id) {
+          const respone_id = await SV__Get_User__Client(id, type);
+          return res.status(200).json(respone_id);
+        } else {
+          return res.status(200).json({
+            status: 404,
+            message: "Invalid id",
+            error: {
+              User: "Invalid id",
+            },
+            data: {},
+          });
+        }
+      }
+    } else {
+      const respone = await SV__Get_User__Client(null, null);
+      return res.status(200).json(respone);
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get user failed" });
+  }
+};
+
 // TODO: Done!
 const CTL__Create_User = async (req, res) => {
   try {
@@ -175,12 +217,12 @@ const CTL__Oauth = async (req, res) => {
 //! TODO: NEED UPDATE
 const CTL__Update_User = async (req, res) => {
   try {
-    const { User_Email } = req.body;
-    if (!User_Email) {
+    const id = req.params.id;
+    if (!id) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
 
-    const respone = await SV__Update_User(req.body);
+    const respone = await SV__Update_User(id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
@@ -214,4 +256,5 @@ module.exports = {
   CTL__Login_User,
   CTL__Oauth,
   CTL__Get_UserM,
+  CTL__Get_User__Client,
 };
