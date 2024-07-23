@@ -28,7 +28,10 @@ const CTL__Create_Comment = async (req, res) => {
     if (!Song_Id || !req.Id || !Content) {
       return res
         .status(404)
-        .json({ status: 404, message: "Not found id user" });
+        .json({
+          status: 404,
+          message: "Not found id user or content is valid",
+        });
     }
     const respone = await SV__Create_Comment(req.body, req.Id);
     return res.status(200).json(respone);

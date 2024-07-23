@@ -18,7 +18,7 @@ Router.get("/reposts/:id/:song", CTL__Get_Repost_Current);
 Router.post(
   "/repost",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Create_Repost
 );
 
@@ -32,7 +32,7 @@ Router.post(
 Router.delete(
   "/repost/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Repost
 );
 

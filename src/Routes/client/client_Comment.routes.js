@@ -16,20 +16,20 @@ Router.get("/comment/:id", CTL__Get_Comment);
 Router.post(
   "/comment",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Create_Comment
 );
 
 Router.put(
   "/comment/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Update_Comment
 );
 Router.delete(
   "/comment/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Comment
 );
 

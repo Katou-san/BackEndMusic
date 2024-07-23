@@ -14,26 +14,26 @@ Router.get("/likes/:topic/:type", CTL__Get_Like);
 Router.get(
   "/like/:topic/:type",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Get_Like
 );
 Router.post(
   "/like",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Create_Like
 );
 Router.put(
   "/like",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Update_Like
 );
 
 Router.delete(
   "/like/:topic/:type",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Like
 );
 

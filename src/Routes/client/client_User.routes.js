@@ -25,7 +25,7 @@ Router.get("/user/:type/:id", JWT_Verify_Token, CTL__Get_User__Client);
 Router.put(
   "/user",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   uploadArray.fields([{ name: "Avatar" }]),
   CTL__Update_User
 );

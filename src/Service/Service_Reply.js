@@ -1,16 +1,30 @@
 const { Reply } = require("../Model/Reply");
 const { Like } = require("../Model/Like");
-const { Convert_vUpdate } = require("../Util/Convert_data");
+const { Convert_vUpdate, Get_Only__Array } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
-
+const { match, join, project } = require("../Util/QueryDB");
+const getValue = {
+  _id: 0,
+  Comment_Id: 1,
+  Song_Id: 1,
+  User_Id: 1,
+  Content: 1,
+  Post_Time: 1,
+  Reply_Id: 1,
+};
 //todo done!
 const SV__Get_Reply = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await Reply.find({ Comment_Id: id });
-      if (!result) {
-        return resolve({ status: 404, message: "Not found Reply with id" });
-      }
+      const value = await Reply.aggregate([
+        match("Comment_Id", id),
+        join("users", "User_Id", "User_Id", "User"),
+        project(getValue, { User: "$User" }),
+        {
+          $unwind: "$User",
+        },
+      ]);
+      const result = Get_Only__Array(value, "User", ["User_Name", "Avatar"]);
 
       return resolve({
         status: 200,

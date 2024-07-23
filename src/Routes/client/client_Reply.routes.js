@@ -16,20 +16,20 @@ Router.get("/reply/:id", CTL__Get_Reply);
 Router.post(
   "/reply",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Create_Reply
 );
 
 Router.put(
   "/reply/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Update_Reply
 );
 Router.delete(
   "/reply/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Reply
 );
 

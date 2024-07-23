@@ -14,14 +14,14 @@ Router.get("/track/:id", CTL__Get_Track);
 Router.post(
   "/track",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Create_Track
 );
 
 Router.delete(
   "/track/:playlist/:song",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Track
 );
 

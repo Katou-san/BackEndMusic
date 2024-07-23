@@ -39,6 +39,49 @@ const SV__Get_Follow = (User_Id) => {
   });
 };
 
+const SV__Get_Follow_Current = (User_Id, Following) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({ User_Id });
+      if (!checkUser) {
+        return resolve({
+          status: 404,
+          message: "Not found user!",
+          error: {
+            Follow: "Not found user!",
+          },
+          data: {},
+        });
+      }
+
+      const result = await Follow.findOne({ Following, Follower: User_Id });
+      if (!result) {
+        return resolve({
+          status: 404,
+          message: "Not found follow!",
+          error: {
+            follow: "Not found follow!",
+          },
+          data: {},
+        });
+      }
+
+      return resolve({
+        status: 200,
+        message: "Get Follow complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Follow.js (SV_Get_Follow)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_Follow = (Following, User_Id) => {
   return new Promise(async (resolve, reject) => {
@@ -130,4 +173,5 @@ module.exports = {
   SV__Get_Follow,
   SV__Delete_Follow,
   SV__Create_Follow,
+  SV__Get_Follow_Current,
 };

@@ -19,28 +19,28 @@ Router.get("/playlist/:type/:id", CTL__Get_Playlist);
 Router.get(
   "/playlists/:type",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Get_PlaylistDF
 );
 
 Router.post(
   "/playlist",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   uploadArray.fields([{ name: "Image" }, { name: "Thumbnail" }]),
   CTL__Create_Playlist
 );
 Router.put(
   "/playlist/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   uploadArray.fields([{ name: "Image" }, { name: "Thumbnail" }]),
   CTL__Update_Playlist
 );
 Router.delete(
   "/playlist/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Delete_Playlist
 );
 

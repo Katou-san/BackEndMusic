@@ -8,7 +8,7 @@ const { CTL__Get_Bill } = require("../../Controller/Controller_Bill");
 Router.get(
   "/bill/:id",
   JWT_Verify_Token,
-  Validate_Role(["client"]),
+  Validate_Role(["client", "creator"]),
   CTL__Get_Bill
 );
 
