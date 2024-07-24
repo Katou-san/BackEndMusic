@@ -10,26 +10,26 @@ const {
 } = require("../../Controller/Controller_Sub");
 
 //TODO localhost:8080/api/admin/v1/subscription
-Router.get("/subscription", CTL__Get_Subscription);
-Router.get("/subscription/:id", CTL__Get_Subscription);
+Router.get("/sub", CTL__Get_Subscription);
+Router.get("/sub/:id", CTL__Get_Subscription);
 Router.post(
-  "/subscription",
+  "/sub",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess"]),
+  Validate_Role(["admin"]),
   CTL__Create_Subscription
 );
 
 Router.put(
-  "/subscription/:id",
+  "/sub/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess"]),
+  Validate_Role(["admin"]),
   CTL__Update_Subscription
 );
 
 Router.delete(
-  "/subscription/:id",
+  "/sub/:id",
   JWT_Verify_Token,
-  Validate_Role(["admin", "employess"]),
+  Validate_Role(["admin"]),
   CTL__Delete_Subscription
 );
 

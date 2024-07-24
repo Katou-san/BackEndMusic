@@ -43,7 +43,7 @@ const SV__Get_Subscription = (id) => {
 const SV__Create_Subscription = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Sub_Title, Price, Content, Duration, Storage } = data;
+      const { Sub_Title, Price, Content, Duration, Storage, Status } = data;
       const result = await Subscription.create({
         Sub_Id: Create_Id("Sub", Sub_Title),
         Sub_Title,
@@ -51,6 +51,7 @@ const SV__Create_Subscription = (data) => {
         Price,
         Content,
         Duration,
+        Status: Status || true,
       });
       resolve({
         status: 200,

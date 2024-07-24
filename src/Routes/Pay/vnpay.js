@@ -5,6 +5,9 @@ const CryptoJS = require("crypto-js"); // npm install crypto-js
 const moment = require("moment"); // npm install moment
 const express = require("express");
 const qs = require("qs");
+const { Create_Id } = require("../../Util/Create_Id");
+const { User } = require("../../Model/User");
+const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const Router = express.Router();
 
 const config = {
@@ -14,13 +17,22 @@ const config = {
   endpoint: "https://sb-openapi.zalopay.vn/v2/create",
 };
 //? DONE
-Router.post("/payment", async (req, res) => {
+Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
   const embed_data = {
     redirecturl: "https://docs.zalopay.vn/result",
   };
 
+  if (!req.Id) {
+    return res.status(200).json({ status: 404, message: "Error when payment" });
+  }
+
+  const getUser = User.findOne({ User_Id: req.Id });
+  if (!getUser) {
+    return res.status(200).json({ status: 404, message: "Not found user" });
+  }
+
   const items = [{}];
-  const transID = Math.floor(Math.random() * 1000000);
+  const transID = Create_Id("payment");
   const order = {
     app_id: config.app_id,
     app_trans_id: `${moment().format("YYMMDD")}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id

@@ -5,7 +5,7 @@ const Router = express.Router();
 const { CTL__Get_Subscription } = require("../../Controller/Controller_Sub");
 
 //TODO localhost:8080/api/admin/v1/premium
-Router.get("/premium", CTL__Get_Subscription);
-Router.get("/premium/:id", CTL__Get_Subscription);
+Router.get("/sub", CTL__Get_Subscription);
+Router.get("/suv/:id", CTL__Get_Subscription);
 
 module.exports = Router;
