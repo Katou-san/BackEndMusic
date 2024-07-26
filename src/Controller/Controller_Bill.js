@@ -2,6 +2,7 @@ const {
   SV__Get_Bill,
   SV__Delete_Bill,
   SV__Create_Bill,
+  SV__Get_Bill__Current,
 } = require("../Service/Service_Bill");
 
 const CTL__Get_Bill = async (req, res) => {
@@ -13,6 +14,23 @@ const CTL__Get_Bill = async (req, res) => {
     } else {
       const respone = await SV__Get_Bill();
       return res.status(200).json(respone);
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Bill failed" });
+  }
+};
+
+const CTL__Get_Bill__Current = async (req, res) => {
+  try {
+    const Sub_Id = req.params.id;
+    if (!Sub_Id || !req.Id) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Information is missing! " });
+    } else {
+      const respone_id = await SV__Get_Bill__Current(req.Id, Sub_Id);
+      return res.status(200).json(respone_id);
     }
   } catch (e) {
     new Error(e.message);
@@ -56,4 +74,5 @@ module.exports = {
   CTL__Get_Bill,
   CTL__Delete_Bill,
   CTL__Create_Bill,
+  CTL__Get_Bill__Current,
 };

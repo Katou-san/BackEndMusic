@@ -86,7 +86,7 @@ const SV__Get_User = (id, type) => {
         return resolve({
           status: 200,
           message: "get user Complete!",
-          data: result,
+          data: result[0],
         });
       }
 

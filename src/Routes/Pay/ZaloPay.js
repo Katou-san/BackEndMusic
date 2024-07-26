@@ -8,6 +8,9 @@ const qs = require("qs");
 const { Create_Id } = require("../../Util/Create_Id");
 const { User } = require("../../Model/User");
 const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
+const { Subscription } = require("../../Model/Subscription");
+const { Bill } = require("../../Model/Bill");
+const { plus_Date } = require("../../Util/Get_Time");
 const Router = express.Router();
 
 const config = {
@@ -19,31 +22,39 @@ const config = {
 //? DONE
 Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
   const embed_data = {
-    redirecturl: "https://docs.zalopay.vn/result",
+    redirecturl: "http://localhost:3000",
   };
 
   if (!req.Id) {
     return res.status(200).json({ status: 404, message: "Error when payment" });
   }
 
-  const getUser = User.findOne({ User_Id: req.Id });
+  const getUser = await User.findOne({ User_Id: req.Id });
   if (!getUser) {
     return res.status(200).json({ status: 404, message: "Not found user" });
   }
 
-  const items = [{}];
+  const Sub_Id = req.params.id;
+  const Check_Sub = await Subscription.findOne({ Sub_Id });
+  if (!Check_Sub) {
+    return res
+      .status(200)
+      .json({ status: 404, message: "Not found subscription" });
+  }
+
+  const items = [Check_Sub];
   const transID = Create_Id("payment");
   const order = {
     app_id: config.app_id,
     app_trans_id: `${moment().format("YYMMDD")}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-    app_user: "user123",
+    app_user: getUser.User_Name,
     app_time: Date.now(), // miliseconds
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data),
-    amount: 50000,
-    description: `Lazada - Payment for the order #${transID}`,
+    amount: 1000,
+    description: `Hotaru - Payment for subscription #${transID}`,
     bank_code: "",
-    callback_url: `${process.env.CALLBACK_URL}/callback`,
+    callback_url: `${process.env.CALLBACK_URL}/zalopay/callback/${getUser.User_Id}`,
   };
 
   // appid|apptransid|appuser|amount|apptime|embeddata|item
@@ -66,17 +77,29 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
 
   try {
     const result = await axios.post(config.endpoint, null, { params: order });
-    return res.status(200).json(result.data);
+    return res.status(200).json({ status: 200, data: result.data });
   } catch (error) {
-    return res.status(404).json({ error: error.message });
+    return res.status(404).json({
+      status: 404,
+      data: {},
+      error: error.message,
+      message: error.message,
+    });
   }
 });
 
 //! NEED CHECK
-Router.post("/callback", (req, res) => {
+Router.post("/callback/:id", async (req, res) => {
   let result = {};
 
   try {
+    const User_Id = req.params.id;
+    const getUser = await User.findOne({ User_Id });
+    if (!getUser) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Error when payment" });
+    }
     let dataStr = req.body.data;
     let reqMac = req.body.mac;
 
@@ -99,6 +122,25 @@ Router.post("/callback", (req, res) => {
 
       result.return_code = 1;
       result.return_message = "success";
+      if (result.return_code === 1) {
+        const data = JSON.parse(req.body.data);
+        const subscription = JSON.parse(data.item)[0];
+        const GetSub = await Subscription.findOne({
+          Sub_Id: subscription.Sub_Id,
+        });
+
+        const createBill = await Bill.create({
+          Bill_Id: Create_Id("Bill"),
+          User_Id,
+          Sub_Id: GetSub.Sub_Id,
+          Expiration_Date: plus_Date(GetSub.Duration),
+        });
+        const update = await User.findOneAndUpdate(
+          { User_Id },
+          { is_Premium: true },
+          { new: true }
+        );
+      }
     }
   } catch (ex) {
     result.return_code = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
@@ -122,7 +164,7 @@ Router.post("/order-status/:id", async function (req, res) {
 
   let postConfig = {
     method: "post",
-    url: config.endpoint,
+    url: "https://sb-openapi.zalopay.vn/v2/query",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },

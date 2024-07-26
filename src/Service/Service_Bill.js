@@ -1,12 +1,24 @@
 const { Bill } = require("../Model/Bill");
 const { Subscription } = require("../Model/Subscription");
+const { User } = require("../Model/User");
 const { Create_Id } = require("../Util/Create_Id");
+const { join, project } = require("../Util/QueryDB");
 //todo done!
-const SV__Get_Bill = (id) => {
+
+const getValue = {
+  _id: 0,
+  Bill_Id: 1,
+  User_Id: 1,
+  Sub_Id: 1,
+  Create_Date: 1,
+  Expiration_Date: 1,
+};
+
+const SV__Get_Bill = (Sub_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (id) {
-        const result = await Bill.find({ User_Id: id });
+      if (Sub_Id) {
+        const result = await Bill.findOne({ Sub_Id });
         if (!result) {
           return resolve({
             status: 404,
@@ -20,11 +32,64 @@ const SV__Get_Bill = (id) => {
         });
       }
 
-      const allBill = await Bill.find();
+      const allBill = await Bill.aggregate([
+        join("users", "User_Id", "User_Id", "user"),
+        project(getValue, { User_Name: "$user.User_Name" }),
+        {
+          $unwind: "$User_Name",
+        },
+      ]);
+
       resolve({
         status: 200,
         message: "get all bill complete!",
         data: allBill,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Bill.js (SV_Get_Bill)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Get_Bill__Current = (User_Id, Sub_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = User.findOne({ User_Id });
+      if (!checkUser) {
+        return resolve({
+          status: 404,
+          message: "Not found user!",
+          data: {},
+          error: "Not found user!",
+        });
+      }
+
+      const checkSub = Subscription.findOne({ Sub_Id });
+      if (!checkSub) {
+        return resolve({
+          status: 404,
+          message: "Not found subscription!",
+          data: {},
+          error: "Not found subscription!",
+        });
+      }
+
+      const result = await Bill.findOne({ User_Id, Sub_Id });
+      if (!result) {
+        return resolve({
+          status: 404,
+          message: "Not found bill for user",
+        });
+      }
+
+      resolve({
+        status: 200,
+        message: "get all bill complete!",
+        data: result,
       });
     } catch (err) {
       reject({
@@ -137,6 +202,7 @@ const SV__Delete_Bill = (Bill_Id) => {
 module.exports = {
   SV__Get_Bill,
   // SV__Update_Bill,
+  SV__Get_Bill__Current,
   SV__Delete_Bill,
   SV__Create_Bill,
 };

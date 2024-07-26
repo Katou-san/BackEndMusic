@@ -217,12 +217,26 @@ const CTL__Oauth = async (req, res) => {
 //! TODO: NEED UPDATE
 const CTL__Update_User = async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!id) {
+    if (!req.Id) {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
 
-    const respone = await SV__Update_User(id, req.body);
+    const respone = await SV__Update_User(req.Id, req.body);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Update user failed" });
+  }
+};
+
+const CTL__Update_User_Admin = async (req, res) => {
+  try {
+    const User_Id = req.params.id;
+    if (!User_Id) {
+      return res.status(200).json({ status: 404, message: "Id is empty" });
+    }
+
+    const respone = await SV__Update_User(User_Id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
@@ -257,4 +271,5 @@ module.exports = {
   CTL__Oauth,
   CTL__Get_UserM,
   CTL__Get_User__Client,
+  CTL__Update_User_Admin,
 };

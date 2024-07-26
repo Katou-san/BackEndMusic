@@ -3,6 +3,7 @@ const {
   SV__Update_Role,
   SV__Delete_Role,
   SV__Create_Role,
+  SV__Get_Role_User,
 } = require("../Service/Service_Role");
 
 const CTL__Get_Role = async (req, res) => {
@@ -15,6 +16,23 @@ const CTL__Get_Role = async (req, res) => {
       const respone = await SV__Get_Role(null);
       return res.status(200).json(respone);
     }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Role failed" });
+  }
+};
+
+const CTL__Get_Role_User = async (req, res) => {
+  try {
+    const type = req.params.type;
+    let respone;
+    if (type == "admin") {
+      respone = await SV__Get_Role_User(type);
+    } else {
+      respone = await SV__Get_Role_User(type);
+    }
+
+    return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res.status(404).json({ status: 404, message: "Get Role failed" });
@@ -72,4 +90,5 @@ module.exports = {
   CTL__Create_Role,
   CTL__Update_Role,
   CTL__Delete_Role,
+  CTL__Get_Role_User,
 };

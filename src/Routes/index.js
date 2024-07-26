@@ -1,12 +1,5 @@
-// const UserRouter = require("./client/Routes_User");
-// const SongRouter = require("./client/Routes_song");
-// const PlaylistRoutes = require("./client/Routes_Playlist");
-// const CategoryRoutes = require("./client/Routes_Category");
-
-// const verify_JWT = require("./client/Routes_JWT");
-// const Search = require("./client/Routes_Search");
-// const RoleRouter = require("./client/Routes_Role");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const RouterAdmin = require("./admin");
 const RouterClient = require("./client");
 const RouterSend = require("./Send");
@@ -18,6 +11,9 @@ const routes = (app) => {
 
   //Todo Pays routes
   app.use("/api/v1/pay", RouterPay);
+  // app.post(`/api/v1/pay/callback`, () => {
+  //   console.log("hello");
+  // });
   //?  localhost:8080/api/v1/pay/vnpay
   //?  localhost:8080/api/v1/pay/momo
 

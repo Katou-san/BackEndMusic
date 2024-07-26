@@ -1,3 +1,4 @@
+const { denyGetRoleUser } = require("../Configs/getRoles");
 const { Role } = require("../Model/Role");
 const { User } = require("../Model/User");
 const { Create_Id } = require("../Util/Create_Id");
@@ -23,6 +24,37 @@ const SV__Get_Role = (id) => {
         status: 200,
         message: "get all Roles complete!",
         data: allRoles,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Role.js (SV_Get_Role)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Get_Role_User = (type = "user") => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const results = await Role.find();
+      let allRoleUser = [];
+      let rolesUser = results.map((role) => {
+        if (type == "admin") {
+          if (denyGetRoleUser.includes(role.Role_Name)) {
+            allRoleUser.push(role);
+          }
+        } else {
+          if (!denyGetRoleUser.includes(role.Role_Name)) {
+            allRoleUser.push(role);
+          }
+        }
+      });
+      resolve({
+        status: 200,
+        message: "get all Roles complete!",
+        data: allRoleUser,
       });
     } catch (err) {
       reject({
@@ -96,7 +128,7 @@ const SV__Update_Role = (id, data) => {
 const SV__Delete_Role = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Check_Role = await User.findOne({ Role: id });
+      const Check_Role = await User.findOne({ Role_Id: id });
       if (Check_Role) {
         return resolve({
           status: 404,
@@ -129,4 +161,5 @@ module.exports = {
   SV__Update_Role,
   SV__Delete_Role,
   SV__Create_Role,
+  SV__Get_Role_User,
 };

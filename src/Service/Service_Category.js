@@ -1,4 +1,5 @@
 const { Category } = require("../Model/Category");
+const { Song } = require("../Model/Song");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { join } = require("../Util/QueryDB");
@@ -102,6 +103,14 @@ const SV__Update_Category = (id, data) => {
 const SV__Delete_Category = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const checkSong = await Song.findOne({ Category_Id: id });
+      if (checkSong) {
+        return resolve({
+          status: 404,
+          message: "Category is using!",
+          error: "Category is using",
+        });
+      }
       const result = await Category.findOneAndDelete({ Category_Id: id });
       if (!result) {
         return resolve({ status: 200, message: "Not found Category with id" });

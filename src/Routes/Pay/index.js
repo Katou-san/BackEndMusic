@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
 
-const vnpay = require("./vnpay");
-Router.use("/vnpay", vnpay);
+const zalopay = require("./ZaloPay");
+Router.use("/zalopay", zalopay);
 module.exports = Router;

@@ -11,4 +11,16 @@ const Get_Current_Time = () => {
   return `${get_Year}${get_Month}${get_Day}${get_Hour}${get_Minute}${get_Second}${get_Millisecond}${Random}`;
 };
 
-module.exports = { Get_Current_Time };
+const plus_Date = (days) => {
+  var date = new Date();
+  date.setDate(date.getDate() + days);
+  return date;
+};
+
+const minus_Date = (days) => {
+  var date = new Date();
+  date.setDate(date.getDate() + days);
+  return date;
+};
+
+module.exports = { Get_Current_Time, plus_Date, minus_Date };

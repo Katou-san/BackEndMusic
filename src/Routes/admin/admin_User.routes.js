@@ -12,6 +12,7 @@ const {
   CTL__Login_User,
   CTL__Oauth,
   CTL__Get_UserM,
+  CTL__Update_User_Admin,
 } = require("../../Controller/Controller_User");
 const uploadFile = multer_Single();
 
@@ -51,7 +52,7 @@ Router.put(
   "/user/:id",
   JWT_Verify_Token,
   Validate_Role(["admin"]),
-  CTL__Update_User
+  CTL__Update_User_Admin
 );
 
 Router.delete(
