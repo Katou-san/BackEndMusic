@@ -10,6 +10,7 @@ const {
   getFileSize,
 } = require("../Util/Handle_File");
 const { match, join, project } = require("../Util/QueryDB");
+const { Repost } = require("../Model/Repost");
 
 const getValue = {
   Song_Id: 1,
@@ -115,7 +116,7 @@ const SV__Create_Song = (data, User_Id) => {
       Color,
       is_Publish = true,
     } = data;
-
+    console.log(Song_Name);
     const IdSong = Create_Id("Song", Song_Name);
     try {
       const check = await Song.findOne({ Song_Id: IdSong });
@@ -123,6 +124,16 @@ const SV__Create_Song = (data, User_Id) => {
         resolve({
           status: "404",
           message: "Song already have!",
+        });
+      }
+
+      const checkSongName = await Song.findOne({
+        Song_Name: String(Song_Name).toLowerCase(),
+      });
+      if (checkSongName) {
+        resolve({
+          status: "404",
+          message: "Name is using!",
         });
       }
 
@@ -292,6 +303,54 @@ const SV__Delete_Song = (id, User_Id) => {
   });
 };
 
+const SV__Check_Delete_Song = (id, User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const find = await Song.findOne({ Song_Id: id, User_Id });
+      if (!find) {
+        return resolve({ status: 404, message: "Not found song with id" });
+      }
+      const checkTrack = await Track.findOne({ Song_Id: id });
+      const checkPlaylist = await Playlist.findOne({
+        Playlist_Id: checkTrack.Playlist_Id,
+        Type: 1,
+      });
+
+      if (checkPlaylist) {
+        return resolve({
+          status: 404,
+          data: {
+            Noitification: true,
+          },
+        });
+      }
+
+      const checkRepost = await Repost.findOne({ Song_Id: id });
+      if (checkRepost) {
+        return resolve({
+          status: 404,
+          data: {
+            Noitification: true,
+          },
+        });
+      }
+
+      resolve({
+        status: 200,
+        data: {
+          Noitification: false,
+        },
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Song.js (SV_Delete_Song)",
+      });
+    }
+  });
+};
+
 const SV__Delete_Song_Admin = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -391,4 +450,5 @@ module.exports = {
   SV__Get_SongM,
   SV__Delete_Song_Admin,
   SV__Update_Song_Admin,
+  SV__Check_Delete_Song,
 };

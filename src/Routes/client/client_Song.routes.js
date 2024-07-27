@@ -2,6 +2,7 @@ const { multer_Single, multer_Array } = require("../../Configs/Multer_Cus");
 const { Validate_Role } = require("../../Middleware/Role_Validate");
 const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const express = require("express");
+const { CTL__Check_Song_Delete } = require("../../Controller/Controller_Song");
 const Router = express.Router();
 
 const {
@@ -16,6 +17,7 @@ const uploadArray = multer_Array();
 //TODO localhost:8080/api/admin/v1/song
 Router.get("/song", CTL__Get_Song);
 Router.get("/song/:id", CTL__Get_Song);
+Router.get("/songs/:id", JWT_Verify_Token, CTL__Check_Song_Delete);
 Router.post(
   "/song",
   JWT_Verify_Token,

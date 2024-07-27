@@ -104,7 +104,7 @@ const CTL__Create_Playlist = async (req, res) => {
     new Error(e.message);
     return res
       .status(404)
-      .json({ status: 404, message: "Create Playlist failed" });
+      .json({ status: 404, message: "Fail Playlist failed" });
   }
 };
 

@@ -1,4 +1,6 @@
+const { Bill } = require("../Model/Bill");
 const { Playlist } = require("../Model/Playlist");
+const { Subscription } = require("../Model/Subscription");
 const { Track } = require("../Model/Track");
 const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
@@ -154,6 +156,68 @@ const SV__Create_Playlist = (id, data) => {
           status: 404,
           message: "Playlist is exist",
         });
+      }
+
+      const checkName = await Playlist.findOne({ Playlist_Name, User_Id: id });
+      if (checkName) {
+        return resolve({
+          status: 404,
+          message: "Name is using",
+        });
+      }
+
+      if (Type == 2) {
+        const getBill = await Bill.aggregate([
+          {
+            $match: {
+              User_Id: id,
+            },
+          },
+          { $sort: { Expiration_Date: -1 } },
+        ]);
+
+        var hav_sub = 1;
+
+        if (getBill.length == 0) {
+          hav_sub = 0;
+        }
+
+        if (getBill.length > 0) {
+          const checkDate =
+            new Date(getBill[0].Expiration_Date).toISOString() <
+            new Date().toISOString(); //het hang
+          if (checkDate) {
+            hav_sub = 0;
+          }
+        }
+
+        if (hav_sub == 0) {
+          const checkAlbum = await Playlist.find({ User_Id: id, Type: 2 });
+          if (checkAlbum.length >= 2) {
+            return resolve({
+              status: 404,
+              message: "You have more than 2 albums",
+              data: {},
+            });
+          } else {
+            const result = await Playlist.create({
+              Playlist_Id,
+              Playlist_Name: String(Playlist_Name).toLowerCase(),
+              User_Id: id,
+              Artist,
+              is_Publish,
+              Image: Image == "null" ? "default.png" : Image,
+              Thumbnail: Thumbnail == "null" ? "default.png" : Thumbnail,
+              Type,
+            });
+
+            return resolve({
+              status: 200,
+              message: "Create album success",
+              data: result,
+            });
+          }
+        }
       }
 
       const result = await Playlist.create({
