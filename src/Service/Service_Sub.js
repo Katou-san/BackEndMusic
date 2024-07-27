@@ -8,7 +8,7 @@ const SV__Get_Subscription = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (id) {
-        const result = await Subscription.findOne({ Sub_Id: id });
+        const result = await Subscription.findOne({ Sub_Id: id, Status: 1 });
         if (!result) {
           return resolve({
             status: 404,
@@ -22,7 +22,7 @@ const SV__Get_Subscription = (id) => {
         });
       }
 
-      const allSubs = await Subscription.find();
+      const allSubs = await Subscription.find({ Status: 1 });
       resolve({
         status: 200,
         message: "get all subscriptions complete!",

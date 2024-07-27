@@ -24,7 +24,7 @@ const CTL__Get_Bill = async (req, res) => {
 const CTL__Get_Bill__Current = async (req, res) => {
   try {
     const Sub_Id = req.params.id;
-    if (!Sub_Id || !req.Id) {
+    if (!req.Id) {
       return res
         .status(200)
         .json({ status: 404, message: "Information is missing! " });

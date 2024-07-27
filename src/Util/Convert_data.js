@@ -40,14 +40,15 @@ const Get_Max_Array = (
   data = [],
   Name_Object = "",
   Id_Item = "",
-  limit = 0
+  limit = 0,
+  start = 0
 ) => {
   if (typeof data != "array") {
     if (Name_Object != "" && Id_Item != "") {
       let arrayMax = [];
       let arrayTemp = [];
       for (let i = 0; i < data.length; i++) {
-        let max = 0;
+        let max = start;
         let index = 0;
         for (let j = 0; j < data.length; j++) {
           if (

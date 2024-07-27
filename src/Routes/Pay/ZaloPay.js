@@ -11,6 +11,7 @@ const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
 const { Subscription } = require("../../Model/Subscription");
 const { Bill } = require("../../Model/Bill");
 const { plus_Date } = require("../../Util/Get_Time");
+const { Storage } = require("../../Model/Storage");
 const Router = express.Router();
 
 const config = {
@@ -22,7 +23,7 @@ const config = {
 //? DONE
 Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
   const embed_data = {
-    redirecturl: "http://localhost:3000",
+    redirecturl: "",
   };
 
   if (!req.Id) {
@@ -51,7 +52,7 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
     app_time: Date.now(), // miliseconds
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data),
-    amount: 1000,
+    amount: Check_Sub.Price,
     description: `Hotaru - Payment for subscription #${transID}`,
     bank_code: "",
     callback_url: `${process.env.CALLBACK_URL}/zalopay/callback/${getUser.User_Id}`,
@@ -91,7 +92,7 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
 //! NEED CHECK
 Router.post("/callback/:id", async (req, res) => {
   let result = {};
-
+  console.log("callback");
   try {
     const User_Id = req.params.id;
     const getUser = await User.findOne({ User_Id });
@@ -138,6 +139,12 @@ Router.post("/callback/:id", async (req, res) => {
         const update = await User.findOneAndUpdate(
           { User_Id },
           { is_Premium: true },
+          { new: true }
+        );
+        const getStorage = await Storage.findOne({ User_Id });
+        const storageUpdate = await Storage.findOneAndUpdate(
+          { User_Id },
+          { Limit: getStorage.Limit + GetSub.Storage },
           { new: true }
         );
       }

@@ -100,7 +100,7 @@ const SV__Get_Trending_Playlist = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const getPlaylist = await Playlist.aggregate([
-        match("is_Publish", true),
+        matchMany([{ is_Publish: true }, { Type: 1 }]),
         join("likes", "Playlist_Id", "Topic_Id", "like"),
         project(getValuePlaylist, { likes: "$like.State" }),
       ]);
@@ -163,7 +163,17 @@ const SV__Get_Trending_Season = () => {
 const SV__Get_Trending_Album = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      resolve({});
+      const getPlaylist = await Playlist.aggregate([
+        matchMany([{ is_Publish: true }, { Type: 2 }]),
+        join("likes", "Playlist_Id", "Topic_Id", "like"),
+        project(getValuePlaylist, { likes: "$like.State" }),
+      ]);
+
+      const result = Get_Max_Array(getPlaylist, "likes", "Playlist_Id", 20);
+      resolve({
+        status: 200,
+        data: result,
+      });
     } catch (err) {
       reject({
         status: 404,

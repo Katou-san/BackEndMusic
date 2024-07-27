@@ -41,7 +41,7 @@ const SV__Get_Song = (id) => {
         });
       }
 
-      const allSongs = await Song.find();
+      const allSongs = await Song.find({ is_Publish: true });
       resolve({
         status: 200,
         message: "get all Songs complete!",

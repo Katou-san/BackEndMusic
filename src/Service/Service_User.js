@@ -22,7 +22,6 @@ const { Reply } = require("../Model/Reply");
 const { Follow } = require("../Model/Follow");
 const { Playlist } = require("../Model/Playlist");
 const { Song } = require("../Model/Song");
-const { SV__Delete_Song } = require("./Service_Song");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -49,11 +48,6 @@ const get_Lable_Emply = {
   createdAt: 1,
   CCCD: 1,
   Phone: 1,
-};
-
-const getRole = {
-  _id: 0,
-  Role_Name: 1,
 };
 
 //! Need Check
@@ -318,6 +312,15 @@ const SV__Create_User = (data) => {
           message: "Email is extisting",
         });
       }
+      const checkName = await User.findOne({ User_Name });
+
+      if (checkName) {
+        return resolve({
+          status: 404,
+          message: "Name is using",
+        });
+      }
+
       const result = await User.create({
         User_Id: Create_Id("User", User_Name),
         User_Email: String(User_Email).toLowerCase(),
@@ -454,6 +457,11 @@ const SV__Delete_User = (User_Id) => {
       const checkUser = await User.findOne({ User_Id });
       if (!checkUser) {
         return resolve({ status: 404, message: "Not found user with id" });
+      }
+
+      const checkUserSong = await Song.findOne({ User_Id });
+      if (!checkUserSong) {
+        return resolve({ status: 404, message: "User have songs" });
       }
 
       const deletePlaylistDF = await SV__Delete_Playlist_DF(User_Id);

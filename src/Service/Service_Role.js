@@ -35,6 +35,32 @@ const SV__Get_Role = (id) => {
   });
 };
 
+const SV__Get_Role_Current = (User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({ User_Id });
+      if (!checkUser) {
+        return resolve({ status: 404, message: "Not found User with id" });
+      }
+      const result = await Role.findOne({ Role_Id: checkUser.Role_Id });
+      if (!result) {
+        return resolve({ status: 404, message: "Not found Role with id" });
+      }
+      return resolve({
+        status: 200,
+        message: "Get Role complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Role.js (SV_Get_Role)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 const SV__Get_Role_User = (type = "user") => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -162,4 +188,5 @@ module.exports = {
   SV__Delete_Role,
   SV__Create_Role,
   SV__Get_Role_User,
+  SV__Get_Role_Current,
 };
