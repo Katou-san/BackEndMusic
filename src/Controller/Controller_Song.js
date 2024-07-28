@@ -7,6 +7,7 @@ const {
   SV__Delete_Song_Admin,
   SV__Update_Song_Admin,
   SV__Check_Delete_Song,
+  SV__Check_Delete_Song_Admin,
 } = require("../Service/Service_Song");
 
 const CTL__Get_Song = async (req, res) => {
@@ -138,6 +139,25 @@ const CTL__Delete_Song = async (req, res) => {
   }
 };
 
+const CTL__Check_Song_Delete_Admin = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(200).json({ status: 404, message: "id is empty" });
+    }
+    if (!req.Id) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Not found id user" });
+    }
+    const respone = await SV__Check_Delete_Song_Admin(id);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Not found song " });
+  }
+};
+
 const CTL__Delete_Song_Admin = async (req, res) => {
   try {
     const id = req.params.id;
@@ -187,4 +207,5 @@ module.exports = {
   CTL__Delete_Song_Admin,
   CTL__Update_Song_Admin,
   CTL__Check_Song_Delete,
+  CTL__Check_Song_Delete_Admin,
 };

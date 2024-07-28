@@ -5,13 +5,11 @@ const express = require("express");
 const Router = express.Router();
 const {
   CTL__Get_Song,
-  CTL__Update_Song,
   CTL__Create_Song,
-  CTL__Delete_Song,
-  CTL__Get_Song_Admin,
   CTL__Get_SongM,
   CTL__Delete_Song_Admin,
   CTL__Update_Song_Admin,
+  CTL__Check_Song_Delete_Admin,
 } = require("../../Controller/Controller_Song");
 
 const uploadArray = multer_Array();
@@ -25,6 +23,12 @@ Router.get(
   JWT_Verify_Token,
   Validate_Role(["employess", "admin"]),
   CTL__Get_SongM
+);
+Router.get(
+  "/songs-check/:id",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Check_Song_Delete_Admin
 );
 
 Router.post(

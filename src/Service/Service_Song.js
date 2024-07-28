@@ -4,11 +4,7 @@ const { Track } = require("../Model/Track");
 const { Storage } = require("../Model/Storage");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
-const {
-  Delete_File,
-  Delete_Many_File,
-  getFileSize,
-} = require("../Util/Handle_File");
+const { Delete_Many_File, getFileSize } = require("../Util/Handle_File");
 const { match, join, project } = require("../Util/QueryDB");
 const { Repost } = require("../Model/Repost");
 
@@ -442,6 +438,56 @@ const SV__Update_Song_Admin = (id, data) => {
   });
 };
 
+const SV__Check_Delete_Song_Admin = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const find = await Song.findOne({ Song_Id: id });
+      if (!find) {
+        return resolve({ status: 404, message: "Not found song with id" });
+      }
+      const checkTrack = await Track.find({ Song_Id: id });
+
+      checkTrack.map(async (track) => {
+        const checkPlaylist = await Playlist.findOne({
+          Playlist_Id: track.Playlist_Id,
+          Type: 1,
+        });
+        if (checkPlaylist) {
+          return resolve({
+            status: 404,
+            data: {
+              Noitification: true,
+            },
+          });
+        }
+      });
+
+      const checkRepost = await Repost.findOne({ Song_Id: id });
+      if (checkRepost) {
+        return resolve({
+          status: 404,
+          data: {
+            Noitification: true,
+          },
+        });
+      }
+
+      resolve({
+        status: 200,
+        data: {
+          Noitification: false,
+        },
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Song.js (SV_Delete_Song)",
+      });
+    }
+  });
+};
+
 module.exports = {
   SV__Get_Song,
   SV__Update_Song,
@@ -451,4 +497,5 @@ module.exports = {
   SV__Delete_Song_Admin,
   SV__Update_Song_Admin,
   SV__Check_Delete_Song,
+  SV__Check_Delete_Song_Admin,
 };
