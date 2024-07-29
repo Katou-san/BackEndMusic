@@ -16,6 +16,7 @@ const Admin_Router_Storage = require("./admin_Storage.routes");
 const Admin_Router_Track = require("./admin_Track.routes");
 const Admin_Router_Partner = require("./admin_Partner.routes");
 const Admin_Router_Dashboard = require("./admin_Dashboard.routes");
+const Admin_Router_Artist = require("./admin_Artist.routes");
 Router.use(Admin_Router_User);
 Router.use(Admin_Router_Category);
 Router.use(Admin_Router_Role);
@@ -32,4 +33,6 @@ Router.use(Admin_Router_Storage);
 Router.use(Admin_Router_Track);
 Router.use(Admin_Router_Partner);
 Router.use(Admin_Router_Dashboard);
+Router.use(Admin_Router_Artist);
+
 module.exports = Router;

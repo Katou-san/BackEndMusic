@@ -7,6 +7,7 @@ const {
   CTL__Create_Artist,
   CTL__Update_Artist,
   CTL__Delete_Artist,
+  CTL__Get_Current_Artist,
 } = require("../../Controller/Controller_Artist");
 const Router = express.Router();
 
@@ -17,7 +18,15 @@ Router.get(
   Validate_Role(["admin", "employess"]),
   CTL__Get_Artist
 );
-Router.get("/artist/:value", CTL__Find_Artist);
+
+Router.get(
+  "/artist/:id",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Get_Current_Artist
+);
+
+Router.get("/artist-search/:value", CTL__Find_Artist);
 Router.post(
   "/artist",
   JWT_Verify_Token,

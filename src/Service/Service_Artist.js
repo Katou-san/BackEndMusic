@@ -1,10 +1,20 @@
 const { Artist } = require("../Model/Artist");
 const { Song } = require("../Model/Song");
+const { removeVietnameseTones } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
-const SV__Get_Artist_V = (Type = "true") => {
+const SV__Get_Artist_V = (Type = "all") => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (Type == "all") {
+        const result = await Artist.find();
+        return resolve({
+          status: 200,
+          message: "Get all vertify artist complete!",
+          data: result,
+        });
+      }
+
       const result = await Artist.find({ Vertify: Boolean(Type) });
       return resolve({
         status: 200,
@@ -21,13 +31,21 @@ const SV__Get_Artist_V = (Type = "true") => {
   });
 };
 
-const SV__Get_Current_Artist = (Type = "true", Name) => {
+const SV__Get_Current_Artist = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await Artist.find({
-        Vertify: Boolean(Type),
-        Artist_Name: Name,
+      const result = await Artist.findOne({
+        Artist_Id: id,
       });
+
+      if (!result) {
+        return resolve({
+          status: 404,
+          message: "Get artist fail!",
+          data: {},
+        });
+      }
+
       return resolve({
         status: 200,
         message: "Get vertify artist complete!",
@@ -46,9 +64,9 @@ const SV__Get_Current_Artist = (Type = "true", Name) => {
 const SV__Find_Artist = (Value) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const search = removeVietnameseTones(String(Value).toLowerCase().trim());
       const result = await Artist.find({
-        Vertify: true,
-        Artist_Name: String(Value).toLowerCase().trim(),
+        Artist_Key: { $regex: search, $options: "i" },
       });
       return resolve({
         status: 200,
@@ -71,7 +89,7 @@ const SV__Create_Artist = (data) => {
       const { Artist_Name, User_Id = "", Vertify = false } = data;
 
       const checkName = await Artist.findOne({
-        Artist_Name: String(Artist_Name).toLowerCase().trim(),
+        Artist_Key: removeVietnameseTones(String(Value).toLowerCase().trim()),
       });
       if (checkName) {
         return resolve({
@@ -81,7 +99,8 @@ const SV__Create_Artist = (data) => {
       } else {
         const result = await Artist.create({
           Artist_Id: Create_Id("Artist"),
-          Artist_Name: String(Artist_Name).toLowerCase().trim(),
+          Artist_Name: String(Artist_Name).trim(),
+          Artist_Key: removeVietnameseTones(String(Value).toLowerCase().trim()),
           User_Id,
           Vertify,
         });
@@ -108,13 +127,15 @@ const SV__Create_Artist = (data) => {
     }
   });
 };
-
-const SV__Create_Artist_Song = (Artist_Name) => {
+const SV__Create_Artist_Song = async (Artist_Name) => {
   const Artist_Id = Create_Id("Artist");
   if (String(Artist_Name).length > 1) {
-    checkArist = Artist.create({
+    checkArist = await Artist.create({
       Artist_Id: Artist_Id,
-      Artist_Name: String(Artist_Name).toLowerCase().trim(),
+      Artist_Name: String(Artist_Name).trim(),
+      Artist_Key: removeVietnameseTones(
+        String(Artist_Name).toLowerCase().trim()
+      ),
       Vertify: false,
       User_Id: "",
     });
@@ -137,7 +158,12 @@ const SV__Update_Artist = (Artist_Id, data) => {
           message: "Artist not exist",
         });
       }
-      let Update_V = Convert_vUpdate(data, ["Artist_Id", "_id", "Artist_Name"]);
+      let Update_V = Convert_vUpdate(data, [
+        "Artist_Id",
+        "_id",
+        "Artist_Name",
+        "Artist_Key",
+      ]);
 
       const result = await Artist.findOneAndUpdate(
         { Artist_Id: Artist_Id },

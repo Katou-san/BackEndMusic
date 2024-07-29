@@ -9,13 +9,12 @@ const {
 
 const CTL__Get_Current_Artist = async (req, res) => {
   try {
-    const Type = req.params.type;
-    const Name = req.params.name;
-    if (!Type) {
+    const id = req.params.id;
+    if (!id) {
       return res.status(200).json({ status: 404, message: "Not found type" });
     }
 
-    const respone_id = await SV__Get_Current_Artist(Type, Name);
+    const respone_id = await SV__Get_Current_Artist(id);
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);
@@ -29,7 +28,6 @@ const CTL__Get_Artist = async (req, res) => {
     if (!Type) {
       return res.status(200).json({ status: 404, message: "Not found type" });
     }
-
     const respone_id = await SV__Get_Artist_V(Type);
     return res.status(200).json(respone_id);
   } catch (e) {

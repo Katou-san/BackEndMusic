@@ -3,7 +3,10 @@ const { Song } = require("../Model/Song");
 const { Track } = require("../Model/Track");
 const { Storage } = require("../Model/Storage");
 const { Artist: ArtistModel } = require("../Model/Artist");
-const { Convert_vUpdate } = require("../Util/Convert_data");
+const {
+  Convert_vUpdate,
+  removeVietnameseTones,
+} = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_Many_File, getFileSize } = require("../Util/Handle_File");
 const { match, join, project } = require("../Util/QueryDB");
@@ -40,7 +43,24 @@ const SV__Get_Song = (id) => {
         });
       }
 
-      const allSongs = await Song.find({ is_Publish: true });
+      const allSongs = await Song.aggregate([
+        {
+          $lookup: {
+            from: "artists",
+            localField: "Artist",
+            foreignField: "Artist_Id",
+            as: "artist_t",
+          },
+        },
+        {
+          $project: {
+            getValue,
+            Artist_Name: {
+              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+            },
+          },
+        },
+      ]);
       resolve({
         status: 200,
         message: "get all Songs complete!",
@@ -169,10 +189,13 @@ const SV__Create_Song = (data, User_Id) => {
 
       let Arist_Id = "";
       const checkArist = await ArtistModel.findOne({
-        Artist_Name: String(Artist).toLowerCase().trim(),
+        Artist_Key: removeVietnameseTones(String(Artist).toLowerCase().trim()),
       });
+
       if (!checkArist) {
-        Arist_Id = SV__Create_Artist_Song(Artist);
+        Arist_Id = await SV__Create_Artist_Song(Artist);
+      } else {
+        Arist_Id = checkArist.Artist_Id;
       }
 
       const song = await Song.create({
