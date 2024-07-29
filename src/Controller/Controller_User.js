@@ -7,6 +7,7 @@ const {
   SV__Login_User,
   SV__Oauth,
   SV__Get_UserM,
+  SV__Update_User_Admin,
 } = require("../Service/Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
@@ -236,7 +237,13 @@ const CTL__Update_User_Admin = async (req, res) => {
       return res.status(200).json({ status: 404, message: "Id is empty" });
     }
 
-    const respone = await SV__Update_User(User_Id, req.body);
+    if (!req.Id) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Get id with token fail" });
+    }
+
+    const respone = await SV__Update_User_Admin(User_Id, req.body, req.Id);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

@@ -1,6 +1,7 @@
 const { denyGetRoleUser } = require("../Configs/getRoles");
 const { Role } = require("../Model/Role");
 const { User } = require("../Model/User");
+const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
 //todo done!
@@ -128,7 +129,8 @@ const SV__Create_Role = (data) => {
 const SV__Update_Role = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await Role.findOneAndUpdate({ Role_Id: id }, data, {
+      const valueUpdate = Convert_vUpdate(data, ["Role_Name"]);
+      const result = await Role.findOneAndUpdate({ Role_Id: id }, valueUpdate, {
         new: true,
       });
       if (!result) {
@@ -154,12 +156,26 @@ const SV__Update_Role = (id, data) => {
 const SV__Delete_Role = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const Check_Role = await User.findOne({ Role_Id: id });
-      if (Check_Role) {
+      const Check_Role_User = await User.findOne({ Role_Id: id });
+      const getRole = await Role.findOne({ Role_Id: id });
+      if (Check_Role_User) {
         return resolve({
           status: 404,
           message: "Role is using!",
           error: "Role is using",
+        });
+      }
+
+      if (
+        getRole.Role_Name == "admin" ||
+        getRole.Role_Name == "employess" ||
+        getRole.Role_Name == "creator" ||
+        getRole.Role_Name == "client"
+      ) {
+        return resolve({
+          status: 404,
+          message: "Cant delete default role!",
+          error: "Cant delete default role!",
         });
       }
 

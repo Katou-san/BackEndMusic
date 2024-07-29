@@ -77,6 +77,9 @@ const CTL__Update_Role = async (req, res) => {
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
+    if (!req.Id) {
+      return res.status(200).json({ status: 404, message: "User id is empty" });
+    }
     const respone = await SV__Update_Role(id, req.body);
     return res.status(200).json(respone);
   } catch (e) {

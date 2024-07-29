@@ -449,6 +449,76 @@ const SV__Update_User = (User_Id, data) => {
   });
 };
 
+const SV__Update_User_Admin = (User_Id, data, Current_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { Avatar } = data;
+      const findUser = await User.findOne({ User_Id });
+      if (!findUser) {
+        return resolve({ status: 404, message: "not found user with id" });
+      }
+      if (findUser.is_Admin) {
+        let deny = [];
+        const checkRole = await Role.findOne({ Role_Id: findUser.Role_Id });
+        if (checkRole.Role_Name == "admin" || User_Id == Current_Id) {
+          deny = ["User_Id", "User_Email", "Role_Id", "_id"];
+        } else {
+          deny = ["User_Id", "User_Email", "_id"];
+        }
+
+        const UpdateData = Convert_vUpdate(data, deny);
+        const result = await User.findOneAndUpdate(
+          { User_Id: findUser.User_Id },
+          UpdateData,
+          {
+            new: true,
+          }
+        );
+
+        if (!result) {
+          return resolve({
+            status: 404,
+            message: "Update Failed!",
+            error: "Update failed",
+          });
+        }
+
+        if (
+          Avatar != undefined &&
+          Avatar != null &&
+          Avatar != "null" &&
+          Avatar != "" &&
+          Avatar != "undefined"
+        ) {
+          Delete_Many_File(
+            [{ url: "User_Avatar", idFile: findUser.Avatar }],
+            ["default.jpg"]
+          );
+        }
+
+        return resolve({
+          status: 200,
+          message: "successfully updated",
+          data: UpdateData,
+        });
+      }
+
+      resolve({
+        status: 404,
+        message: "you arent allowed update",
+        data: {},
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_User.js (SV_Update_User)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Update
 const SV__Delete_User = (User_Id) => {
   return new Promise(async (resolve, reject) => {
@@ -527,4 +597,5 @@ module.exports = {
   SV__Login_User,
   SV__Oauth,
   SV__Get_UserM,
+  SV__Update_User_Admin,
 };

@@ -2,11 +2,13 @@ const { Playlist } = require("../Model/Playlist");
 const { Song } = require("../Model/Song");
 const { Track } = require("../Model/Track");
 const { Storage } = require("../Model/Storage");
+const { Artist: ArtistModel } = require("../Model/Artist");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_Many_File, getFileSize } = require("../Util/Handle_File");
 const { match, join, project } = require("../Util/QueryDB");
 const { Repost } = require("../Model/Repost");
+const { SV__Create_Artist_Song } = require("./Service_Artist");
 
 const getValue = {
   Song_Id: 1,
@@ -112,7 +114,7 @@ const SV__Create_Song = (data, User_Id) => {
       Color,
       is_Publish = true,
     } = data;
-    console.log(Song_Name);
+
     const IdSong = Create_Id("Song", Song_Name);
     try {
       const check = await Song.findOne({ Song_Id: IdSong });
@@ -165,12 +167,20 @@ const SV__Create_Song = (data, User_Id) => {
         });
       }
 
+      let Arist_Id = "";
+      const checkArist = await ArtistModel.findOne({
+        Artist_Name: String(Artist).toLowerCase().trim(),
+      });
+      if (!checkArist) {
+        Arist_Id = SV__Create_Artist_Song(Artist);
+      }
+
       const song = await Song.create({
         Song_Id: IdSong,
-        Song_Name: String(Song_Name).toLowerCase(),
+        Song_Name: String(Song_Name).trim(),
         Song_Audio,
         Song_Image: Song_Image != "null" ? Song_Image : "default.png",
-        Artist,
+        Artist: Arist_Id,
         User_Id,
         Category_Id,
         Lyrics,
