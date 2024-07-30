@@ -11,7 +11,6 @@ const {
 const {
   SV__Create_Playlist_DF,
   SV__Delete_Playlist_DF,
-  SV__Delete_Playlist,
 } = require("./Service_Playlist");
 const { match, join, project, matchMany } = require("../Util/QueryDB");
 const { Delete_Many_File } = require("../Util/Handle_File");
@@ -149,11 +148,36 @@ const SV__Get_UserM = (type) => {
   });
 };
 
+const SV__Find_User = (name) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const getRole = await Role.findOne({ Role_Name: "creator" });
+      const result = await User.find({
+        User_Name: { $regex: name, $options: "i" },
+        Role_Id: getRole.Role_Id,
+      });
+
+      resolve({
+        status: 200,
+        message: `Get all ${name} complete!`,
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_User.js (SV_Login_User)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //TODO Done!
 const SV__Login_User = (data, type) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { User_Email, User_Pass } = data;
+      const { User_Email, User_Pass, Phone } = data;
       const result = await User.findOne({ User_Email });
 
       if (!result) {
@@ -175,6 +199,17 @@ const SV__Login_User = (data, type) => {
       });
 
       if (type == "admin") {
+        const checkPhone = await User.findOne({ Phone, User_Email });
+        // console.log(data);
+        // console.log(checkPhone);
+        if (!checkPhone) {
+          return resolve({
+            status: 404,
+            message: "Phone not match",
+            error: { phone: "Phone not match" },
+          });
+        }
+
         if (result.is_Admin == true) {
           resolve({
             status: 200,
@@ -457,56 +492,48 @@ const SV__Update_User_Admin = (User_Id, data, Current_Id) => {
       if (!findUser) {
         return resolve({ status: 404, message: "not found user with id" });
       }
-      if (findUser.is_Admin) {
-        let deny = [];
-        const checkRole = await Role.findOne({ Role_Id: findUser.Role_Id });
-        if (checkRole.Role_Name == "admin" || User_Id == Current_Id) {
-          deny = ["User_Id", "User_Email", "Role_Id", "_id"];
-        } else {
-          deny = ["User_Id", "User_Email", "_id"];
+      let deny = [];
+      const checkRole = await Role.findOne({ Role_Id: findUser.Role_Id });
+      if (checkRole.Role_Name == "admin" || User_Id == Current_Id) {
+        deny = ["User_Id", "User_Email", "Role_Id", "_id", "is_Admin"];
+      } else {
+        deny = ["User_Id", "User_Email", "_id", "is_Admin"];
+      }
+
+      const UpdateData = Convert_vUpdate(data, deny);
+      const result = await User.findOneAndUpdate(
+        { User_Id: findUser.User_Id },
+        UpdateData,
+        {
+          new: true,
         }
+      );
 
-        const UpdateData = Convert_vUpdate(data, deny);
-        const result = await User.findOneAndUpdate(
-          { User_Id: findUser.User_Id },
-          UpdateData,
-          {
-            new: true,
-          }
-        );
-
-        if (!result) {
-          return resolve({
-            status: 404,
-            message: "Update Failed!",
-            error: "Update failed",
-          });
-        }
-
-        if (
-          Avatar != undefined &&
-          Avatar != null &&
-          Avatar != "null" &&
-          Avatar != "" &&
-          Avatar != "undefined"
-        ) {
-          Delete_Many_File(
-            [{ url: "User_Avatar", idFile: findUser.Avatar }],
-            ["default.jpg"]
-          );
-        }
-
+      if (!result) {
         return resolve({
-          status: 200,
-          message: "successfully updated",
-          data: UpdateData,
+          status: 404,
+          message: "Update Failed!",
+          error: "Update failed",
         });
       }
 
-      resolve({
-        status: 404,
-        message: "you arent allowed update",
-        data: {},
+      if (
+        Avatar != undefined &&
+        Avatar != null &&
+        Avatar != "null" &&
+        Avatar != "" &&
+        Avatar != "undefined"
+      ) {
+        Delete_Many_File(
+          [{ url: "User_Avatar", idFile: findUser.Avatar }],
+          ["default.jpg"]
+        );
+      }
+
+      return resolve({
+        status: 200,
+        message: "successfully updated",
+        data: UpdateData,
       });
     } catch (err) {
       reject({
@@ -530,7 +557,8 @@ const SV__Delete_User = (User_Id) => {
       }
 
       const checkUserSong = await Song.findOne({ User_Id });
-      if (!checkUserSong) {
+
+      if (checkUserSong) {
         return resolve({ status: 404, message: "User have songs" });
       }
 
@@ -591,6 +619,7 @@ const SV__Delete_User = (User_Id) => {
 
 module.exports = {
   SV__Get_User,
+  SV__Find_User,
   SV__Create_User,
   SV__Update_User,
   SV__Delete_User,

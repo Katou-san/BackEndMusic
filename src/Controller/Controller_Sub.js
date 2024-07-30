@@ -3,6 +3,7 @@ const {
   SV__Update_Subscription,
   SV__Delete_Subscription,
   SV__Create_Subscription,
+  SV___Get_All_Subscription,
 } = require("../Service/Service_Sub");
 
 const CTL__Get_Subscription = async (req, res) => {
@@ -15,6 +16,16 @@ const CTL__Get_Subscription = async (req, res) => {
       const respone = await SV__Get_Subscription();
       return res.status(200).json(respone);
     }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Premium failed" });
+  }
+};
+
+const CTL__Get_All_Subscription = async (req, res) => {
+  try {
+    const respone = await SV___Get_All_Subscription();
+    return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res.status(404).json({ status: 404, message: "Get Premium failed" });
@@ -73,6 +84,7 @@ const CTL__Delete_Subscription = async (req, res) => {
 
 module.exports = {
   CTL__Get_Subscription,
+  CTL__Get_All_Subscription,
   CTL__Create_Subscription,
   CTL__Update_Subscription,
   CTL__Delete_Subscription,

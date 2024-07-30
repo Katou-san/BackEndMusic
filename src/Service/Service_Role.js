@@ -106,7 +106,7 @@ const SV__Create_Role = (data) => {
       }
       const result = await Role.create({
         Role_Id: Create_Id("Role", Role_Name),
-        Role_Name: String(Role_Name).toLowerCase(),
+        Role_Name: String(Role_Name).toLowerCase().trim(),
         Description: Description ? Description : "",
       });
       resolve({

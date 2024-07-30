@@ -7,10 +7,12 @@ const {
   CTL__Create_Subscription,
   CTL__Update_Subscription,
   CTL__Delete_Subscription,
+  CTL__Get_All_Subscription,
 } = require("../../Controller/Controller_Sub");
 
 //TODO localhost:8080/api/admin/v1/subscription
 Router.get("/sub", CTL__Get_Subscription);
+Router.get("/subs", CTL__Get_All_Subscription);
 Router.get("/sub/:id", CTL__Get_Subscription);
 Router.post(
   "/sub",

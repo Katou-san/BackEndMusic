@@ -13,6 +13,7 @@ const {
   CTL__Oauth,
   CTL__Get_UserM,
   CTL__Update_User_Admin,
+  CTL__Find_User,
 } = require("../../Controller/Controller_User");
 const uploadFile = multer_Single();
 
@@ -36,6 +37,13 @@ Router.get(
   JWT_Verify_Token,
   Validate_Role(["employess", "admin"]),
   CTL__Get_User
+);
+
+Router.get(
+  "/find-user/:name",
+  JWT_Verify_Token,
+  Validate_Role(["employess", "admin"]),
+  CTL__Find_User
 );
 
 Router.get("/user/Oauth", JWT_Verify_Token, CTL__Oauth);

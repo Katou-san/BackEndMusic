@@ -75,7 +75,6 @@ const CTL__Create_Artist = async (req, res) => {
 const CTL__Update_Artist = async (req, res) => {
   try {
     const Artist_Id = req.params.id;
-    const { Artist_Name } = req.body;
 
     if (!Artist_Id) {
       return res
@@ -83,20 +82,13 @@ const CTL__Update_Artist = async (req, res) => {
         .json({ status: 404, message: "Not found id Artist" });
     }
 
-    if (Artist_Name != undefined) {
-      if (!Artist_Name && String(Artist_Name).length > 3) {
-        return res
-          .status(200)
-          .json({ status: 404, message: "Name artist is missing" });
-      }
-    }
     const respone = await SV__Update_Artist(Artist_Id, req.body);
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res
       .status(404)
-      .json({ status: 404, message: "Create Artist failed" });
+      .json({ status: 404, message: "Update Artist failed" });
   }
 };
 

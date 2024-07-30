@@ -1,6 +1,9 @@
 const { Artist } = require("../Model/Artist");
 const { Song } = require("../Model/Song");
-const { removeVietnameseTones } = require("../Util/Convert_data");
+const {
+  removeVietnameseTones,
+  Convert_vUpdate,
+} = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 
 const SV__Get_Artist_V = (Type = "all") => {
@@ -15,7 +18,7 @@ const SV__Get_Artist_V = (Type = "all") => {
         });
       }
 
-      const result = await Artist.find({ Vertify: Boolean(Type) });
+      const result = await Artist.find({ Vertify: Type });
       return resolve({
         status: 200,
         message: "Get vertify artist complete!",
@@ -89,7 +92,9 @@ const SV__Create_Artist = (data) => {
       const { Artist_Name, User_Id = "", Vertify = false } = data;
 
       const checkName = await Artist.findOne({
-        Artist_Key: removeVietnameseTones(String(Value).toLowerCase().trim()),
+        Artist_Key: removeVietnameseTones(
+          String(Artist_Name).toLowerCase().trim()
+        ),
       });
       if (checkName) {
         return resolve({
@@ -100,7 +105,9 @@ const SV__Create_Artist = (data) => {
         const result = await Artist.create({
           Artist_Id: Create_Id("Artist"),
           Artist_Name: String(Artist_Name).trim(),
-          Artist_Key: removeVietnameseTones(String(Value).toLowerCase().trim()),
+          Artist_Key: removeVietnameseTones(
+            String(Artist_Name).toLowerCase().trim()
+          ),
           User_Id,
           Vertify,
         });
@@ -210,7 +217,7 @@ const SV__Delete_Artist = (Artist_Id) => {
       }
 
       const check = await Song.findOne({
-        Artist: checkArtist.Artist_Name,
+        Artist: checkArtist.Artist_Id,
       });
       if (check) {
         return resolve({

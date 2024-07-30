@@ -79,7 +79,7 @@ const SV__Get_Trending_Song = () => {
         project(getValueSong, { likes: "$like.State" }),
       ]);
 
-      const result = Get_Max_Array(getSong, "likes", "Song_Id", 20);
+      const result = Get_Max_Array(getSong, "likes", "Song_Id", 10);
 
       resolve({
         status: 200,

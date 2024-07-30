@@ -39,6 +39,26 @@ const SV__Get_Subscription = (id) => {
   });
 };
 
+const SV___Get_All_Subscription = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allSubs = await Subscription.find();
+      resolve({
+        status: 200,
+        message: "get all subscriptions complete!",
+        data: allSubs,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Subscription.js (SV_Get_Subscription)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_Subscription = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -145,4 +165,5 @@ module.exports = {
   SV__Update_Subscription,
   SV__Delete_Subscription,
   SV__Create_Subscription,
+  SV___Get_All_Subscription,
 };

@@ -26,41 +26,48 @@ const getValue = {
   Color: 1,
   is_Publish: 1,
   Create_Date: 1,
+  Artist_Name: 1,
 };
 
 const SV__Get_Song = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (id) {
-        const result = await Song.findOne({ Song_Id: id });
-        if (!result) {
+        const result = await Song.aggregate([
+          join("artists", "Artist", "Artist_Id", "artist_t"),
+          {
+            $project: {
+              ...getValue,
+              is_Admin: "$User.is_Admin",
+              Artist_Name: {
+                $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+              },
+            },
+          },
+          match("Song_Id", id),
+        ]);
+        if (result.length == 0) {
           return resolve({ status: 200, message: "Not found Song with id" });
         }
         return resolve({
           status: 200,
           message: "Get song complete!",
-          data: result,
+          data: result[0],
         });
       }
 
       const allSongs = await Song.aggregate([
-        {
-          $lookup: {
-            from: "artists",
-            localField: "Artist",
-            foreignField: "Artist_Id",
-            as: "artist_t",
-          },
-        },
+        join("artists", "Artist", "Artist_Id", "artist_t"),
         {
           $project: {
-            getValue,
+            ...getValue,
             Artist_Name: {
               $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
             },
           },
         },
       ]);
+
       resolve({
         status: 200,
         message: "get all Songs complete!",
@@ -84,7 +91,16 @@ const SV__Get_SongM = (type) => {
         case "user":
           result = await Song.aggregate([
             join("users", "User_Id", "User_Id", "User"),
-            project(getValue, { is_Admin: "$User.is_Admin" }),
+            join("artists", "Artist", "Artist_Id", "artist_t"),
+            {
+              $project: {
+                ...getValue,
+                is_Admin: "$User.is_Admin",
+                Artist_Name: {
+                  $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+                },
+              },
+            },
             {
               $unwind: "$is_Admin",
             },
@@ -95,7 +111,16 @@ const SV__Get_SongM = (type) => {
         case "admin":
           result = await Song.aggregate([
             join("users", "User_Id", "User_Id", "User"),
-            project(getValue, { is_Admin: "$User.is_Admin" }),
+            join("artists", "Artist", "Artist_Id", "artist_t"),
+            {
+              $project: {
+                ...getValue,
+                is_Admin: "$User.is_Admin",
+                Artist_Name: {
+                  $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+                },
+              },
+            },
             {
               $unwind: "$is_Admin",
             },
@@ -187,15 +212,32 @@ const SV__Create_Song = (data, User_Id) => {
         });
       }
 
+      let tempArtist = false;
       let Arist_Id = "";
-      const checkArist = await ArtistModel.findOne({
-        Artist_Key: removeVietnameseTones(String(Artist).toLowerCase().trim()),
-      });
+      if (!tempArtist) {
+        const checkArist = await ArtistModel.findOne({
+          Artist_Id: Artist,
+        });
+        if (checkArist) {
+          tempArtist = true;
+          Arist_Id = checkArist.Artist_Id;
+        }
+      }
 
-      if (!checkArist) {
+      if (!tempArtist) {
+        const checkAristKey = await ArtistModel.findOne({
+          Artist_Key: removeVietnameseTones(
+            String(Artist).toLowerCase().trim()
+          ),
+        });
+        if (checkAristKey) {
+          tempArtist = true;
+          Arist_Id = checkAristKey.Artist_Id;
+        }
+      }
+
+      if (!tempArtist) {
         Arist_Id = await SV__Create_Artist_Song(Artist);
-      } else {
-        Arist_Id = checkArist.Artist_Id;
       }
 
       const song = await Song.create({
@@ -247,8 +289,49 @@ const SV__Create_Song = (data, User_Id) => {
 const SV__Update_Song = (id, data, User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Song_Image } = data;
-      const Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      const { Song_Image, Artist } = data;
+
+      let tempArtist = false;
+      let Arist_Id = "";
+
+      let Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      if (Artist != undefined && Artist != "unknown") {
+        if (!tempArtist) {
+          const checkArist = await ArtistModel.findOne({
+            Artist_Id: Artist,
+          });
+          if (checkArist) {
+            tempArtist = true;
+            Update_V = Convert_vUpdate(
+              { ...data, Artist: checkArist.Artist_Id },
+              ["User_Id", "_id", "Song_Id"]
+            );
+          }
+        }
+        if (!tempArtist) {
+          const checkAristKey = await ArtistModel.findOne({
+            Artist_Key: removeVietnameseTones(
+              String(Artist).toLowerCase().trim()
+            ),
+          });
+          if (checkAristKey) {
+            tempArtist = true;
+            Update_V = Convert_vUpdate(
+              { ...data, Artist: checkAristKey.Artist_Id },
+              ["User_Id", "_id", "Song_Id"]
+            );
+          }
+        }
+        if (!tempArtist) {
+          Arist_Id = await SV__Create_Artist_Song(Artist);
+          Update_V = Convert_vUpdate({ ...data, Artist: Arist_Id }, [
+            "User_Id",
+            "_id",
+            "Song_Id",
+          ]);
+        }
+      }
+
       const state_Song = await Song.findOne({ Song_Id: id });
       const result = await Song.findOneAndUpdate(
         { Song_Id: id, User_Id },
@@ -428,8 +511,49 @@ const SV__Delete_Song_Admin = (id) => {
 const SV__Update_Song_Admin = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { Song_Image } = data;
-      const Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      const { Song_Image, Artist } = data;
+
+      let tempArtist = false;
+      let Arist_Id = "";
+
+      let Update_V = Convert_vUpdate(data, ["User_Id", "_id", "Song_Id"]);
+      if (Artist != undefined && Artist != "unknown") {
+        if (!tempArtist) {
+          const checkArist = await ArtistModel.findOne({
+            Artist_Id: Artist,
+          });
+          if (checkArist) {
+            tempArtist = true;
+            Update_V = Convert_vUpdate(
+              { ...data, Artist: checkArist.Artist_Id },
+              ["User_Id", "_id", "Song_Id"]
+            );
+          }
+        }
+        if (!tempArtist) {
+          const checkAristKey = await ArtistModel.findOne({
+            Artist_Key: removeVietnameseTones(
+              String(Artist).toLowerCase().trim()
+            ),
+          });
+          if (checkAristKey) {
+            tempArtist = true;
+            Update_V = Convert_vUpdate(
+              { ...data, Artist: checkAristKey.Artist_Id },
+              ["User_Id", "_id", "Song_Id"]
+            );
+          }
+        }
+        if (!tempArtist) {
+          Arist_Id = await SV__Create_Artist_Song(Artist);
+          Update_V = Convert_vUpdate({ ...data, Artist: Arist_Id }, [
+            "User_Id",
+            "_id",
+            "Song_Id",
+          ]);
+        }
+      }
+
       const state_Song = await Song.findOne({ Song_Id: id });
       const result = await Song.findOneAndUpdate(
         { Song_Id: id, User_Id: state_Song.User_Id },

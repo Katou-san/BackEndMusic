@@ -8,6 +8,7 @@ const {
   SV__Oauth,
   SV__Get_UserM,
   SV__Update_User_Admin,
+  SV__Find_User,
 } = require("../Service/Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
@@ -113,6 +114,24 @@ const CTL__Get_User__Client = async (req, res) => {
       const respone = await SV__Get_User__Client(null, null);
       return res.status(200).json(respone);
     }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get user failed" });
+  }
+};
+
+const CTL__Find_User = async (req, res) => {
+  try {
+    const name = req.params.name;
+    if (!name) {
+      return res.status(200).json({
+        status: 404,
+        message: "Name is emty",
+        error: { Song_Manage: "Name is emty" },
+      });
+    }
+    const respone = await SV__Find_User(name);
+    return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);
     return res.status(404).json({ status: 404, message: "Get user failed" });
@@ -258,6 +277,7 @@ const CTL__Delete_User = async (req, res) => {
     if (!id) {
       return res.status(200).json({ status: 404, message: "id is empty" });
     }
+    console.log(id);
     const respone = await SV__Delete_User(id);
 
     return res.status(200).json(respone);
@@ -270,6 +290,7 @@ const CTL__Delete_User = async (req, res) => {
 };
 
 module.exports = {
+  CTL__Find_User,
   CTL__Get_User,
   CTL__Create_User,
   CTL__Update_User,
