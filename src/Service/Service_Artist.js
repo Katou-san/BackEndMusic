@@ -70,6 +70,7 @@ const SV__Find_Artist = (Value) => {
       const search = removeVietnameseTones(String(Value).toLowerCase().trim());
       const result = await Artist.find({
         Artist_Key: { $regex: search, $options: "i" },
+        Vertify: true,
       });
       return resolve({
         status: 200,
@@ -216,19 +217,23 @@ const SV__Delete_Artist = (Artist_Id) => {
         });
       }
 
-      const check = await Song.findOne({
-        Artist: checkArtist.Artist_Id,
-      });
-      if (check) {
-        return resolve({
-          status: 404,
-          message: "Artist is using",
+      if (checkArtist.Vertify) {
+        const check = await Song.findOne({
+          Artist: checkArtist.Artist_Id,
         });
+
+        if (check) {
+          return resolve({
+            status: 404,
+            message: "Artist is using",
+          });
+        }
       }
 
       const result = await Artist.findOneAndDelete({
         Artist_Id: checkArtist.Artist_Id,
       });
+
       return resolve({
         status: 200,
         message: "Delete artist complete!",

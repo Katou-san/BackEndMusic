@@ -21,6 +21,8 @@ const handle_Link = (nameFile = "") => {
       return { status: true, url: "./src/Assets/Partner" };
     case "avatar":
       return { status: true, url: "./src/Assets/User_Avatar" };
+    case "logo":
+      return { status: true, url: "./src/Assets/Partner" };
 
     default:
       return { status: false, url: "./src/Assets/Test" };

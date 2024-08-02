@@ -17,6 +17,8 @@ const Client_Router_Trending = require("./client_Trending.routes");
 const Client_Router_Search = require("./client_Search.routes");
 const Client_Router_Role = require("./client_Role.routes");
 const Client_Router_Visit = require("./client_Visit.routes");
+const Client_Router_Artist = require("./client_Artist.routes");
+Router.use(Client_Router_Artist);
 Router.use(Client_Router_User);
 Router.use(Client_Router_Category);
 Router.use(Client_Router_Song);

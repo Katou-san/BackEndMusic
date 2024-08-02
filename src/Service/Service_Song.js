@@ -160,7 +160,7 @@ const SV__Create_Song = (data, User_Id) => {
       is_Publish = true,
     } = data;
 
-    const IdSong = Create_Id("Song", Song_Name);
+    const IdSong = Create_Id("Song");
     try {
       const check = await Song.findOne({ Song_Id: IdSong });
       if (check) {

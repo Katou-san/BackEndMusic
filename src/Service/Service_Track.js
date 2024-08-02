@@ -5,6 +5,20 @@ const { match, join, project } = require("../Util/QueryDB");
 
 const getValue = {
   _id: 0,
+  Song_Id: 1,
+  Song_Name: 1,
+  Song_Image: 1,
+  Song_Audio: 1,
+  Artist: 1,
+  User_Id: 1,
+  Category_Id: 1,
+  Lyrics: 1,
+  Tag: 1,
+  Color: 1,
+  is_Publish: 1,
+  Create_Date: 1,
+  Artist_Name: 1,
+  Songs: 1,
 };
 
 //todo done!
@@ -14,16 +28,30 @@ const SV__Get_Track = (Playlist_Id) => {
       const result = await Track.aggregate([
         match("Playlist_Id", Playlist_Id),
         join("songs", "Song_Id", "Song_Id", "Song"),
-        project(getValue, { Songs: "$Song" }),
+        {
+          $project: {
+            ...getValue,
+            Songs: "$Song",
+          },
+        },
         {
           $unwind: "$Songs",
+        },
+        join("artists", "Songs.Artist", "Artist_Id", "artist_t"),
+        {
+          $project: {
+            ...getValue,
+            Artist_Name: {
+              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+            },
+          },
         },
       ]);
 
       let ArraySong = [];
       if (result.length != 0) {
         result.map((item) => {
-          ArraySong.push(item.Songs);
+          ArraySong.push({ ...item, ...item.Songs });
         });
       }
 
@@ -47,14 +75,12 @@ const SV__Get_Track = (Playlist_Id) => {
 const SV__Create_Track = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(data);
       const { Playlist_Id, Song_Id } = data;
       const temp = await Playlist.findOne({
         User_Id,
         Playlist_Id: "@Playlist2024522116452950825",
       });
       const check_Playlist = await Playlist.findOne({ Playlist_Id, User_Id });
-      console.log(temp);
       if (!check_Playlist) {
         return resolve({
           status: 404,

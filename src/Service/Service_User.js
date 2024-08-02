@@ -178,7 +178,9 @@ const SV__Login_User = (data, type) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { User_Email, User_Pass, Phone } = data;
-      const result = await User.findOne({ User_Email });
+      const result = await User.findOne({
+        User_Email: String(User_Email).toLowerCase().trim(),
+      });
 
       if (!result) {
         return resolve({ status: 404, message: "Not found email" });
@@ -200,8 +202,6 @@ const SV__Login_User = (data, type) => {
 
       if (type == "admin") {
         const checkPhone = await User.findOne({ Phone, User_Email });
-        // console.log(data);
-        // console.log(checkPhone);
         if (!checkPhone) {
           return resolve({
             status: 404,

@@ -51,13 +51,22 @@ const SV__Get_Slider = () => {
       const getSong = await Song.aggregate([
         match("is_Publish", true),
         join("likes", "Song_Id", "Topic_Id", "like"),
-        project(getValueSong, { likes: "$like.State" }),
-      ]);
+        join("artists", "Artist", "Artist_Id", "artist_t"),
+        {
+          $project: {
+            ...getValueSong,
+            is_Admin: "$User.is_Admin",
+            Artist_Name: {
+              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+            },
+            likes: "$like.State",
+          },
+        },
+      ]).limit(5);
 
-      const result = Get_Max_Array(getSong, "likes", "Song_Id", 5);
       resolve({
         status: 200,
-        data: result,
+        data: getSong,
       });
     } catch (err) {
       reject({
@@ -76,14 +85,22 @@ const SV__Get_Trending_Song = () => {
       const getSong = await Song.aggregate([
         match("is_Publish", true),
         join("likes", "Song_Id", "Topic_Id", "like"),
-        project(getValueSong, { likes: "$like.State" }),
-      ]);
-
-      const result = Get_Max_Array(getSong, "likes", "Song_Id", 10);
+        join("artists", "Artist", "Artist_Id", "artist_t"),
+        {
+          $project: {
+            ...getValueSong,
+            is_Admin: "$User.is_Admin",
+            Artist_Name: {
+              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+            },
+            likes: "$like.State",
+          },
+        },
+      ]).limit(10);
 
       resolve({
         status: 200,
-        data: result,
+        data: getSong,
       });
     } catch (err) {
       reject({
