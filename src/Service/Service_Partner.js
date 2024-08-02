@@ -3,6 +3,7 @@ const { Partner } = require("../Model/Partner");
 const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
+const { Delete_File } = require("../Util/Handle_File");
 
 //todo done!
 const SV__Get_Partner = (Partner_Id) => {
@@ -102,6 +103,7 @@ const SV__Create_Partner = (User_Id, data) => {
 const SV__Update_Partner = (Partner_Id, User_Id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { Logo } = data;
       const checkUser = await User.findOne({ User_Id });
       const checkPartner = await Partner.findOne({ Partner_Id });
       if (!checkUser) {
@@ -130,7 +132,9 @@ const SV__Update_Partner = (Partner_Id, User_Id, data) => {
         "Partner_Id",
         "User_Id",
         "Create_Date",
+        "Contract_num",
       ]);
+
       const result = await Partner.findOneAndUpdate(
         { Partner_Id },
         updateValue,
@@ -138,6 +142,28 @@ const SV__Update_Partner = (Partner_Id, User_Id, data) => {
           new: true,
         }
       );
+
+      if (!result) {
+        return resolve({
+          status: 200,
+          message: "Not found partner with id!",
+          error: {
+            user: "Not found partner with id!",
+          },
+          data: {},
+        });
+      }
+
+      if (
+        Logo != undefined &&
+        Logo != checkPartner.Logo &&
+        Logo != "null" &&
+        Logo != null &&
+        Logo != "" &&
+        checkPartner.Logo != "default.png"
+      ) {
+        Delete_File("Partner", checkPartner.Logo);
+      }
 
       resolve({
         status: 200,
@@ -163,12 +189,15 @@ const SV__Delete_Partner = (Partner_Id) => {
       const checkAds = await Ads.findOne({
         Partner_Id: checkPartner.Partner_Id,
       });
-      if (
-        new Date(checkAds.End_time).getTime() > new Date().getTime() &&
-        !checkPartner.Status
-      ) {
-        await Ads.findOneAndDelete({ Ads_Id: checkAds.Ads_Id });
-        await Partner.findByIdAndDelete({ Partner_Id: checkAds.Ads_Id });
+      if (checkAds) {
+        return resolve({
+          status: 200,
+          message: "Cant delete partner",
+          error: {
+            user: "Cant delete partner",
+          },
+          data: {},
+        });
       }
 
       if (!checkPartner) {
@@ -183,6 +212,27 @@ const SV__Delete_Partner = (Partner_Id) => {
       }
 
       const result = await Partner.findOneAndDelete({ Partner_Id });
+      if (!result) {
+        return resolve({
+          status: 200,
+          message: "Not found partner with id!",
+          error: {
+            user: "Not found partner with id!",
+          },
+          data: {},
+        });
+      }
+
+      if (
+        checkPartner.Logo != undefined &&
+        checkPartner.Logo != "null" &&
+        checkPartner.Logo != null &&
+        checkPartner.Logo != "" &&
+        checkPartner.Logo != "default.png"
+      ) {
+        Delete_File("Partner", checkPartner.Logo);
+      }
+
       resolve({
         status: 200,
         message: "Delete Partner complete!",

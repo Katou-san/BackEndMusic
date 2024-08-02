@@ -36,6 +36,7 @@ Router.post(
 Router.put(
   "/partner/:id",
   JWT_Verify_Token,
+  uploadArray.fields([{ name: "Logo" }]),
   Validate_Role(["admin", "employess"]),
   CTL__Update_Partner
 );

@@ -119,10 +119,36 @@ const Send_Playlist_Thumbnail = async (req, res) => {
   }
 };
 
+const Send_Logo = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const filePath = {
+      root: path.join(__dirname, "../Assets/Partner"),
+    };
+
+    if (!Id || Id == "null") {
+      return res.sendFile(`default.png`, filePath, (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+
+    return res.sendFile(`${Id}`, filePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+};
+
 module.exports = {
   Send_Song_Audio,
   Send_Song_Img,
   Send_User_Avatar,
   Send_Playlist_Thumbnail,
   Send_Playlist_Img,
+  Send_Logo,
 };
