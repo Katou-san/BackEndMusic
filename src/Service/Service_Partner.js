@@ -43,6 +43,29 @@ const SV__Get_Partner = (Partner_Id) => {
   });
 };
 
+const SV__Find_Partner = (Partner_Name) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await Partner.find({
+        Partner_Name: { $regex: Partner_Name, $options: "i" },
+        Status: true,
+      });
+      return resolve({
+        status: 200,
+        message: "Get partner complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Admin_Service_Partner.js (SV_Get_Partner)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_Partner = (User_Id, data) => {
   return new Promise(async (resolve, reject) => {
@@ -250,6 +273,7 @@ const SV__Delete_Partner = (Partner_Id) => {
 
 module.exports = {
   SV__Get_Partner,
+  SV__Find_Partner,
   SV__Update_Partner,
   SV__Delete_Partner,
   SV__Create_Partner,

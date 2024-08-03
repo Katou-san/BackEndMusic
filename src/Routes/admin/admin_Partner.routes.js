@@ -9,6 +9,7 @@ const {
   CTL__Create_Partner,
   CTL__Update_Partner,
   CTL__Delete_Partner,
+  CTL__Find_Partner,
 } = require("../../Controller/Controller_Partner");
 
 const Router = express.Router();
@@ -25,6 +26,14 @@ Router.get(
   Validate_Role(["admin", "employess"]),
   CTL__Get_Partner
 );
+
+Router.get(
+  "/partners/:name",
+  JWT_Verify_Token,
+  Validate_Role(["admin", "employess"]),
+  CTL__Find_Partner
+);
+
 Router.post(
   "/partner",
   JWT_Verify_Token,
