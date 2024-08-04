@@ -22,6 +22,7 @@ const { Follow } = require("../Model/Follow");
 const { Playlist } = require("../Model/Playlist");
 const { Song } = require("../Model/Song");
 const { dehash64 } = require("../Util/hash");
+const { Send_Email_Verify } = require("../Util/Send_Email");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -195,6 +196,14 @@ const SV__Login_User = (data, type) => {
         });
       }
 
+      if (result.Status == 2) {
+        Send_Email_Verify(result.User_Email);
+        return resolve({
+          status: 404,
+          message: "Account not verify",
+        });
+      }
+
       const Access_Token = JWT_Create_Token({
         User_Email: result.User_Email,
         Role: result.Role_Id,
@@ -334,7 +343,7 @@ const SV__Create_User = (data) => {
       User_Name,
       User_Pass,
       Role_Id = getRole.Role_Id,
-      Status = 1,
+      Status = 2,
       is_Admin = false,
       Phone = "",
       CCCD = "",
@@ -400,22 +409,24 @@ const SV__Create_User = (data) => {
         });
       }
 
-      const Access_Token = JWT_Create_Token({
-        User_Email: result.User_Email,
-        Role: result.Role_Id,
-        User_Id: result.User_Id,
-      });
+      Send_Email_Verify(result.User_Email);
+
+      // const Access_Token = JWT_Create_Token({
+      //   User_Email: result.User_Email,
+      //   Role: result.Role_Id,
+      //   User_Id: result.User_Id,
+      // });
 
       resolve({
         status: 200,
         message: "Create user success",
-        data: {
-          is_Login: true,
-          Access_Token: Access_Token,
-          User_Id: result.User_Id,
-          User_Name: result.User_Name,
-          Avatar: result.Avatar,
-        },
+        // data: {
+        //   is_Login: true,
+        //   Access_Token: Access_Token,
+        //   User_Id: result.User_Id,
+        //   User_Name: result.User_Name,
+        //   Avatar: result.Avatar,
+        // },
       });
     } catch (err) {
       reject({
