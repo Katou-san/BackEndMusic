@@ -144,6 +144,56 @@ const Send_Logo = async (req, res) => {
   }
 };
 
+const Send_Ads_Image = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const filePath = {
+      root: path.join(__dirname, "../Assets/Ads/Image"),
+    };
+
+    if (!Id || Id == "null") {
+      return res.sendFile(`default.png`, filePath, (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+
+    return res.sendFile(`${Id}`, filePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+};
+
+const Send_Ads_Audio = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const filePath = {
+      root: path.join(__dirname, "../Assets/Ads/Audio"),
+    };
+
+    if (!Id || Id == "null") {
+      return res.sendFile(`default.png`, filePath, (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+
+    return res.sendFile(`${Id}`, filePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
+};
+
 module.exports = {
   Send_Song_Audio,
   Send_Song_Img,
@@ -151,4 +201,6 @@ module.exports = {
   Send_Playlist_Thumbnail,
   Send_Playlist_Img,
   Send_Logo,
+  Send_Ads_Image,
+  Send_Ads_Audio,
 };

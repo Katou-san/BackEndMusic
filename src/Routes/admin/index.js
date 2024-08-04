@@ -17,6 +17,8 @@ const Admin_Router_Track = require("./admin_Track.routes");
 const Admin_Router_Partner = require("./admin_Partner.routes");
 const Admin_Router_Dashboard = require("./admin_Dashboard.routes");
 const Admin_Router_Artist = require("./admin_Artist.routes");
+const Admin_Router_Ads = require("./admin_Ads.routes");
+Router.use(Admin_Router_Ads);
 Router.use(Admin_Router_User);
 Router.use(Admin_Router_Category);
 Router.use(Admin_Router_Role);

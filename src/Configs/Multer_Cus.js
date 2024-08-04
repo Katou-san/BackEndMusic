@@ -23,6 +23,10 @@ const handle_Link = (nameFile = "") => {
       return { status: true, url: "./src/Assets/User_Avatar" };
     case "logo":
       return { status: true, url: "./src/Assets/Partner" };
+    case "ads_audio":
+      return { status: true, url: "./src/Assets/Ads/Audio" };
+    case "ads_image":
+      return { status: true, url: "./src/Assets/Ads/Image" };
 
     default:
       return { status: false, url: "./src/Assets/Test" };
