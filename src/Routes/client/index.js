@@ -19,6 +19,7 @@ const Client_Router_Role = require("./client_Role.routes");
 const Client_Router_Visit = require("./client_Visit.routes");
 const Client_Router_Artist = require("./client_Artist.routes");
 const Client_Login_Google = require("./client_Login_Google.routes");
+const Client_Email = require("./client_Mail.routes");
 Router.use(Client_Router_Artist);
 Router.use(Client_Router_User);
 Router.use(Client_Router_Category);
@@ -38,5 +39,6 @@ Router.use(Client_Router_Search);
 Router.use(Client_Router_Role);
 Router.use(Client_Router_Visit);
 Router.use(Client_Login_Google);
+Router.use(Client_Email);
 
 module.exports = Router;
