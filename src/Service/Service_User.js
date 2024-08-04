@@ -21,6 +21,7 @@ const { Reply } = require("../Model/Reply");
 const { Follow } = require("../Model/Follow");
 const { Playlist } = require("../Model/Playlist");
 const { Song } = require("../Model/Song");
+const { dehash64 } = require("../Util/hash");
 const get_Lable_User = {
   _id: 0,
   User_Id: 1,
@@ -186,7 +187,7 @@ const SV__Login_User = (data, type) => {
         return resolve({ status: 404, message: "Not found email" });
       }
 
-      if (!Confirm_Hash_Password(User_Pass, result?.User_Pass)) {
+      if (!Confirm_Hash_Password(dehash64(User_Pass), result?.User_Pass)) {
         return resolve({
           status: 404,
           message: "Pass not match",
@@ -359,7 +360,7 @@ const SV__Create_User = (data) => {
       const result = await User.create({
         User_Id: Create_Id("User", User_Name),
         User_Email: String(User_Email).toLowerCase(),
-        User_Pass: Hash_Password(User_Pass),
+        User_Pass: Hash_Password(dehash64(User_Pass)),
         User_Name,
         Role_Id: Role_Id,
         is_Admin,
