@@ -17,6 +17,19 @@ const JWT_Create_Token = (Payload) => {
   }
 };
 
+const JWT_Verify_Email = (Payload) => {
+  let token = null;
+  try {
+    token = jwt.sign(
+      { ...Payload, expiresIn: process.env.EMAIL_VERIFY_EXPIRES_IN },
+      Key_JWT
+    );
+    return token;
+  } catch (err) {
+    return token;
+  }
+};
+
 const JWT_Verify_Token = async (req, res, next) => {
   let Token = await req.headers["x-access-token"];
   if (Token) {
@@ -35,4 +48,4 @@ const JWT_Verify_Token = async (req, res, next) => {
   }
 };
 
-module.exports = { JWT_Create_Token, JWT_Verify_Token };
+module.exports = { JWT_Create_Token, JWT_Verify_Token, JWT_Verify_Email };

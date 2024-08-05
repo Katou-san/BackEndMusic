@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { User } = require("../Model/User");
-const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
+const { JWT_Verify_Email } = require("../Middleware/JWT_ActionS");
 dotenv.config();
 
 const trans = nodemailer.createTransport({
@@ -21,7 +21,7 @@ const Send_Email_Verify = async (email) => {
     }
 
     if (user.Status == 2) {
-      const Email_Token = JWT_Create_Token({
+      const Email_Token = JWT_Verify_Email({
         User_Email: user.User_Email,
         User_Id: user.User_Id,
       });
@@ -31,7 +31,7 @@ const Send_Email_Verify = async (email) => {
         to: email,
         subject: "Hotaru Verify Mail",
         text: "Mail Verify",
-        html: `<p>Đây là mail để xác nhận tài khoảng trên trang Hotaru.</p><p>Ấn vào đường link bên dưới để xác nhận:</p><p><a href="${process.env.EMAIL_CALLBACK}/${Email_Token}">Verify mail</a></p>`,
+        html: `<p>Hello ${user.User_Name}</p><p>This is an email to verify the account for Hotaru Music.</p><p>To confirm your email, click the link below: </p><p><a href="${process.env.EMAIL_CALLBACK}/${Email_Token}">Verify email</a></p><p>This link will expire within 1 hour.</p>`,
       };
 
       trans.sendMail(mailOpt, function (error, info) {
@@ -92,7 +92,46 @@ const Email_verify = async (id) => {
   }
 };
 
+const Send_reset_password = async (email) => {
+  try {
+    const user = await User.findOne({ User_Email: email, is_Admin: false });
+    if (!user) {
+      return 0;
+    }
+
+    if (user.Status == 1) {
+      const Email_Token = JWT_Verify_Email({
+        User_Id: user.User_Id,
+        Reset: user.User_Pass,
+      });
+
+      const mailOpt = {
+        from: process.env.MAIL_NAME,
+        to: email,
+        subject: "Hotaru reset password",
+        text: "Reset password",
+        html: `<p>Hello ${user.User_Name}</p><p>This is an email to reset your password for Hotaru Music.</p><p>Click the link below to continue: </p><p><a href="${process.env.PASSWORLD_RESET_CALLBACK}/${Email_Token}">Reset password</a></p><p>This link will expire within 1 hour.</p>`,
+      };
+
+      trans.sendMail(mailOpt, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email reset send: " + info.response);
+        }
+      });
+      return 1;
+    } else {
+      return 2;
+    }
+  } catch (e) {
+    console.log(e);
+    return -1;
+  }
+};
+
 module.exports = {
   Send_Email_Verify,
   Email_verify,
+  Send_reset_password,
 };

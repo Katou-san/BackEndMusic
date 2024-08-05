@@ -200,7 +200,8 @@ const SV__Login_User = (data, type) => {
         Send_Email_Verify(result.User_Email);
         return resolve({
           status: 404,
-          message: "Account not verify",
+          message:
+            "Your account is not verify. Verify link have been send you your email.",
         });
       }
 
@@ -419,7 +420,7 @@ const SV__Create_User = (data) => {
 
       resolve({
         status: 200,
-        message: "Create user success",
+        message: "User creates successfully. Please verify your email.",
         // data: {
         //   is_Login: true,
         //   Access_Token: Access_Token,
@@ -629,6 +630,41 @@ const SV__Delete_User = (User_Id) => {
   });
 };
 
+const SV__User_reset_password = (token, pass, repass) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const verify = jwt.verify(
+        token,
+        process.env.PRIVATE_KEY_JWT,
+        async (err, decoded) => {
+          if (err) {
+            return 0;
+          } else {
+            const check = await User.findOne({
+              User_Id: decoded.User_Id,
+              User_Pass: decoded.User_Pass,
+            });
+            return check;
+          }
+        }
+      );
+
+      resolve({
+        status: 200,
+        message: "Reset! test",
+        data: verify,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Service_User.js (SV__User_reset_password)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 module.exports = {
   SV__Get_User,
   SV__Find_User,
@@ -639,4 +675,5 @@ module.exports = {
   SV__Oauth,
   SV__Get_UserM,
   SV__Update_User_Admin,
+  SV__User_reset_password,
 };

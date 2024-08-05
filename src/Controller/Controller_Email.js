@@ -1,6 +1,10 @@
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
-const { Send_Email_Verify, Email_verify } = require("../Util/Send_Email");
+const {
+  Send_Email_Verify,
+  Email_verify,
+  Send_reset_password,
+} = require("../Util/Send_Email");
 dotenv.config();
 
 const emailRegexp =
@@ -55,29 +59,51 @@ const CTL__Email_confirm = async (req, res) => {
 
     switch (result) {
       case 0:
-        return res
-          .status(200)
-          .json({ status: 404, message: "Verify token not valid" });
+        return res.status(200).json("Verify token is not valid.");
       case 1:
-        return res
-          .status(200)
-          .json({ status: 200, message: "Verify email complete!" });
+        return res.status(200).json("Your email has been verified.");
       case 2:
-        return res
-          .status(200)
-          .json({ status: 404, message: "Email already vetify" });
+        return res.status(200).json("Email has already been vetified.");
       default:
-        return res
-          .status(200)
-          .json({ status: 404, message: "Verify Email Fail" });
+        return res.status(200).json("Email verification failed.");
     }
   } catch (e) {
     new Error(e.message);
-    return res.status(404).json({ status: 404, message: "Verify Email Fail" });
+    return res.status(404).json("Verify email fail!");
+  }
+};
+
+const CTL__Send_Email_reset = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const result = await Send_reset_password(email);
+
+    switch (result) {
+      case 0:
+        return res
+          .status(200)
+          .json({ status: 404, message: "Account not exist" });
+      case 1:
+        return res
+          .status(200)
+          .json({ status: 200, message: "Reset Email has been sent!" });
+      case 2:
+        return res
+          .status(200)
+          .json({ status: 404, message: "Account not active" });
+      default:
+        return res
+          .status(200)
+          .json({ status: 404, message: "Send Email Fail" });
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Send Email Fail" });
   }
 };
 
 module.exports = {
   CTL__Send_Email_Verify,
   CTL__Email_confirm,
+  CTL__Send_Email_reset,
 };

@@ -9,6 +9,7 @@ const {
   SV__Get_UserM,
   SV__Update_User_Admin,
   SV__Find_User,
+  SV__User_reset_password,
 } = require("../Service/Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
@@ -289,6 +290,20 @@ const CTL__Delete_User = async (req, res) => {
   }
 };
 
+const CTL__Reset_User = async (req, res) => {
+  try {
+    const { token, pass, repass } = req.body;
+    const respone = await SV__User_reset_password(token, pass, repass);
+
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Reset password failed" });
+  }
+};
+
 module.exports = {
   CTL__Find_User,
   CTL__Get_User,
@@ -300,4 +315,5 @@ module.exports = {
   CTL__Get_UserM,
   CTL__Get_User__Client,
   CTL__Update_User_Admin,
+  CTL__Reset_User,
 };
