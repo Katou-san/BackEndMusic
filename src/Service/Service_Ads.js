@@ -3,6 +3,7 @@ const { User } = require("../Model/User");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
 const { Delete_Many_File } = require("../Util/Handle_File");
+const { dotenv } = require("dotenv").config();
 
 //todo done!
 const SV__Get_Ads = (Ads_Id) => {
@@ -26,6 +27,27 @@ const SV__Get_Ads = (Ads_Id) => {
       }
 
       const result = await Ads.find();
+      return resolve({
+        status: 200,
+        message: "Get Ads complete!",
+        data: result,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Ads.js (SV_Get_Ads)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__Random_Ads = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const count = await Ads.countDocuments({});
+      const random = Math.floor(Math.random() * count);
+      const result = await Ads.findOne().skip(random);
       return resolve({
         status: 200,
         message: "Get Ads complete!",
@@ -214,4 +236,5 @@ module.exports = {
   SV__Update_Ads,
   SV__Delete_Ads,
   SV__Create_Ads,
+  SV__Random_Ads,
 };

@@ -147,6 +147,7 @@ const Send_Logo = async (req, res) => {
 const Send_Ads_Image = async (req, res) => {
   try {
     const { Id } = req.params;
+    console.log(Id);
     const filePath = {
       root: path.join(__dirname, "../Assets/Ads/Image"),
     };
@@ -172,6 +173,7 @@ const Send_Ads_Image = async (req, res) => {
 const Send_Ads_Audio = async (req, res) => {
   try {
     const { Id } = req.params;
+    console.log(Id);
     const filePath = {
       root: path.join(__dirname, "../Assets/Ads/Audio"),
     };

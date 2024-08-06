@@ -3,6 +3,7 @@ const {
   SV__Create_Ads,
   SV__Update_Ads,
   SV__Delete_Ads,
+  SV__Random_Ads,
 } = require("../Service/Service_Ads");
 
 const CTL__Get_Ads = async (req, res) => {
@@ -13,6 +14,16 @@ const CTL__Get_Ads = async (req, res) => {
       return res.status(200).json(respone_id);
     }
     const respone_id = await SV__Get_Ads(id);
+    return res.status(200).json(respone_id);
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Artist failed" });
+  }
+};
+
+const CTL__Random_Ads = async (req, res) => {
+  try {
+    const respone_id = await SV__Random_Ads();
     return res.status(200).json(respone_id);
   } catch (e) {
     new Error(e.message);
@@ -102,5 +113,6 @@ module.exports = {
   CTL__Delete_Ads,
   CTL__Create_Ads,
   // CTL__Find_Ads,
+  CTL__Random_Ads,
   CTL__Update_Ads,
 };
