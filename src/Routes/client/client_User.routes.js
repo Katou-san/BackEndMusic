@@ -21,7 +21,7 @@ Router.post("/user/login/:type", CTL__Login_User);
 Router.post("/user/signup", CTL__Create_User);
 Router.get("/user/Oauth", JWT_Verify_Token, CTL__Oauth);
 Router.get("/user/:type/:id", JWT_Verify_Token, CTL__Get_User__Client);
-Router.post("/reset", CTL__Reset_User);
+Router.post("/user/reset", CTL__Reset_User);
 
 Router.put(
   "/user",

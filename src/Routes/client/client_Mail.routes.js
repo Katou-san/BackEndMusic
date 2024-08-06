@@ -8,6 +8,6 @@ const {
 
 Router.get("/mail/confirm/:id", CTL__Email_confirm);
 Router.get("/mail/send-verify/:mail", CTL__Send_Email_Verify);
-Router.get("/mail/send-verify/:mail", CTL__Send_Email_reset);
+Router.post("/mail/send-reset", CTL__Send_Email_reset);
 
 module.exports = Router;

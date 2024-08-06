@@ -1,6 +1,7 @@
 const { Hash_Password, Confirm_Hash_Password } = require("../Middleware/Hash");
 const { JWT_Create_Token } = require("../Middleware/JWT_ActionS");
 const { User } = require("../Model/User");
+const jwt = require("jsonwebtoken");
 const { Role } = require("../Model/Role");
 const { Convert_vUpdate } = require("../Util/Convert_data");
 const { Create_Id } = require("../Util/Create_Id");
@@ -633,27 +634,47 @@ const SV__Delete_User = (User_Id) => {
 const SV__User_reset_password = (token, pass, repass) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const verify = jwt.verify(
+      const verify = await jwt.verify(
         token,
         process.env.PRIVATE_KEY_JWT,
         async (err, decoded) => {
           if (err) {
-            return 0;
+            return resolve({
+              status: 200,
+              message: "Token not valid",
+            });
           } else {
             const check = await User.findOne({
               User_Id: decoded.User_Id,
-              User_Pass: decoded.User_Pass,
+              User_Pass: decoded.Reset,
             });
-            return check;
+            if (!check) {
+              return resolve({
+                status: 200,
+                message: "Account not exist",
+              });
+            } else {
+              const user = await User.findOneAndUpdate(
+                {
+                  User_Id: decoded.User_Id,
+                },
+                {
+                  User_Pass: Hash_Password(dehash64(pass)),
+                },
+                {
+                  new: true,
+                }
+              );
+              return resolve({
+                status: 200,
+                message: "Password has been reset!",
+              });
+            }
           }
         }
       );
 
-      resolve({
-        status: 200,
-        message: "Reset! test",
-        data: verify,
-      });
+      return verify;
     } catch (err) {
       reject({
         status: 404,

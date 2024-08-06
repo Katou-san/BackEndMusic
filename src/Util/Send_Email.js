@@ -110,7 +110,7 @@ const Send_reset_password = async (email) => {
         to: email,
         subject: "Hotaru reset password",
         text: "Reset password",
-        html: `<p>Hello ${user.User_Name}</p><p>This is an email to reset your password for Hotaru Music.</p><p>Click the link below to continue: </p><p><a href="${process.env.PASSWORLD_RESET_CALLBACK}/${Email_Token}">Reset password</a></p><p>This link will expire within 1 hour.</p>`,
+        html: `<p>Hello ${user.User_Name}</p><p>This is an email to reset your password for Hotaru Music.</p><p>Click the link below to continue: </p><p><a href="${process.env.PASSWORLD_RESET_CALLBACK}${Email_Token}">Reset password</a></p><p>This link will expire within 1 hour.</p>`,
       };
 
       trans.sendMail(mailOpt, function (error, info) {

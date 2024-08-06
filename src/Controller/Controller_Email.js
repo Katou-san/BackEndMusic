@@ -75,7 +75,10 @@ const CTL__Email_confirm = async (req, res) => {
 
 const CTL__Send_Email_reset = async (req, res) => {
   try {
-    const email = req.params.email;
+    const { email } = req.body;
+    if (!email) {
+      return res.status(200).json({ status: 404, message: "Email invalid" });
+    }
     const result = await Send_reset_password(email);
 
     switch (result) {
