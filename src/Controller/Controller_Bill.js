@@ -21,6 +21,22 @@ const CTL__Get_Bill = async (req, res) => {
   }
 };
 
+const CTL__Check_Bill = async (req, res) => {
+  try {
+    if (!req.Id) {
+      return res
+        .status(200)
+        .json({ status: 404, message: "Information is missing! " });
+    } else {
+      const respone = await SV__Get_Bill();
+      return res.status(200).json(respone);
+    }
+  } catch (e) {
+    new Error(e.message);
+    return res.status(404).json({ status: 404, message: "Get Bill failed" });
+  }
+};
+
 const CTL__Get_Bill__Current = async (req, res) => {
   try {
     const Sub_Id = req.params.id;

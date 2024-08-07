@@ -24,7 +24,7 @@ const CTL__Send_Email_Verify = async (req, res) => {
     const check = emailRegexp.test(mail);
     if (check) {
       const result = await Send_Email_Verify(mail);
-      console.log(result);
+
       switch (result) {
         case 0:
           return res

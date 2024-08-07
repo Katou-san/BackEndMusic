@@ -110,6 +110,47 @@ const SV__Get_Bill__Current = (User_Id, Sub_Id) => {
   });
 };
 
+const SV__Check_Bill = (User_Id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (Sub_Id) {
+        const result = await Bill.find({ User_Id });
+        if (!result) {
+          return resolve({
+            status: 404,
+            message: "Not found bill for user",
+          });
+        }
+        return resolve({
+          status: 200,
+          message: "Get bill complete!",
+          data: result,
+        });
+      }
+
+      const allBill = await Bill.aggregate([
+        join("users", "User_Id", "User_Id", "user"),
+        project(getValue, { User_Name: "$user.User_Name" }),
+        {
+          $unwind: "$User_Name",
+        },
+      ]);
+
+      resolve({
+        status: 200,
+        message: "get all bill complete!",
+        data: allBill,
+      });
+    } catch (err) {
+      reject({
+        status: 404,
+        message: "something went wrong in Admin_Service_Bill.js (SV_Get_Bill)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
 //! Need Check
 const SV__Create_Bill = (User_Id, Sub_Id) => {
   return new Promise(async (resolve, reject) => {
@@ -160,30 +201,6 @@ const SV__Create_Bill = (User_Id, Sub_Id) => {
     }
   });
 };
-
-// //! Need Check
-// const SV__Update_Bill = (User_Id, data) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const result = await Bill.findOneAndUpdate({ User_Id }, data, {
-//         new: true,
-//       });
-
-//       resolve({
-//         status: 200,
-//         message: "Updated Bill complete!",
-//         data: result,
-//       });
-//     } catch (err) {
-//       reject({
-//         status: 404,
-//         message:
-//           "something went wrong in Admin_Service_Bill.js (SV_Update_Bill)",
-//       });
-//       throw new Error(err);
-//     }
-//   });
-// };
 
 //! Need Check
 const SV__Delete_Bill = (Bill_Id) => {

@@ -1,7 +1,6 @@
 const { Song } = require("../Model/Song");
 const { Playlist } = require("../Model/Playlist");
-const { join, match, project, matchMany } = require("../Util/QueryDB");
-const { Get_Max_Array } = require("../Util/Convert_data");
+const { join, match } = require("../Util/QueryDB");
 const { User } = require("../Model/User");
 const { Role } = require("../Model/Role");
 const getValueSong = {
@@ -117,15 +116,58 @@ const SV__Get_Trending_Playlist = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const getPlaylist = await Playlist.aggregate([
-        matchMany([{ is_Publish: true }, { Type: 1 }]),
-        join("likes", "Playlist_Id", "Topic_Id", "like"),
-        project(getValuePlaylist, { likes: "$like.State" }),
+        { $match: { is_Publish: true, Type: 1 } },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "Playlist_Id",
+            foreignField: "Topic_Id",
+            as: "Like_list",
+          },
+        },
+        {
+          $unwind: {
+            path: "$Like_list",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $group: {
+            _id: {
+              Playlist_Id: "$Playlist_Id",
+              Playlist_Name: "$Playlist_Name",
+              Artist: "$Artist",
+              Image: "$Image",
+              Thumbnail: "$Thumbnail",
+              User_Id: "$User_I",
+              is_Publish: "$is_Publish",
+              Type: "$Type",
+              Create_Date: "$Create_Date",
+            },
+            like: { $sum: "$Like_list.State" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            Playlist_Id: "$_id.Playlist_Id",
+            Playlist_Name: "$_id.Playlist_Name",
+            Artist: "$_id.Artist",
+            Image: "$_id.Image",
+            Thumbnail: "$_id.Thumbnail",
+            User_Id: "$_id.User_I",
+            is_Publish: "$_id.is_Publish",
+            Type: "$_id.Type",
+            Create_Date: "$_id.Create_Date",
+            like: 1,
+          },
+        },
+        { $sort: { like: -1 } },
+        { $limit: 10 },
       ]);
-
-      const result = Get_Max_Array(getPlaylist, "likes", "Playlist_Id", 20);
       resolve({
         status: 200,
-        data: result,
+        data: getPlaylist,
       });
     } catch (err) {
       reject({
@@ -143,10 +185,35 @@ const SV__Get_Trending_Artist = () => {
     try {
       const getRole = await Role.findOne({ Role_Name: "creator" });
 
-      const result = await User.find({
-        Status: 1,
-        Role_Id: getRole.Role_Id,
-      }).select(getValueUser);
+      const result = await User.aggregate(
+        [
+          { $match: { is_Admin: false, Status: 1, Role_Id: getRole.Role_Id } },
+          {
+            $lookup: {
+              from: "follows",
+              localField: "User_Id",
+              foreignField: "Following",
+              as: "follower_list",
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              User_Id: 1,
+              User_Email: 1,
+              User_Name: 1,
+              Color: 1,
+              Avatar: 1,
+              Role_Id: 1,
+              Create_date: 1,
+              follower: { $size: "$follower_list" },
+            },
+          },
+          { $sort: { follower: -1 } },
+          { $limit: 10 },
+        ],
+        { maxTimeMS: 60000, allowDiskUse: true }
+      );
 
       resolve({
         status: 200,
@@ -180,16 +247,62 @@ const SV__Get_Trending_Season = () => {
 const SV__Get_Trending_Album = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getPlaylist = await Playlist.aggregate([
-        matchMany([{ is_Publish: true }, { Type: 2 }]),
-        join("likes", "Playlist_Id", "Topic_Id", "like"),
-        project(getValuePlaylist, { likes: "$like.State" }),
-      ]);
-
-      const result = Get_Max_Array(getPlaylist, "likes", "Playlist_Id", 20);
+      const getPlaylist = await Playlist.aggregate(
+        [
+          { $match: { is_Publish: true, Type: 2 } },
+          {
+            $lookup: {
+              from: "likes",
+              localField: "Playlist_Id",
+              foreignField: "Topic_Id",
+              as: "Like_list",
+            },
+          },
+          {
+            $unwind: {
+              path: "$Like_list",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $group: {
+              _id: {
+                Playlist_Id: "$Playlist_Id",
+                Playlist_Name: "$Playlist_Name",
+                Artist: "$Artist",
+                Image: "$Image",
+                Thumbnail: "$Thumbnail",
+                User_Id: "$User_I",
+                is_Publish: "$is_Publish",
+                Type: "$Type",
+                Create_Date: "$Create_Date",
+              },
+              like: { $sum: "$Like_list.State" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              Playlist_Id: "$_id.Playlist_Id",
+              Playlist_Name: "$_id.Playlist_Name",
+              Artist: "$_id.Artist",
+              Image: "$_id.Image",
+              Thumbnail: "$_id.Thumbnail",
+              User_Id: "$_id.User_I",
+              is_Publish: "$_id.is_Publish",
+              Type: "$_id.Type",
+              Create_Date: "$_id.Create_Date",
+              like: 1,
+            },
+          },
+          { $sort: { like: -1 } },
+          { $limit: 10 },
+        ],
+        { maxTimeMS: 60000, allowDiskUse: true }
+      );
       resolve({
         status: 200,
-        data: result,
+        data: getPlaylist,
       });
     } catch (err) {
       reject({
