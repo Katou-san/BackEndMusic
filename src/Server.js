@@ -28,6 +28,10 @@ mongoose
     console.log("Connect Database failed!");
   });
 
+app.use("/", (req, res) => {
+  res.send("<h1>Server music is running !</h1>");
+});
+
 app.listen(port, () => {
   console.log("Server is running in http://localhost:" + port);
 });

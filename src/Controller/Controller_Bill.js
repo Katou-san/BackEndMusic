@@ -3,6 +3,7 @@ const {
   SV__Delete_Bill,
   SV__Create_Bill,
   SV__Get_Bill__Current,
+  SV__Check_Bill,
 } = require("../Service/Service_Bill");
 
 const CTL__Get_Bill = async (req, res) => {
@@ -23,12 +24,15 @@ const CTL__Get_Bill = async (req, res) => {
 
 const CTL__Check_Bill = async (req, res) => {
   try {
+    const id = req.params.id;
     if (!req.Id) {
-      return res
-        .status(200)
-        .json({ status: 404, message: "Information is missing! " });
+      return res.status(200).json({
+        status: 200,
+        message: "Dont have bill! ",
+        data: { Bill: false },
+      });
     } else {
-      const respone = await SV__Get_Bill();
+      const respone = await SV__Check_Bill(req.Id, id);
       return res.status(200).json(respone);
     }
   } catch (e) {
@@ -90,5 +94,6 @@ module.exports = {
   CTL__Get_Bill,
   CTL__Delete_Bill,
   CTL__Create_Bill,
+  CTL__Check_Bill,
   CTL__Get_Bill__Current,
 };

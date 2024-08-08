@@ -7,7 +7,7 @@ const { Create_Id } = require("../Util/Create_Id");
 const SV__Get_Repost = (User_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await Repost.find({ User_Id });
+      const result = await Repost.find({ User_Id }).sort({ createdAt: -1 });
       if (!result) {
         return resolve({ status: 404, message: "There are no reposts" });
       }

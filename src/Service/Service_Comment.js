@@ -17,7 +17,6 @@ const getValue = {
 const SV__Get_Comment = (Song_Id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // const result = await Comment.find({ Song_Id });
       const value = await Comment.aggregate([
         match("Song_Id", Song_Id),
         join("users", "User_Id", "User_Id", "User"),
@@ -25,7 +24,7 @@ const SV__Get_Comment = (Song_Id) => {
         {
           $unwind: "$User",
         },
-      ]);
+      ]).sort({ Post_Time: -1 });
 
       const result = Get_Only__Array(value, "User", ["User_Name", "Avatar"]);
       return resolve({

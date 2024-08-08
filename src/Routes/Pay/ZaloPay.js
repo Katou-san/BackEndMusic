@@ -22,10 +22,6 @@ const config = {
 };
 //? DONE
 Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
-  const embed_data = {
-    redirecturl: "",
-  };
-
   if (!req.Id) {
     return res.status(200).json({ status: 404, message: "Error when payment" });
   }
@@ -42,6 +38,10 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
       .status(200)
       .json({ status: 404, message: "Not found subscription" });
   }
+
+  const embed_data = {
+    redirecturl: `${process.env.BACKEND_URL}/api/v1/pay/zalopay/order-status/${Check_Sub.Sub_Id}/${req.Id}`,
+  };
 
   const items = [Check_Sub];
   const transID = Create_Id("payment");
@@ -78,6 +78,7 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
 
   try {
     const result = await axios.post(config.endpoint, null, { params: order });
+    console.log(result);
     return res.status(200).json({ status: 200, data: result.data });
   } catch (error) {
     return res.status(404).json({
@@ -92,7 +93,6 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
 //! NEED CHECK
 Router.post("/callback/:id", async (req, res) => {
   let result = {};
-  console.log("callback");
   try {
     const User_Id = req.params.id;
     const getUser = await User.findOne({ User_Id });
@@ -124,29 +124,6 @@ Router.post("/callback/:id", async (req, res) => {
       result.return_code = 1;
       result.return_message = "success";
       if (result.return_code === 1) {
-        const data = JSON.parse(req.body.data);
-        const subscription = JSON.parse(data.item)[0];
-        const GetSub = await Subscription.findOne({
-          Sub_Id: subscription.Sub_Id,
-        });
-
-        const createBill = await Bill.create({
-          Bill_Id: Create_Id("Bill"),
-          User_Id,
-          Sub_Id: GetSub.Sub_Id,
-          Expiration_Date: plus_Date(GetSub.Duration),
-        });
-        const update = await User.findOneAndUpdate(
-          { User_Id },
-          { is_Premium: true },
-          { new: true }
-        );
-        const getStorage = await Storage.findOne({ User_Id });
-        const storageUpdate = await Storage.findOneAndUpdate(
-          { User_Id },
-          { Limit: getStorage.Limit + GetSub.Storage },
-          { new: true }
-        );
       }
     }
   } catch (ex) {
@@ -159,14 +136,17 @@ Router.post("/callback/:id", async (req, res) => {
 });
 
 //! NEED CHECK
-Router.post("/order-status/:id", async function (req, res) {
-  const id = req.params.id;
+
+Router.get("/order-status/:Sub_Id/:User_Id", async function (req, res) {
+  const { Sub_Id } = req.params;
+  const { amount, status, apptransid } = req.query;
+
   let postData = {
     app_id: config.app_id,
-    app_trans_id: id, // Input your app_trans_id
+    app_trans_id: apptransid,
   };
 
-  let data = postData.app_id + "|" + postData.app_trans_id + "|" + config.key1; // appid|app_trans_id|key1
+  let data = postData.app_id + "|" + postData.app_trans_id + "|" + config.key1;
   postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   let postConfig = {
@@ -179,6 +159,28 @@ Router.post("/order-status/:id", async function (req, res) {
   };
   try {
     const result = await axios(postConfig);
+    if (result.data.return_code === 1 && status === 1) {
+      const GetSub = await Subscription.findOne({
+        Sub_Id,
+      });
+      await Bill.create({
+        Bill_Id: Create_Id("Bill"),
+        User_Id,
+        Sub_Id: GetSub.Sub_Id,
+        Expiration_Date: plus_Date(GetSub.Duration),
+      });
+      await User.findOneAndUpdate(
+        { User_Id },
+        { is_Premium: true },
+        { new: true }
+      );
+      const getStorage = await Storage.findOne({ User_Id });
+      await Storage.findOneAndUpdate(
+        { User_Id },
+        { Limit: getStorage.Limit + GetSub.Storage },
+        { new: true }
+      );
+    }
     return res.status(200).json(result.data);
   } catch (error) {
     return res.status(404).json({ error: error.message });

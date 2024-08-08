@@ -119,6 +119,19 @@ const SV__Get_Trending_Playlist = () => {
         { $match: { is_Publish: true, Type: 1 } },
         {
           $lookup: {
+            from: "tracks",
+            localField: "Playlist_Id",
+            foreignField: "Playlist_Id",
+            as: "track_list",
+          },
+        },
+        {
+          $match: {
+            track_list: { $gt: { $size: 1 } },
+          },
+        },
+        {
+          $lookup: {
             from: "likes",
             localField: "Playlist_Id",
             foreignField: "Topic_Id",
@@ -247,59 +260,69 @@ const SV__Get_Trending_Season = () => {
 const SV__Get_Trending_Album = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getPlaylist = await Playlist.aggregate(
-        [
-          { $match: { is_Publish: true, Type: 2 } },
-          {
-            $lookup: {
-              from: "likes",
-              localField: "Playlist_Id",
-              foreignField: "Topic_Id",
-              as: "Like_list",
-            },
+      const getPlaylist = await Playlist.aggregate([
+        { $match: { is_Publish: true, Type: 2 } },
+        {
+          $lookup: {
+            from: "tracks",
+            localField: "Playlist_Id",
+            foreignField: "Playlist_Id",
+            as: "track_list",
           },
-          {
-            $unwind: {
-              path: "$Like_list",
-              preserveNullAndEmptyArrays: true,
-            },
+        },
+        {
+          $match: {
+            track_list: { $gt: { $size: 1 } },
           },
-          {
-            $group: {
-              _id: {
-                Playlist_Id: "$Playlist_Id",
-                Playlist_Name: "$Playlist_Name",
-                Artist: "$Artist",
-                Image: "$Image",
-                Thumbnail: "$Thumbnail",
-                User_Id: "$User_I",
-                is_Publish: "$is_Publish",
-                Type: "$Type",
-                Create_Date: "$Create_Date",
-              },
-              like: { $sum: "$Like_list.State" },
-            },
+        },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "Playlist_Id",
+            foreignField: "Topic_Id",
+            as: "Like_list",
           },
-          {
-            $project: {
-              _id: 0,
-              Playlist_Id: "$_id.Playlist_Id",
-              Playlist_Name: "$_id.Playlist_Name",
-              Artist: "$_id.Artist",
-              Image: "$_id.Image",
-              Thumbnail: "$_id.Thumbnail",
-              User_Id: "$_id.User_I",
-              is_Publish: "$_id.is_Publish",
-              Type: "$_id.Type",
-              Create_Date: "$_id.Create_Date",
-              like: 1,
-            },
+        },
+        {
+          $unwind: {
+            path: "$Like_list",
+            preserveNullAndEmptyArrays: true,
           },
-          { $sort: { like: -1 } },
-          { $limit: 10 },
-        ],
-        { maxTimeMS: 60000, allowDiskUse: true }
-      );
+        },
+        {
+          $group: {
+            _id: {
+              Playlist_Id: "$Playlist_Id",
+              Playlist_Name: "$Playlist_Name",
+              Artist: "$Artist",
+              Image: "$Image",
+              Thumbnail: "$Thumbnail",
+              User_Id: "$User_I",
+              is_Publish: "$is_Publish",
+              Type: "$Type",
+              Create_Date: "$Create_Date",
+            },
+            like: { $sum: "$Like_list.State" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            Playlist_Id: "$_id.Playlist_Id",
+            Playlist_Name: "$_id.Playlist_Name",
+            Artist: "$_id.Artist",
+            Image: "$_id.Image",
+            Thumbnail: "$_id.Thumbnail",
+            User_Id: "$_id.User_I",
+            is_Publish: "$_id.is_Publish",
+            Type: "$_id.Type",
+            Create_Date: "$_id.Create_Date",
+            like: 1,
+          },
+        },
+        { $sort: { like: -1 } },
+        { $limit: 10 },
+      ]);
       resolve({
         status: 200,
         data: getPlaylist,
