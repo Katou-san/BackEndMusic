@@ -155,10 +155,26 @@ const SV__Find_User = (name) => {
   return new Promise(async (resolve, reject) => {
     try {
       const getRole = await Role.findOne({ Role_Name: "creator" });
-      const result = await User.find({
-        User_Name: { $regex: name, $options: "i" },
-        Role_Id: getRole.Role_Id,
-      });
+      // const result = await User.find({
+      //   User_Name: { $regex: name, $options: "i" },
+      //   Role_Id: getRole.Role_Id,
+      // });
+
+      const result = await User.aggregate([
+        {
+          $match: {
+            $and: [
+              {
+                $or: [
+                  { $text: { $search: `${name}` } },
+                  { User_Name: RegExp(`${name}`, "i") },
+                ],
+              },
+              { Role_Id: getRole.Role_Id },
+            ],
+          },
+        },
+      ]).sort({ score: { $meta: "textScore" } });
 
       resolve({
         status: 200,
@@ -411,7 +427,18 @@ const SV__Create_User = (data) => {
         });
       }
 
-      Send_Email_Verify(result.User_Email);
+      if (result.Status == 2) {
+        Send_Email_Verify(result.User_Email);
+        return resolve({
+          status: 200,
+          message: "User creates successfully. Please verify your email.",
+        });
+      } else {
+        return resolve({
+          status: 200,
+          message: "User creates successfully.",
+        });
+      }
 
       // const Access_Token = JWT_Create_Token({
       //   User_Email: result.User_Email,
@@ -419,17 +446,13 @@ const SV__Create_User = (data) => {
       //   User_Id: result.User_Id,
       // });
 
-      resolve({
-        status: 200,
-        message: "User creates successfully. Please verify your email.",
-        // data: {
-        //   is_Login: true,
-        //   Access_Token: Access_Token,
-        //   User_Id: result.User_Id,
-        //   User_Name: result.User_Name,
-        //   Avatar: result.Avatar,
-        // },
-      });
+      // data: {
+      //   is_Login: true,
+      //   Access_Token: Access_Token,
+      //   User_Id: result.User_Id,
+      //   User_Name: result.User_Name,
+      //   Avatar: result.Avatar,
+      // },
     } catch (err) {
       reject({
         status: 404,
