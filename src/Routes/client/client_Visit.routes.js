@@ -17,47 +17,7 @@ Router.get("/visit", async (req, res) => {
 });
 
 Router.get("/Test343", async (req, res) => {
-  const a = await User.aggregate([
-    {
-      $match: {
-        $and: [
-          {
-            $or: [
-              { $text: { $search: "client" } },
-              { User_Name: RegExp("client", "i") },
-            ],
-          },
-          { is_Admin: false, Status: 1 },
-        ],
-      },
-    },
-    {
-      $lookup: {
-        from: "follows",
-        localField: "User_Id",
-        foreignField: "Following",
-        as: "follower_list",
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        User_Id: 1,
-        User_Email: 1,
-        User_Name: 1,
-        Color: 1,
-        Avatar: 1,
-        Role_Id: 1,
-        Create_date: 1,
-        follower: { $size: "$follower_list" },
-      },
-    },
-    { $sort: { follower: -1 } },
-    { $limit: 20 },
-  ]);
-
-  console.log(a);
-  return res.status(200).json(a);
+  return res.status(200).json("hello");
 });
 
 module.exports = Router;

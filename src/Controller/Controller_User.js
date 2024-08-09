@@ -10,6 +10,7 @@ const {
   SV__Update_User_Admin,
   SV__Find_User,
   SV__User_reset_password,
+  SV__User_Change_Pass,
 } = require("../Service/Service_User");
 const { Validate_Login, Validate_SignUp } = require("../Util/Validate");
 
@@ -303,6 +304,21 @@ const CTL__Reset_User = async (req, res) => {
       .json({ status: 404, message: "Reset password failed" });
   }
 };
+const CTL_User_Change_Pass = async (req, res) => {
+  try {
+    const { oldpass, pass, repass } = req.body;
+    if (!req.Id) {
+      return res.status(200).json({ status: 404, message: "id not valid" });
+    }
+    const respone = await SV__User_Change_Pass(req.Id, oldpass, pass, repass);
+    return res.status(200).json(respone);
+  } catch (e) {
+    new Error(e.message);
+    return res
+      .status(404)
+      .json({ status: 404, message: "Update password failed" });
+  }
+};
 
 module.exports = {
   CTL__Find_User,
@@ -316,4 +332,5 @@ module.exports = {
   CTL__Get_User__Client,
   CTL__Update_User_Admin,
   CTL__Reset_User,
+  CTL_User_Change_Pass,
 };

@@ -13,6 +13,7 @@ const {
   CTL__Oauth,
   CTL__Get_User__Client,
   CTL__Reset_User,
+  CTL_User_Change_Pass,
 } = require("../../Controller/Controller_User");
 const uploadArray = multer_Array();
 
@@ -36,6 +37,13 @@ Router.delete(
   JWT_Verify_Token,
   Validate_Role(["admin"]),
   CTL__Delete_User
+);
+
+Router.post(
+  "/user/password",
+  JWT_Verify_Token,
+  Validate_Role(["client", "creator"]),
+  CTL_User_Change_Pass
 );
 
 module.exports = Router;

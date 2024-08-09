@@ -657,52 +657,110 @@ const SV__Delete_User = (User_Id) => {
 const SV__User_reset_password = (token, pass, repass) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const verify = await jwt.verify(
-        token,
-        process.env.PRIVATE_KEY_JWT,
-        async (err, decoded) => {
-          if (err) {
-            return resolve({
-              status: 200,
-              message: "Token not valid",
-            });
-          } else {
-            const check = await User.findOne({
-              User_Id: decoded.User_Id,
-              User_Pass: decoded.Reset,
-            });
-            if (!check) {
+      if (pass == repass) {
+        const verify = await jwt.verify(
+          token,
+          process.env.PRIVATE_KEY_JWT,
+          async (err, decoded) => {
+            if (err) {
               return resolve({
-                status: 200,
-                message: "Account not exist",
+                status: 404,
+                message: "Token not valid",
               });
             } else {
-              const user = await User.findOneAndUpdate(
-                {
-                  User_Id: decoded.User_Id,
-                },
-                {
-                  User_Pass: Hash_Password(dehash64(pass)),
-                },
-                {
-                  new: true,
-                }
-              );
-              return resolve({
-                status: 200,
-                message: "Password has been reset!",
+              const check = await User.findOne({
+                User_Id: decoded.User_Id,
+                User_Pass: decoded.Reset,
               });
+              if (!check) {
+                return resolve({
+                  status: 404,
+                  message: "Account not exist",
+                });
+              } else {
+                const user = await User.findOneAndUpdate(
+                  {
+                    User_Id: decoded.User_Id,
+                  },
+                  {
+                    User_Pass: Hash_Password(dehash64(pass)),
+                  },
+                  {
+                    new: true,
+                  }
+                );
+                return resolve({
+                  status: 200,
+                  message: "Password has been reset!",
+                });
+              }
             }
           }
-        }
-      );
+        );
 
-      return verify;
+        return verify;
+      } else {
+        return resolve({
+          status: 404,
+          message: "Password not match",
+        });
+      }
     } catch (err) {
       reject({
         status: 404,
         message:
           "something went wrong in Service_User.js (SV__User_reset_password)",
+      });
+      throw new Error(err);
+    }
+  });
+};
+
+const SV__User_Change_Pass = (id, oldpass, pass, repass) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (pass == repass) {
+        const check = await User.findOne({
+          User_Id: id,
+          User_Pass: Hash_Password(dehash64(oldpass)),
+        });
+        if (check) {
+          const result = await User.findOneAndUpdate(
+            { User_Id: id },
+            {
+              User_Pass: Hash_Password(dehash64(pass)),
+            },
+            {
+              new: true,
+            }
+          );
+          if (!result) {
+            return resolve({
+              status: 404,
+              message: "Update password failed",
+            });
+          }
+          return resolve({
+            status: 200,
+            message: "Password successfully updated",
+          });
+        } else {
+          return resolve({
+            status: 404,
+            message: "User info not valid",
+          });
+        }
+      } else {
+        return resolve({
+          status: 404,
+          message: "Password not match",
+        });
+      }
+    } catch (err) {
+      reject({
+        status: 404,
+        message:
+          "something went wrong in Service_User.js (SV__Change_Pass_User)",
       });
       throw new Error(err);
     }
@@ -720,4 +778,5 @@ module.exports = {
   SV__Get_UserM,
   SV__Update_User_Admin,
   SV__User_reset_password,
+  SV__User_Change_Pass,
 };
