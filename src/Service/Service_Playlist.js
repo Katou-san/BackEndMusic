@@ -145,7 +145,7 @@ const SV__Create_Playlist = (id, data) => {
       Artist,
       Thumbnail,
       Image,
-      is_Publish = true,
+      is_Publish = false,
       Type = 0,
     } = data;
     try {

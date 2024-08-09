@@ -92,9 +92,9 @@ const CTL__Get_PlaylistDF = async (req, res) => {
 
 const CTL__Create_Playlist = async (req, res) => {
   try {
-    const { Playlist_Name } = req.body;
+    const { Playlist_Name, Artist } = req.body;
 
-    if (!Playlist_Name || !req.Id) {
+    if (!Playlist_Name || !req.Id || !Artist) {
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
 

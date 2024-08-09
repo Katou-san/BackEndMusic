@@ -78,7 +78,6 @@ Router.post("/payment/:id", JWT_Verify_Token, async (req, res) => {
 
   try {
     const result = await axios.post(config.endpoint, null, { params: order });
-    console.log(result);
     return res.status(200).json({ status: 200, data: result.data });
   } catch (error) {
     return res.status(404).json({
@@ -138,9 +137,9 @@ Router.post("/callback/:id", async (req, res) => {
 //! NEED CHECK
 
 Router.get("/order-status/:Sub_Id/:User_Id", async function (req, res) {
-  const { Sub_Id } = req.params;
+  const { Sub_Id, User_Id } = req.params;
   const { amount, status, apptransid } = req.query;
-
+  console.log(req.query);
   let postData = {
     app_id: config.app_id,
     app_trans_id: apptransid,
@@ -159,12 +158,17 @@ Router.get("/order-status/:Sub_Id/:User_Id", async function (req, res) {
   };
   try {
     const result = await axios(postConfig);
-    if (result.data.return_code === 1 && status === 1) {
+    if (result.data.return_code === 1 && status == 1) {
       const GetSub = await Subscription.findOne({
         Sub_Id,
       });
+      const checkBill = await Bill.findOne({ Bill_Id: `zalo_${apptransid}` });
+      if (checkBill) {
+        return res.status(200).send("<script>window.close();</script > ");
+      }
+
       await Bill.create({
-        Bill_Id: Create_Id("Bill"),
+        Bill_Id: `zalo_${apptransid}`,
         User_Id,
         Sub_Id: GetSub.Sub_Id,
         Expiration_Date: plus_Date(GetSub.Duration),
