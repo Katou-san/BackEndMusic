@@ -1,6 +1,14 @@
+// const { Shazam } = require("node-shazam");
+
 const express = require("express");
 const fs = require("fs");
-const { User } = require("../../Model/User");
+
+const {
+  CTL__FPCheck,
+  CTL__FP_Song_Create,
+  CTL__FP_Song_CreateAll,
+  CTL__find_Audio_FP,
+} = require("../../Controller/Controller_AudioFP");
 const Router = express.Router();
 
 Router.get("/visit", async (req, res) => {
@@ -16,8 +24,10 @@ Router.get("/visit", async (req, res) => {
   }
 });
 
-Router.get("/Test343", async (req, res) => {
-  return res.status(200).json("hello");
-});
+Router.get("/Test343", CTL__FPCheck);
+
+Router.post("/audiofp/createfp", CTL__FP_Song_Create);
+Router.get("/audiofp/createAll", CTL__FP_Song_CreateAll);
+Router.get("/audiofp/find", CTL__find_Audio_FP);
 
 module.exports = Router;
