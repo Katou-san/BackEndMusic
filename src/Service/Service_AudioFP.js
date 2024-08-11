@@ -23,13 +23,17 @@ const defaultOptions = {
 
 const SV__GetFP = (file) => {
   return new Promise(async (resolve, reject) => {
-    const fpcalc = path.join(__dirname, "../Assets/fpcalc/fpcalc.exe");
+    try {
+      const fpcalc = path.join(__dirname, "../Assets/fpcalc/fpcalc.exe");
+      ///sau khi npm i thi vao tahy doi thu vien(bo 40 - 51)
+      fpcalca(file, { command: fpcalc, raw: true }, async (err, result) => {
+        if (err) throw err;
 
-    fpcalca(file, { command: fpcalc, raw: true }, async (err, result) => {
-      if (err) throw err;
-
-      return resolve(result.fingerprint);
-    });
+        return resolve(result.fingerprint);
+      });
+    } catch (error) {
+      reject({ status: 404, message: error.message });
+    }
   });
 };
 

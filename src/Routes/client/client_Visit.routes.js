@@ -42,7 +42,7 @@ Router.get(
   Validate_Role(["admin"]),
   CTL__FP_Song_CreateAll
 );
-Router.get(
+Router.post(
   "/audiofp/find",
   JWT_Verify_Token,
   uploadArray.fields([{ name: "Song_Find" }]),
