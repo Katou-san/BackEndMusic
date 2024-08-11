@@ -5,6 +5,7 @@ const CryptoJS = require("crypto-js"); // npm install crypto-js
 const moment = require("moment"); // npm install moment
 const express = require("express");
 const qs = require("qs");
+const path = require("path");
 const { Create_Id } = require("../../Util/Create_Id");
 const { User } = require("../../Model/User");
 const { JWT_Verify_Token } = require("../../Middleware/JWT_ActionS");
@@ -185,7 +186,8 @@ Router.get("/order-status/:Sub_Id/:User_Id", async function (req, res) {
         { new: true }
       );
     }
-    return res.status(200).json(result.data);
+    console.log(path.join(__dirname, "../../Page/payment.html"));
+    return res.sendFile(path.join(__dirname, "../../Page/payment.html"));
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }

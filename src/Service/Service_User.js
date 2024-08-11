@@ -716,44 +716,52 @@ const SV__User_reset_password = (token, pass, repass) => {
   });
 };
 
-const SV__User_Change_Pass = (id, oldpass, pass, repass) => {
+const SV__User_Change_Pass = (User_Id, oldpass, pass, repass) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (pass == repass) {
-        const check = await User.findOne({
-          User_Id: id,
-          User_Pass: Hash_Password(dehash64(oldpass)),
+      if (pass != repass) {
+        return resolve({
+          status: 404,
+          message: "New password not match",
         });
-        if (check) {
-          const result = await User.findOneAndUpdate(
-            { User_Id: id },
-            {
-              User_Pass: Hash_Password(dehash64(pass)),
-            },
-            {
-              new: true,
-            }
-          );
-          if (!result) {
-            return resolve({
-              status: 404,
-              message: "Update password failed",
-            });
+      }
+
+      const checkUser = await User.findOne({
+        User_Id,
+      });
+
+      if (!checkUser) {
+        return resolve({
+          status: 404,
+          message: "Not found user",
+          error: { changePass: "Not found user" },
+        });
+      }
+
+      if (Confirm_Hash_Password(dehash64(oldpass), checkUser.User_Pass)) {
+        const result = await User.findOneAndUpdate(
+          { User_Id },
+          {
+            User_Pass: Hash_Password(dehash64(pass)),
+          },
+          {
+            new: true,
           }
-          return resolve({
-            status: 200,
-            message: "Password successfully updated",
-          });
-        } else {
+        );
+        if (!result) {
           return resolve({
             status: 404,
-            message: "User info not valid",
+            message: "Update password failed",
           });
         }
+        return resolve({
+          status: 200,
+          message: "Update password successfully",
+        });
       } else {
         return resolve({
           status: 404,
-          message: "Password not match",
+          message: "Current password is incorrect",
         });
       }
     } catch (err) {

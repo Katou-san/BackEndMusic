@@ -73,7 +73,7 @@ const SV__Create_Partner = (User_Id, data) => {
       const { Partner_Name, Phone, Contract_num, Logo, Status = true } = data;
       const checkUser = await User.findOne({ User_Id });
       const checkPartner = await Partner.findOne({
-        Partner_Name: { $regex: Partner_Name, $options: "i" },
+        Partner_Name,
       });
 
       if (checkPartner) {
@@ -82,6 +82,18 @@ const SV__Create_Partner = (User_Id, data) => {
           message: "Name aready using!",
           error: {
             user: "Name aready using!",
+          },
+          data: {},
+        });
+      }
+
+      const checkContract = await Partner.findOne({ Contract_num });
+      if (checkContract) {
+        return resolve({
+          status: 200,
+          message: "Contract is exist!",
+          error: {
+            user: "Contract is exist!",
           },
           data: {},
         });

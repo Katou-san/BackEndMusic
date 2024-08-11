@@ -81,7 +81,11 @@ const SV__Get_Bill__Current = (User_Id, Sub_Id) => {
           });
         }
 
-        const result = await Bill.findOne({ User_Id, Sub_Id });
+        const result = await Bill.findOne({
+          User_Id,
+          Sub_Id,
+          Expiration_Date: { $gte: new Date() },
+        });
         if (!result) {
           return resolve({
             status: 404,
