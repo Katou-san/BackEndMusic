@@ -27,7 +27,8 @@ const handle_Link = (nameFile = "") => {
       return { status: true, url: "./src/Assets/Ads/Audio" };
     case "ads_image":
       return { status: true, url: "./src/Assets/Ads/Image" };
-
+    case "song_find":
+      return { status: true, url: "./src/Assets/Temp_File" };
     default:
       return { status: false, url: "./src/Assets/Test" };
   }

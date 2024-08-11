@@ -8,6 +8,7 @@ const {
   SV__find_Audio_FP,
 } = require("../Service/Service_AudioFP");
 const path = require("path");
+const { Delete_Many_File } = require("../Util/Handle_File");
 
 const CTL__FPCheck = async (req, res) => {
   try {
@@ -96,10 +97,12 @@ const CTL__FP_Song_CreateAll = async (req, res) => {
 
 const CTL__find_Audio_FP = async (req, res) => {
   try {
-    const file = path.join(
-      __dirname,
-      "../Assets/Song_Audio/20246222153252565.mp3"
-    );
+    const { Song_Find } = req.body;
+
+    if (!Song_Find) {
+      return res.status(200).json({ status: 404, message: "Song null" });
+    }
+    const file = path.join(__dirname, `../Assets/Temp_File/${Song_Find}`);
     if (!fs.existsSync(file)) {
       return res.status(200).json({ status: 404, message: "File patch error" });
     }
@@ -107,10 +110,12 @@ const CTL__find_Audio_FP = async (req, res) => {
     const result = await SV__find_Audio_FP(file);
 
     if (result == false) {
+      await Delete_Many_File([{ url: "Temp_File", idFile: Song_Find }]);
       return res
         .status(200)
         .json({ status: 404, message: "There no match song" });
     } else {
+      await Delete_Many_File([{ url: "Temp_File", idFile: Song_Find }]);
       return res
         .status(200)
         .json({ status: 200, message: "FP find complete", data: result });

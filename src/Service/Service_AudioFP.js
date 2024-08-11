@@ -4,6 +4,8 @@ var bin = require("dec-to-binary");
 const path = require("path");
 const numpy = require("jsnumpy");
 const { Fingerprints } = require("../Model/Audio_FP");
+const { Song } = require("../Model/Song");
+const { join, match } = require("../Util/QueryDB");
 
 const defaultOptions = {
   // seconds to sample audio file for
@@ -178,16 +180,53 @@ const SV__Create_Audio_FP = async (file, songID) => {
   }
 };
 
+const getValue = {
+  Song_Id: 1,
+  Song_Name: 1,
+  Song_Image: 1,
+  Song_Audio: 1,
+  Artist: 1,
+  User_Id: 1,
+  Category_Id: 1,
+  Lyrics: 1,
+  Tag: 1,
+  Color: 1,
+  is_Publish: 1,
+  Create_Date: 1,
+  Artist_Name: 1,
+};
+
 const SV__find_Audio_FP = async (file) => {
   try {
-    const list = await Fingerprints.find();
+    const list = await Fingerprints.aggregate([
+      { $set: { rand: { $rand: {} } } },
+      { $sort: { rand: -1 } },
+      { $project: { rand: 0 } },
+    ]);
     const file_fp = await SV__GetFP(file);
     if (list) {
       for (const fp of list) {
         const result = await SV__CompareFP(fp.FB_array, file_fp);
 
         if (result.match > 85) {
-          return { Song_Id: fp.Song_Id, result: result };
+          const song = await Song.aggregate([
+            join("artists", "Artist", "Artist_Id", "artist_t"),
+            {
+              $project: {
+                ...getValue,
+                is_Admin: "$User.is_Admin",
+                Artist_Name: {
+                  $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
+                },
+              },
+            },
+            match("Song_Id", fp.Song_Id),
+          ]);
+          if (song.length > 0) {
+            return { Song: song[0], result: result };
+          } else {
+            return { Song_Id: fp.Song_Id, result: result };
+          }
         }
       }
       return false;

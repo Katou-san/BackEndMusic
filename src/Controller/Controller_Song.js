@@ -1,3 +1,5 @@
+const path = require("path");
+const { SV__Create_Audio_FP } = require("../Service/Service_AudioFP");
 const {
   SV__Get_Song,
   SV__Update_Song,
@@ -70,6 +72,15 @@ const CTL__Create_Song = async (req, res) => {
       return res.status(404).json({ status: 404, message: "Input is Empty" });
     }
     const respone = await SV__Create_Song(req.body, req.Id);
+
+    //===============tao fp============
+    if (respone.status == 200) {
+      const file = path.join(__dirname, `../Assets/Song_Audio/${Song_Audio}`);
+      await SV__Create_Audio_FP(file, respone.data.Song_Id);
+    }
+
+    //=================================
+
     return res.status(200).json(respone);
   } catch (e) {
     new Error(e.message);

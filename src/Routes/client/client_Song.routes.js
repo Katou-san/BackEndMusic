@@ -30,7 +30,7 @@ Router.put(
   "/song/:id",
   JWT_Verify_Token,
   Validate_Role(["client", "creator"]),
-  uploadArray.fields([{ name: "Song_Src" }, { name: "Song_Image" }]),
+  uploadArray.fields([{ name: "Song_Audio" }, { name: "Song_Image" }]),
   CTL__Update_Song
 );
 
