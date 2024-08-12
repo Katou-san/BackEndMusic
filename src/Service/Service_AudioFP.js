@@ -217,6 +217,7 @@ const SV__find_Audio_FP = async (file) => {
           Song_Id: 1,
           FB_array: 1,
           public: "$result.is_Publish",
+        },
       },
       { $match: { public: true } },
       { $set: { rand: { $rand: {} } } },
