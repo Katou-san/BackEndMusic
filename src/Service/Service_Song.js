@@ -12,6 +12,7 @@ const { Delete_Many_File, getFileSize } = require("../Util/Handle_File");
 const { match, join, project } = require("../Util/QueryDB");
 const { Repost } = require("../Model/Repost");
 const { SV__Create_Artist_Song } = require("./Service_Artist");
+const { Fingerprints } = require("../Model/Audio_FP");
 
 const getValue = {
   Song_Id: 1,
@@ -391,6 +392,7 @@ const SV__Delete_Song = (id, User_Id) => {
       );
 
       const result = await Song.deleteOne({ Song_Id: id });
+
       Delete_Many_File(
         [
           { url: "Song_Image", idFile: find.Song_Image },
@@ -400,7 +402,7 @@ const SV__Delete_Song = (id, User_Id) => {
       );
 
       await Track.deleteMany({ Song_Id: find.Song_Id });
-
+      await Fingerprints.deleteOne({ Song_Id: id });
       resolve({
         status: 200,
         message: result ? "Delete song complete!" : "Delete song failed",
@@ -493,7 +495,7 @@ const SV__Delete_Song_Admin = (id) => {
       );
 
       await Track.deleteMany({ Song_Id: find.Song_Id });
-
+      await Fingerprints.deleteOne({ Song_Id: find.Song_Id });
       resolve({
         status: 200,
         message: result ? "Delete song complete!" : "Delete song failed",

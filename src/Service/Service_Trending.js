@@ -49,19 +49,63 @@ const SV__Get_Slider = () => {
     try {
       const getSong = await Song.aggregate([
         match("is_Publish", true),
-        join("likes", "Song_Id", "Topic_Id", "like"),
-        join("artists", "Artist", "Artist_Id", "artist_t"),
+        join("users", "User_Id", "User_Id", "User"),
+        join("likes", "Song_Id", "Topic_Id", "like_list"),
+        join("artists", "Artist", "Artist_Id", "artist_a"),
         {
-          $project: {
-            ...getValueSong,
-            is_Admin: "$User.is_Admin",
-            Artist_Name: {
-              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
-            },
-            likes: "$like.State",
+          $unwind: {
+            path: "$like_list",
+            preserveNullAndEmptyArrays: true,
           },
         },
-      ]).limit(5);
+        {
+          $group: {
+            _id: {
+              Song_Id: "$Song_Id",
+              Song_Name: "$Song_Name",
+              Song_Image: "$Song_Image",
+              Song_Audio: "$Song_Audio",
+              Artist: "$Artist",
+              User_Id: "$User_Id",
+              Category_Id: "$Category_Id",
+              Lyrics: "$Lyrics",
+              Tag: "$Tag",
+              Color: "$Color",
+              is_Publish: "$is_Publish",
+              Create_Date: "$Create_Date",
+              User_Name: {
+                $first: "$User.User_Name",
+              },
+              Artist_Name: {
+                $first: "$artist_a.Artist_Name",
+              },
+            },
+            like: { $sum: "$like_list.State" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            Song_Id: "$_id.Song_Id",
+            Song_Name: "$_id.Song_Name",
+            Song_Image: "$_id.Song_Image",
+            Song_Audio: "$_id.Song_Audio",
+            Artist: "$_id.Artist",
+            User_Id: "$_id.User_Id",
+            Category_Id: "$_id.Category_Id",
+            Lyrics: "$_id.Lyrics",
+            Tag: "$_id.Lyrics",
+            Color: "$_id.Color",
+            is_Publish: "$_id.is_Publish",
+            Create_Date: "$_id.Create_Date",
+            User_Name: "$_id.User_Name",
+            Artist_Name: "$_id.Artist_Name",
+            like: 1,
+          },
+        },
+        { $sort: { like: -1 } },
+        { $limit: 5 },
+      ]);
 
       resolve({
         status: 200,
@@ -83,19 +127,63 @@ const SV__Get_Trending_Song = () => {
     try {
       const getSong = await Song.aggregate([
         match("is_Publish", true),
-        join("likes", "Song_Id", "Topic_Id", "like"),
-        join("artists", "Artist", "Artist_Id", "artist_t"),
+        join("users", "User_Id", "User_Id", "User"),
+        join("likes", "Song_Id", "Topic_Id", "like_list"),
+        join("artists", "Artist", "Artist_Id", "artist_a"),
         {
-          $project: {
-            ...getValueSong,
-            is_Admin: "$User.is_Admin",
-            Artist_Name: {
-              $ifNull: [{ $first: "$artist_t.Artist_Name" }, "unknown"],
-            },
-            likes: "$like.State",
+          $unwind: {
+            path: "$like_list",
+            preserveNullAndEmptyArrays: true,
           },
         },
-      ]).limit(10);
+        {
+          $group: {
+            _id: {
+              Song_Id: "$Song_Id",
+              Song_Name: "$Song_Name",
+              Song_Image: "$Song_Image",
+              Song_Audio: "$Song_Audio",
+              Artist: "$Artist",
+              User_Id: "$User_Id",
+              Category_Id: "$Category_Id",
+              Lyrics: "$Lyrics",
+              Tag: "$Tag",
+              Color: "$Color",
+              is_Publish: "$is_Publish",
+              Create_Date: "$Create_Date",
+              User_Name: {
+                $first: "$User.User_Name",
+              },
+              Artist_Name: {
+                $first: "$artist_a.Artist_Name",
+              },
+            },
+            like: { $sum: "$like_list.State" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            Song_Id: "$_id.Song_Id",
+            Song_Name: "$_id.Song_Name",
+            Song_Image: "$_id.Song_Image",
+            Song_Audio: "$_id.Song_Audio",
+            Artist: "$_id.Artist",
+            User_Id: "$_id.User_Id",
+            Category_Id: "$_id.Category_Id",
+            Lyrics: "$_id.Lyrics",
+            Tag: "$_id.Lyrics",
+            Color: "$_id.Color",
+            is_Publish: "$_id.is_Publish",
+            Create_Date: "$_id.Create_Date",
+            User_Name: "$_id.User_Name",
+            Artist_Name: "$_id.Artist_Name",
+            like: 1,
+          },
+        },
+        { $sort: { like: -1 } },
+        { $limit: 10 },
+      ]);
 
       resolve({
         status: 200,
