@@ -245,8 +245,6 @@ const SV__find_Audio_FP = async (file) => {
           ]);
           if (song.length > 0) {
             return { Song: song[0], result: result };
-          } else {
-            return false;
           }
         }
       }
