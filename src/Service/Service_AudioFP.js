@@ -203,6 +203,22 @@ const getValue = {
 const SV__find_Audio_FP = async (file) => {
   try {
     const list = await Fingerprints.aggregate([
+      {
+        $lookup: {
+          from: "songs",
+          localField: "Song_Id",
+          foreignField: "Song_Id",
+          as: "result",
+        },
+      },
+      { $unwind: { path: "$result" } },
+      {
+        $project: {
+          Song_Id: 1,
+          FB_array: 1,
+          public: "$result.is_Publish",
+      },
+      { $match: { public: true } },
       { $set: { rand: { $rand: {} } } },
       { $sort: { rand: -1 } },
       { $project: { rand: 0 } },
@@ -229,7 +245,7 @@ const SV__find_Audio_FP = async (file) => {
           if (song.length > 0) {
             return { Song: song[0], result: result };
           } else {
-            return { Song_Id: fp.Song_Id, result: result };
+            return false;
           }
         }
       }
