@@ -16,7 +16,7 @@ const defaultOptions = {
   step: 1,
   // minimum number of points that must overlap in cross correlation
   // exception is raised if this cannot be met
-  min_overlap: 1,
+  min_overlap: 10,
   // report match when cross correlation has a peak exceeding threshold
   threshold: 0.2,
 };
@@ -40,7 +40,7 @@ const SV__GetFP = (file) => {
 function correlation(listx, listy) {
   if (!(listx?.length > 0 && listy?.length > 0)) {
     //Error checking in main program should prevent us from ever being able to get here.
-    throw Error("Empty lists cannot be correlated.");
+    return null;
   }
 
   if (listx.length > listy.length) {
@@ -82,9 +82,11 @@ function cross_correlation(listx, listy, offset) {
 }
 
 function compareCorrelate(listx, listy, span, step) {
-  const min = Math.min(listx.length, listy.length);
-  if (defaultOptions.span > min) {
+  // const min = Math.min(listx.length, listy.length);
+  if (defaultOptions.span > listx.length) {
     return false;
+  } else if (defaultOptions.span > listy.length) {
+    return -1;
   }
 
   const corr_xy = [];
@@ -92,7 +94,6 @@ function compareCorrelate(listx, listy, span, step) {
   for (let offset of numpy.arange(-span, span, step)) {
     corr_xy.push(cross_correlation(listx, listy, offset));
   }
-  //   console.log(corr_xy);
 
   return corr_xy;
 }
@@ -144,6 +145,10 @@ const SV__CompareFP = async (fp1, fp2) => {
         defaultOptions.span,
         defaultOptions.step
       );
+
+      if (corr == -1) {
+        return -1;
+      }
       if (corr == false) {
         return { err: "Not enought lenght" };
       }
@@ -225,9 +230,13 @@ const SV__find_Audio_FP = async (file) => {
       { $project: { rand: 0 } },
     ]);
     const file_fp = await SV__GetFP(file);
+
     if (list) {
       for (const fp of list) {
         const result = await SV__CompareFP(fp.FB_array, file_fp);
+        if (result == -1) {
+          return { status: 404, message: "File use not have enough length" };
+        }
 
         if (result.match > 85) {
           const song = await Song.aggregate([

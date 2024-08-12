@@ -109,7 +109,10 @@ const CTL__find_Audio_FP = async (req, res) => {
 
     const result = await SV__find_Audio_FP(file);
 
-    if (result == false) {
+    if (result.status == 404) {
+      await Delete_Many_File([{ url: "Temp_File", idFile: Song_Find }]);
+      return res.status(200).json(result);
+    } else if (result == false) {
       await Delete_Many_File([{ url: "Temp_File", idFile: Song_Find }]);
       return res
         .status(200)
