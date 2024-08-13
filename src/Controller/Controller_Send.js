@@ -40,7 +40,11 @@ const Send_Song_Img = async (req, res) => {
 
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
-        console.log(err);
+        return res.sendFile(`default.png`, filePath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
     });
   } catch (error) {
@@ -63,7 +67,11 @@ const Send_User_Avatar = async (req, res) => {
 
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
-        console.log(err);
+        return res.sendFile(`default.png`, filePath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
     });
   } catch (error) {
@@ -86,7 +94,11 @@ const Send_Playlist_Img = async (req, res) => {
 
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
-        console.log(err);
+        return res.sendFile(`default.png`, filePath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
     });
   } catch (error) {
@@ -104,7 +116,11 @@ const Send_Playlist_Thumbnail = async (req, res) => {
     if (!Id || Id == "null") {
       return res.sendFile(`default.png`, filePath, (err) => {
         if (err) {
-          console.log(err);
+          return res.sendFile(`default.png`, filePath, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
         }
       });
     }
@@ -136,7 +152,11 @@ const Send_Logo = async (req, res) => {
 
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
-        console.log(err);
+        return res.sendFile(`default.png`, filePath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
     });
   } catch (error) {
@@ -147,7 +167,6 @@ const Send_Logo = async (req, res) => {
 const Send_Ads_Image = async (req, res) => {
   try {
     const { Id } = req.params;
-    console.log(Id);
     const filePath = {
       root: path.join(__dirname, "../Assets/Ads/Image"),
     };
@@ -162,7 +181,11 @@ const Send_Ads_Image = async (req, res) => {
 
     return res.sendFile(`${Id}`, filePath, (err) => {
       if (err) {
-        console.log(err);
+        // return res.sendFile(`default.png`, filePath, (err) => {
+        //   if (err) {
+        //     console.log(err);
+        //   }
+        // });
       }
     });
   } catch (error) {
@@ -173,7 +196,6 @@ const Send_Ads_Image = async (req, res) => {
 const Send_Ads_Audio = async (req, res) => {
   try {
     const { Id } = req.params;
-    console.log(Id);
     const filePath = {
       root: path.join(__dirname, "../Assets/Ads/Audio"),
     };

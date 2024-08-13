@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
+const path = require("path");
 const {
   Send_Email_Verify,
   Email_verify,

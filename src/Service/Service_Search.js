@@ -250,7 +250,6 @@ const SV__Search_Type = (name, type) => {
   return new Promise(async (resolve, reject) => {
     try {
       let result = [];
-      console.log(name);
       switch (type) {
         case "song":
           result = await Song.aggregate(SearchSong(name, 20));
