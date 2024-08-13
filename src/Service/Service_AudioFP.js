@@ -13,12 +13,13 @@ const defaultOptions = {
   // number of points to scan cross correlation over
   span: 50,
   // step size(in points) of cross correlation
-  step: 1,
+  step: 10,
   // minimum number of points that must overlap in cross correlation
   // exception is raised if this cannot be met
   min_overlap: 10,
+
   // report match when cross correlation has a peak exceeding threshold
-  threshold: 0.2,
+  // threshold: 0.2,
 };
 
 const SV__GetFP = (file) => {
@@ -154,7 +155,7 @@ const SV__CompareFP = async (fp1, fp2) => {
       }
 
       const check = await get_max_corr(corr, fp1, fp2);
-      if (check.match > 85) {
+      if (check.match > 75) {
         return check;
       } else {
         timeloop++;
@@ -238,7 +239,7 @@ const SV__find_Audio_FP = async (file) => {
           return { status: 404, message: "File use not have enough length" };
         }
 
-        if (result.match > 85) {
+        if (result.match > 75) {
           const song = await Song.aggregate([
             join("artists", "Artist", "Artist_Id", "artist_t"),
             {
